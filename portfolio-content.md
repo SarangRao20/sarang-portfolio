@@ -37,7 +37,7 @@ I'm an engineer who builds practical AI systems across the stack — from comput
 - Merged two fragmented codebases into a single production repository; owns LLM pipelines across rental agreements, KYC, and financial document processing.
 - Shipped RAG document processing, LangGraph agent workflows, real-time voice pipelines, and CV room-inventory systems — all in production.
 
-Note: The Experience timeline is work-only. Education lives in the hero TRAINING row and the Achievements & Certifications section.
+Note: The Experience timeline is work-only. Education lives in the hero TRAINING row and the Certifications section.
 
 ---
 
@@ -100,12 +100,16 @@ Note: The Experience timeline is work-only. Education lives in the hero TRAINING
 
 ---
 
-## Certifications / Academic Milestones
+## Achievements
+
+- **Winner ×2 — Ideathons** — Innowave 2025 (PICT ACM) & FY Healthcare Track.
+- **Reliance Foundation Scholar** — Top 1% nationally, 2024 cohort.
+- **CodeChef 3★ · LeetCode 382 solved** — Rating 1711, 12 contests.
+
+## Certifications
 
 - **BS in Data Science & Programming** — IIT Madras. Diploma in Programming completed, Data Science in progress.
 - **Machine Learning Specialization** — DeepLearning.AI · Andrew Ng · Coursera.
-- **Reliance Foundation Scholar** — Top 1% nationally, 2024 cohort.
-- **Winner ×2 — Ideathons** — Innowave 2025 (PICT ACM) & FY Healthcare Track.
 
 ---
 
@@ -140,9 +144,10 @@ Build a portfolio website that includes:
 4. Projects
    - Featured: Elysia-AI, FinServe NBFC, Nivana, LeetCode Wrapped
    - Additional: OLA BDM, Hospital Management, Temple Run, Reading Hall, EY Proto
-5. Certifications (IITM Diploma, ML Specialization)
-6. Skills (grouped)
-7. Contact (email, phone, LinkedIn, GitHub, LeetCode)
+5. Achievements (Ideathon wins, scholarships, DSA)
+6. Certifications (IITM Diploma, ML Specialization)
+7. Skills (grouped)
+8. Contact (email, phone, LinkedIn, GitHub, LeetCode)
 
 Design notes:
 - Keep it clean and modern, easy to scan.
