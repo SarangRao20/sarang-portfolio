@@ -138,7 +138,7 @@ const data = {
     benchmarks: [
         { value: 9.07, decimals: 2, suffix: '', label: 'CGPA · B.TECH E&amp;CE' },
         { value: 110, suffix: '+', label: 'TOOLS · ELYSIA-AI VOICE AGENT' },
-        { value: 50, suffix: 'K+', label: 'GH STARS · OPEN SOURCE' },
+        { value: 4, suffix: '+', label: 'PROD DEPLOYMENTS · LIVE SYSTEMS' },
         { value: 10, suffix: '', label: 'AI ENGINEERS LED' }
     ]
 };

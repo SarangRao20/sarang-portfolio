@@ -104,7 +104,6 @@ Note: The Experience timeline is work-only. Education lives in the hero TRAINING
 
 - **Winner ×2 — Ideathons** — Innowave 2025 (PICT ACM) & FY Healthcare Track.
 - **Reliance Foundation Scholar** — Top 1% nationally, 2024 cohort.
-- **CodeChef 3★ · LeetCode 382 solved** — Rating 1711, 12 contests.
 
 ## Certifications
 
