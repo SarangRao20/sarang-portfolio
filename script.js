@@ -147,12 +147,12 @@ const data = {
             ]
         },
         {
-            title: 'EY Proto',
-            category: 'AI AGENTS',
-            description: 'Conversational loan negotiation with 5-step compliance ladder and 3-tier decisioning (auto-approve, manual review, reject) using Gemini agents and spaCy NER.',
-            metric: 'FINTECH · NER',
+            title: 'HP Battery Charge Limiter',
+            category: 'TOOLS & SYSTEMS',
+            description: 'Reverse-engineered HP EC firmware to control battery charge limits — a safety fix shared openly for the community.',
+            metric: 'EC FIRMWARE · 2023',
             links: [
-                { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20/EY_proto' }
+                { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20' }
             ]
         }
     ],
@@ -169,8 +169,7 @@ const data = {
         { value: 1, suffix: '%', label: 'TOP NATIONAL · RELIANCE SCHOLAR' },
         { value: 4, suffix: '+', label: 'PROD SYSTEMS · LIVE' },
         { value: 5, suffix: '', label: 'INTERNS LED' }
-    ],
-    projectFilters: ['ALL', 'AI AGENTS', 'COMPUTER VISION', 'DATA VIZ', 'FULL STACK']
+    ]
 };
 
 // ===== RENDERERS =====
@@ -200,93 +199,42 @@ function renderExperience() {
     `).join('');
 }
 
-let projectFilter = 'ALL';
-
-function renderProjectFilters() {
-    const el = document.getElementById('proj-filters');
+function renderFeatured() {
+    const el = document.getElementById('featured-grid');
     if (!el) return;
-    el.innerHTML = data.projectFilters.map(f => `
-        <button class="proj-chip mono${f === projectFilter ? ' active' : ''}" data-filter="${f}" type="button" aria-pressed="${f === projectFilter}">${f}</button>
-    `).join('') + '<span class="proj-count mono" id="proj-count"></span>';
-}
-
-function renderProjects() {
-    const el = document.getElementById('project-grid');
-    if (!el) return;
-    const all = [...data.featuredProjects, ...data.additionalProjects];
-    const list = projectFilter === 'ALL' ? all : all.filter(p => p.category === projectFilter);
-    el.innerHTML = list.map(p => {
-        const isFeatured = !!p.metrics;
-        const group = isFeatured ? data.featuredProjects : data.additionalProjects;
-        const number = (isFeatured ? 0 : data.featuredProjects.length) + group.indexOf(p) + 1;
-        const num = 'P-' + String(number).padStart(2, '0');
-        return `
-        <article class="proj-ticket${isFeatured ? ' is-featured' : ''} reveal" data-cat="${p.category}">
-            <header class="proj-head">
-                <span class="proj-id mono">${num}</span>
-                <div class="proj-head-main">
-                    <h3 class="proj-title">${p.title}</h3>
-                    ${p.subtitle ? `<p class="proj-sub mono">${p.subtitle}</p>` : ''}
-                </div>
-                <span class="proj-cat mono">${p.category}</span>
+    el.innerHTML = data.featuredProjects.map((p, i) => `
+        <article class="feat-card reveal">
+            <header class="feat-head">
+                <span class="feat-id mono">P-${String(i + 1).padStart(2, '0')}</span>
+                <h3 class="feat-title">${p.title}</h3>
+                ${p.subtitle ? `<p class="feat-sub mono">${p.subtitle}</p>` : ''}
             </header>
-            <p class="proj-desc">${p.description}</p>
-            ${isFeatured ? `
-            <div class="proj-tabs" role="tablist" aria-label="${p.title} details">
-                <button class="proj-tab active mono" data-tab="stack" type="button" aria-selected="true">STACK</button>
-                <button class="proj-tab mono" data-tab="metrics" type="button" aria-selected="false">METRICS</button>
-                <button class="proj-tab mono" data-tab="ship" type="button" aria-selected="false">SHIP LOG</button>
-            </div>
-            <div class="proj-pane active" data-pane="stack">
+            <p class="feat-desc">${p.description}</p>
+            <footer class="feat-foot">
                 <div class="tag-row">${p.tags.map(t => `<span class="tag mono">${t}</span>`).join('')}</div>
-            </div>
-            <div class="proj-pane" data-pane="metrics">
-                <div class="metric-row">${p.metrics.map(m => `
-                    <div class="metric"><span class="metric-v">${m.v}</span><span class="metric-k mono">${m.k}</span></div>`).join('')}</div>
-            </div>
-            <div class="proj-pane" data-pane="ship">
-                <ul class="proj-log mono">${p.shipLog.map(s => `<li>${s}</li>`).join('')}</ul>
-            </div>` : `
-            <div class="proj-meta-line"><span class="tag mono">${p.metric}</span></div>`}
-            <footer class="proj-foot">
-                ${p.links.length ? p.links.map(l =>
-                    `<a class="text-link mono" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`).join('') : ''}
+                <div class="link-row">${p.links.map(l =>
+                    `<a class="text-link mono" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`).join('')}</div>
             </footer>
-        </article>`;
-    }).join('');
-    const count = document.getElementById('proj-count');
-    if (count) count.textContent = list.length + ' / ' + all.length + ' SYSTEMS';
+        </article>
+    `).join('');
+    const count = document.getElementById('more-count');
+    if (count) count.textContent = data.additionalProjects.length + ' SYSTEMS';
     setupReveals(el);
 }
 
-function setupProjectFilters() {
-    const el = document.getElementById('proj-filters');
+function renderMore() {
+    const el = document.getElementById('more-work');
     if (!el) return;
-    el.addEventListener('click', e => {
-        const chip = e.target.closest('.proj-chip');
-        if (!chip) return;
-        projectFilter = chip.dataset.filter;
-        renderProjectFilters();
-        renderProjects();
-    });
-}
-
-function setupProjectTabs() {
-    const grid = document.getElementById('project-grid');
-    if (!grid) return;
-    grid.addEventListener('click', e => {
-        const tab = e.target.closest('.proj-tab');
-        if (!tab) return;
-        const ticket = tab.closest('.proj-ticket');
-        if (!ticket) return;
-        ticket.querySelectorAll('.proj-tab').forEach(t => {
-            t.classList.toggle('active', t === tab);
-            t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
-        });
-        ticket.querySelectorAll('.proj-pane').forEach(pa => {
-            pa.classList.toggle('active', pa.dataset.pane === tab.dataset.tab);
-        });
-    });
+    el.innerHTML = data.additionalProjects.map((p, i) => `
+        <li class="more-item">
+            <span class="more-id mono">P-${String(data.featuredProjects.length + i + 1).padStart(2, '0')}</span>
+            <span class="more-cat mono">${p.category}</span>
+            <h4 class="more-title">${p.title}</h4>
+            <span class="tag mono">${p.metric}</span>
+            ${p.links.length ? `<div class="link-row">${p.links.map(l =>
+                `<a class="text-link mono" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`).join('')}</div>` : ''}
+        </li>
+    `).join('');
 }
 
 function renderSkills() {
@@ -748,10 +696,8 @@ function consoleEgg() {
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
     renderExperience();
-    renderProjectFilters();
-    renderProjects();
-    setupProjectFilters();
-    setupProjectTabs();
+    renderFeatured();
+    renderMore();
     renderSkills();
     renderBenchmarks();
     splitHeroName();

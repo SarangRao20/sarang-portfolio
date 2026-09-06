@@ -94,9 +94,9 @@ Note: The Experience timeline is work-only. Education lives in the hero TRAINING
 - Real-time seat occupancy detection with YOLOv8 + OpenCV and grid calibration.
 **Repo:** https://github.com/SarangRao20/Reading-hall-management
 
-### EY Proto — Conversational Loan Negotiation
-- 5-step compliance ladder, 3-tier decisioning (auto-approve, manual review, reject) with Gemini agents and spaCy NER document extraction.
-**Repo:** https://github.com/SarangRao20/EY_proto
+### HP Battery Charge Limiter — EC Firmware Hack
+- Reverse-engineered HP EC firmware to control battery charge limits; shared openly as a community safety fix (2023).
+**Repo:** https://github.com/SarangRao20
 
 ---
 
@@ -145,7 +145,7 @@ Build a portfolio website that includes:
    - Featured (4) = build tickets with tabs: STACK · METRICS · SHIP LOG
    - Additional (5) = compact tickets with metric chip
    - Featured: Elysia-AI (AI AGENTS), FinServe NBFC (AI AGENTS), Nivana (AI AGENTS), LeetCode Wrapped (DATA VIZ)
-   - Additional: OLA BDM (DATA VIZ), Hospital (FULL STACK), Temple Run (CV), Reading Hall (CV), EY Proto (AI AGENTS)
+   - Additional: OLA BDM (DATA VIZ), Hospital (FULL STACK), Temple Run (CV), Reading Hall (CV), HP Battery Limiter (TOOLS & SYSTEMS)
 5. Achievements (Ideathon wins, scholarships, DSA)
 6. Certifications (IITM Diploma, ML Specialization)
 7. Skills (grouped)
