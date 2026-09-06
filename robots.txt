@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sarang-rao.vercel.app/sitemap.xml
+Sitemap: https://sarangrao.vercel.app/sitemap.xml
