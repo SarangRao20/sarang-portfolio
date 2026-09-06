@@ -9,13 +9,13 @@ const data = {
         {
             id: 'RUN-01',
             status: 'running',
-            date: '2024 — PRESENT',
+            date: 'JAN 2026 — PRESENT',
             role: 'AI Team Lead',
             org: 'TenancyPassport',
             loc: 'Remote',
             points: [
-                'Started as an AI/ML Engineer Intern (2024) → AI Engineer (2025) → promoted to AI Team Lead (2026); now leads a team of 10 AI engineers.',
-                'Merged two fragmented codebases into a single production repository; owns LLM pipelines across rental agreements, KYC, and financial document processing.',
+                'Leads a team of 5 AI interns building agentic document intelligence across rental agreements, KYC, and financial documents.',
+                'Merged two fragmented codebases into a single production repository; owns LLM pipelines for document processing.',
                 'Shipped RAG document processing, LangGraph agent workflows, real-time voice pipelines, and CV room-inventory systems — all in production.',
             ],
             tags: ['Team Lead', 'LangGraph', 'RAG', 'Voice AI', 'Computer Vision']
@@ -25,12 +25,18 @@ const data = {
     featuredProjects: [
         {
             title: 'Elysia-AI',
+            category: 'AI AGENTS',
             subtitle: 'Real-time voice AI desktop assistant · Solo project',
             description: 'Built a real-time voice AI assistant using Gemini Live API with bidirectional audio streaming, wake word detection, screen sharing, and text fallback across a 3-process architecture. ~110 tools across 21 modules covering browser automation, file system, terminal, system control, clipboard, OCR, and Google integrations — with persistent memory, canvas visualizer, and video character states.',
             metrics: [
                 { v: '110+', k: 'TOOLS' },
                 { v: '3', k: 'PROCESS ARCH' },
                 { v: '4', k: 'OS BACKENDS' }
+            ],
+            shipLog: [
+                'Designed a 3-process architecture: React shell, Node orchestrator, Python desktop agent — communicating over WebSockets.',
+                '~110 tool functions across 21 modules with 4 OS backends (Linux GNOME/Wayland, macOS, Windows).',
+                'Persistent memory with 7-category extraction + canvas holographic visualizer with video character states.'
             ],
             tags: ['Gemini Live API', 'LangGraph', 'Electron', 'TypeScript', 'WebRTC'],
             links: [
@@ -39,12 +45,18 @@ const data = {
         },
         {
             title: 'FinServe NBFC',
+            category: 'AI AGENTS',
             subtitle: 'Multi-agent loan origination · Team lead',
             description: 'Led a team building a multi-agent loan origination system using LangGraph connecting KYC, fraud detection, underwriting, and sanction agents with structured state passing. Gemini Vision and OCR for financial document extraction with confidence-based validation and manual review fallback. FastAPI + MongoDB + Redis on Vercel with CI/CD.',
             metrics: [
                 { v: '4', k: 'AGENT TYPES' },
                 { v: 'OCR', k: 'VISION PARSER' },
                 { v: 'CI/CD', k: 'VERCEL DEPLOYED' }
+            ],
+            shipLog: [
+                'Orchestrated KYC → fraud → underwriting → sanction agents with structured state passing on LangGraph.',
+                'Gemini Vision + OCR document extraction with confidence checks and manual review fallback.',
+                'FastAPI + MongoDB + Redis on Vercel with CI/CD — live production deploy.'
             ],
             tags: ['LangGraph', 'Gemini Vision', 'FastAPI', 'Redis', 'MongoDB'],
             links: [
@@ -54,12 +66,18 @@ const data = {
         },
         {
             title: 'Nivana',
+            category: 'AI AGENTS',
             subtitle: 'Mental health conversational AI · Team',
             description: 'Built a mental health platform with an emotional vector engine tracking mood across sessions and triggering interventions on deterioration. Multi-layered AI pipeline: Ollama for local intent classification, Gemini for conversational responses, crisis detection with automatic escalation. Full stack: Flask, PostgreSQL, Redis, Celery, React.',
             metrics: [
                 { v: 'PHQ-9', k: 'DEPRESSION' },
                 { v: 'GAD-7', k: 'ANXIETY' },
                 { v: 'ASYNC', k: 'CELERY WORKERS' }
+            ],
+            shipLog: [
+                'Emotional vector engine tracks mood across sessions; triggers interventions when signals deteriorate.',
+                'Three-layer AI pipeline: local intent (Ollama) → conversational (Gemini) → crisis detection with automatic escalation.',
+                'Shipped full stack: Flask, PostgreSQL, Redis, Celery async alerts and reports.'
             ],
             tags: ['Flask', 'PostgreSQL', 'Redis', 'Celery', 'Gemini API'],
             links: [
@@ -69,12 +87,18 @@ const data = {
         },
         {
             title: 'LeetCode Wrapped',
+            category: 'DATA VIZ',
             subtitle: 'Spotify Wrapped for LeetCode · Solo project',
             description: 'Full-stack data visualization platform with FastAPI querying the LeetCode GraphQL API to aggregate yearly submission statistics: difficulty breakdowns, active days, and acceptance trends. Redis caching for rate limits, Recharts interactive charts for streak tracking and yearly retrospectives. Deployed on Vercel.',
             metrics: [
                 { v: 'GRAPHQL', k: 'API' },
                 { v: 'REDIS', k: 'CACHED' },
                 { v: 'RECHARTS', k: 'VIZ' }
+            ],
+            shipLog: [
+                'FastAPI queries LeetCode\u2019s GraphQL API to aggregate yearly submission statistics.',
+                'Redis caching to respect API rate limits; Recharts for streak tracking and yearly retrospectives.',
+                'CI/CD on Vercel \u2014 live deploy with cached analytics pipeline.'
             ],
             tags: ['FastAPI', 'React', 'GraphQL', 'Redis', 'Recharts'],
             links: [
@@ -87,6 +111,7 @@ const data = {
     additionalProjects: [
         {
             title: 'OLA BDM Analytics',
+            category: 'DATA VIZ',
             description: 'Revenue and driver analytics on 50K+ ride records: cohort analysis, executive dashboards, statistical modeling for cancellations and earnings variability.',
             metric: '50K+ RECORDS',
             links: [
@@ -96,6 +121,7 @@ const data = {
         },
         {
             title: 'Hospital Management System',
+            category: 'FULL STACK',
             description: 'Multi-role hospital platform (Admin, Doctor, Patient) with Flask REST API, Vue.js frontend, JWT auth, Celery async task processing, 10+ entity relational schema.',
             metric: 'IITM MAD2 — GRADED A',
             links: [
@@ -104,6 +130,7 @@ const data = {
         },
         {
             title: 'Temple Run (Position-Based)',
+            category: 'COMPUTER VISION',
             description: 'Position-based game controller using MediaPipe hand tracking and OpenCV — hand gestures drive in-game movement via grid-based finger position mapping.',
             metric: 'CV · MEDIAPIPE',
             links: [
@@ -112,6 +139,7 @@ const data = {
         },
         {
             title: 'Reading Hall Occupancy',
+            category: 'COMPUTER VISION',
             description: 'Real-time seat occupancy detection using YOLOv8 and OpenCV with grid calibration for reading hall monitoring.',
             metric: 'YOLOv8 · OPENCV',
             links: [
@@ -120,6 +148,7 @@ const data = {
         },
         {
             title: 'EY Proto',
+            category: 'AI AGENTS',
             description: 'Conversational loan negotiation with 5-step compliance ladder and 3-tier decisioning (auto-approve, manual review, reject) using Gemini agents and spaCy NER.',
             metric: 'FINTECH · NER',
             links: [
@@ -139,8 +168,9 @@ const data = {
         { value: 2, suffix: '', label: 'IDEATHON WINS' },
         { value: 1, suffix: '%', label: 'TOP NATIONAL · RELIANCE SCHOLAR' },
         { value: 4, suffix: '+', label: 'PROD SYSTEMS · LIVE' },
-        { value: 10, suffix: '', label: 'ENGINEERS LED' }
-    ]
+        { value: 5, suffix: '', label: 'INTERNS LED' }
+    ],
+    projectFilters: ['ALL', 'AI AGENTS', 'COMPUTER VISION', 'DATA VIZ', 'FULL STACK']
 };
 
 // ===== RENDERERS =====
@@ -170,62 +200,93 @@ function renderExperience() {
     `).join('');
 }
 
-function renderFeatured() {
-    const el = document.getElementById('featured-projects');
-    if (!el) return;
-    el.innerHTML = data.featuredProjects.map((p, i) => `
-        <article class="eval-card reveal">
-            <header class="eval-head">
-                <span class="eval-id mono">P-${String(i + 1).padStart(2, '0')}</span>
-                <div>
-                    <h3 class="eval-title">${p.title}</h3>
-                    <p class="eval-sub">${p.subtitle}</p>
-                </div>
-            </header>
-            ${p.video ? `
-            <div class="eval-video">
-                <video controls muted playsinline preload="metadata" src="${p.video}"
-                       aria-label="${p.title} demo video"></video>
-                <span class="video-caption mono">PRODUCT DEMO · 3 MIN</span>
-            </div>` : ''}
-            <p class="eval-desc">${p.description}</p>
-            <div class="metric-row">
-                ${p.metrics.map(m => `
-                    <div class="metric">
-                        <span class="metric-v">${m.v}</span>
-                        <span class="metric-k mono">${m.k}</span>
-                    </div>`).join('')}
-            </div>
-            <footer class="eval-foot">
-                <div class="tag-row">${p.tags.map(t => `<span class="tag mono">${t}</span>`).join('')}</div>
-                ${p.links.length ? `<div class="link-row">${p.links.map(l =>
-                    `<a class="text-link mono" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`).join('')}</div>` : ''}
-            </footer>
-        </article>
-    `).join('');
+let projectFilter = 'ALL';
 
-    // If a demo file is missing (e.g., not yet copied into assets/),
-    // remove the player — the external demo link still works.
-    el.querySelectorAll('.eval-video video').forEach(v => {
-        v.addEventListener('error', () => {
-            const block = v.closest('.eval-video');
-            if (block) block.remove();
-        });
+function renderProjectFilters() {
+    const el = document.getElementById('proj-filters');
+    if (!el) return;
+    el.innerHTML = data.projectFilters.map(f => `
+        <button class="proj-chip mono${f === projectFilter ? ' active' : ''}" data-filter="${f}" type="button" aria-pressed="${f === projectFilter}">${f}</button>
+    `).join('') + '<span class="proj-count mono" id="proj-count"></span>';
+}
+
+function renderProjects() {
+    const el = document.getElementById('project-grid');
+    if (!el) return;
+    const all = [...data.featuredProjects, ...data.additionalProjects];
+    const list = projectFilter === 'ALL' ? all : all.filter(p => p.category === projectFilter);
+    el.innerHTML = list.map(p => {
+        const isFeatured = !!p.metrics;
+        const group = isFeatured ? data.featuredProjects : data.additionalProjects;
+        const number = (isFeatured ? 0 : data.featuredProjects.length) + group.indexOf(p) + 1;
+        const num = 'P-' + String(number).padStart(2, '0');
+        return `
+        <article class="proj-ticket${isFeatured ? ' is-featured' : ''} reveal" data-cat="${p.category}">
+            <header class="proj-head">
+                <span class="proj-id mono">${num}</span>
+                <div class="proj-head-main">
+                    <h3 class="proj-title">${p.title}</h3>
+                    ${p.subtitle ? `<p class="proj-sub mono">${p.subtitle}</p>` : ''}
+                </div>
+                <span class="proj-cat mono">${p.category}</span>
+            </header>
+            <p class="proj-desc">${p.description}</p>
+            ${isFeatured ? `
+            <div class="proj-tabs" role="tablist" aria-label="${p.title} details">
+                <button class="proj-tab active mono" data-tab="stack" type="button" aria-selected="true">STACK</button>
+                <button class="proj-tab mono" data-tab="metrics" type="button" aria-selected="false">METRICS</button>
+                <button class="proj-tab mono" data-tab="ship" type="button" aria-selected="false">SHIP LOG</button>
+            </div>
+            <div class="proj-pane active" data-pane="stack">
+                <div class="tag-row">${p.tags.map(t => `<span class="tag mono">${t}</span>`).join('')}</div>
+            </div>
+            <div class="proj-pane" data-pane="metrics">
+                <div class="metric-row">${p.metrics.map(m => `
+                    <div class="metric"><span class="metric-v">${m.v}</span><span class="metric-k mono">${m.k}</span></div>`).join('')}</div>
+            </div>
+            <div class="proj-pane" data-pane="ship">
+                <ul class="proj-log mono">${p.shipLog.map(s => `<li>${s}</li>`).join('')}</ul>
+            </div>` : `
+            <div class="proj-meta-line"><span class="tag mono">${p.metric}</span></div>`}
+            <footer class="proj-foot">
+                ${p.links.length ? p.links.map(l =>
+                    `<a class="text-link mono" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`).join('') : ''}
+            </footer>
+        </article>`;
+    }).join('');
+    const count = document.getElementById('proj-count');
+    if (count) count.textContent = list.length + ' / ' + all.length + ' SYSTEMS';
+    setupReveals(el);
+}
+
+function setupProjectFilters() {
+    const el = document.getElementById('proj-filters');
+    if (!el) return;
+    el.addEventListener('click', e => {
+        const chip = e.target.closest('.proj-chip');
+        if (!chip) return;
+        projectFilter = chip.dataset.filter;
+        renderProjectFilters();
+        renderProjects();
     });
 }
 
-function renderAdditional() {
-    const el = document.getElementById('additional-projects');
-    if (!el) return;
-    el.innerHTML = data.additionalProjects.map(p => `
-        <article class="mini-card reveal">
-            <span class="mini-metric mono">${p.metric}</span>
-            <h4 class="mini-title">${p.title}</h4>
-            <p class="mini-desc">${p.description}</p>
-            ${p.links.length ? `<div class="link-row">${p.links.map(l =>
-                `<a class="text-link mono" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`).join('')}</div>` : ''}
-        </article>
-    `).join('');
+function setupProjectTabs() {
+    const grid = document.getElementById('project-grid');
+    if (!grid) return;
+    grid.addEventListener('click', e => {
+        const tab = e.target.closest('.proj-tab');
+        if (!tab) return;
+        const ticket = tab.closest('.proj-ticket');
+        if (!ticket) return;
+        ticket.querySelectorAll('.proj-tab').forEach(t => {
+            t.classList.toggle('active', t === tab);
+            t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+        });
+        ticket.querySelectorAll('.proj-pane').forEach(pa => {
+            pa.classList.toggle('active', pa.dataset.pane === tab.dataset.tab);
+        });
+    });
 }
 
 function renderSkills() {
@@ -255,8 +316,8 @@ function renderBenchmarks() {
 // ===== INTERACTIONS =====
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function setupReveals() {
-    const els = document.querySelectorAll('.reveal');
+function setupReveals(root = document) {
+    const els = root.querySelectorAll('.reveal:not(.in)');
     if (reducedMotion || !('IntersectionObserver' in window)) {
         els.forEach(el => el.classList.add('in'));
         return;
@@ -687,8 +748,10 @@ function consoleEgg() {
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
     renderExperience();
-    renderFeatured();
-    renderAdditional();
+    renderProjectFilters();
+    renderProjects();
+    setupProjectFilters();
+    setupProjectTabs();
     renderSkills();
     renderBenchmarks();
     splitHeroName();

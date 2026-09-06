@@ -26,14 +26,14 @@ Also mirrored from `/home/sarang/resume/career.md` (authoritative long-form sour
 
 ## Short Bio (Use on Homepage)
 
-I'm an engineer who builds practical AI systems across the stack — from computer vision pipelines to multi-agent orchestration to backend APIs. I started as an intern and got promoted to lead a team within months. Currently AI Team Lead at TenancyPassport, where I merged two fragmented codebases into one production repo and lead a team of 10 AI engineers across document intelligence agents, room-inventory CV pipelines, and conversational AI. I care about systems that actually ship, not just models that score well on benchmarks.
+I'm an engineer who builds practical AI systems across the stack — from computer vision pipelines to multi-agent orchestration to backend APIs. I started as an intern and got promoted to lead a team within months. Currently AI Team Lead at TenancyPassport (Jan 2026–present), where I merged two fragmented codebases into one production repo and lead a team of 5 AI interns across document intelligence agents, room-inventory CV pipelines, and conversational AI. I care about systems that actually ship, not just models that score well on benchmarks.
 
 ---
 
 ## Experience
 
-### TenancyPassport — AI Team Lead (2024 — present, promoted through Intern → Engineer → Lead)
-- Started as an AI/ML Engineer Intern (2024), promoted to AI Engineer (2025), then AI Team Lead (2026) — now leads a team of 10 AI engineers.
+### TenancyPassport — AI Team Lead (Jan 2026 — present)
+- Leads a team of 5 AI interns.
 - Merged two fragmented codebases into a single production repository; owns LLM pipelines across rental agreements, KYC, and financial document processing.
 - Shipped RAG document processing, LangGraph agent workflows, real-time voice pipelines, and CV room-inventory systems — all in production.
 
@@ -140,9 +140,12 @@ Build a portfolio website that includes:
 1. Home (Headline + short bio + featured projects)
 2. Overview (longer bio + currently learning)
 3. Experience (timeline)
-4. Projects
-   - Featured: Elysia-AI, FinServe NBFC, Nivana, LeetCode Wrapped
-   - Additional: OLA BDM, Hospital Management, Temple Run, Reading Hall, EY Proto
+4. Projects ("Project Registry"):
+   - Filter chips: ALL / AI AGENTS / COMPUTER VISION / DATA VIZ / FULL STACK
+   - Featured (4) = build tickets with tabs: STACK · METRICS · SHIP LOG
+   - Additional (5) = compact tickets with metric chip
+   - Featured: Elysia-AI (AI AGENTS), FinServe NBFC (AI AGENTS), Nivana (AI AGENTS), LeetCode Wrapped (DATA VIZ)
+   - Additional: OLA BDM (DATA VIZ), Hospital (FULL STACK), Temple Run (CV), Reading Hall (CV), EY Proto (AI AGENTS)
 5. Achievements (Ideathon wins, scholarships, DSA)
 6. Certifications (IITM Diploma, ML Specialization)
 7. Skills (grouped)
