@@ -136,10 +136,10 @@ const data = {
         { group: 'TOOLS & SYSTEMS', items: ['Git', 'Linux', 'Docker', 'Google ADK', 'Groq', 'Playwright', 'SQLAlchemy', 'JWT'] }
     ],
     benchmarks: [
-        { value: 9.07, decimals: 2, suffix: '', label: 'CGPA · B.TECH E&amp;CE' },
-        { value: 110, suffix: '+', label: 'TOOLS · ELYSIA-AI VOICE AGENT' },
-        { value: 4, suffix: '+', label: 'PROD DEPLOYMENTS · LIVE SYSTEMS' },
-        { value: 10, suffix: '', label: 'AI ENGINEERS LED' }
+        { value: 2, suffix: '', label: 'IDEATHON WINS' },
+        { value: 1, suffix: '%', label: 'TOP NATIONAL · RELIANCE SCHOLAR' },
+        { value: 4, suffix: '+', label: 'PROD SYSTEMS · LIVE' },
+        { value: 10, suffix: '', label: 'ENGINEERS LED' }
     ]
 };
 
