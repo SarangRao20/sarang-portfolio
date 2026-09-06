@@ -134,6 +134,12 @@ const data = {
         { group: 'BACKEND', items: ['FastAPI', 'Flask', 'REST APIs', 'Celery', 'PostgreSQL', 'MongoDB', 'Redis', 'SQLAlchemy'] },
         { group: 'FRONTEND', items: ['React', 'Vue.js', 'TypeScript', 'Tailwind CSS'] },
         { group: 'TOOLS & SYSTEMS', items: ['Git', 'Linux', 'Docker', 'Google ADK', 'Groq', 'Playwright', 'SQLAlchemy', 'JWT'] }
+    ],
+    benchmarks: [
+        { value: 9.07, decimals: 2, suffix: '', label: 'CGPA · B.TECH E&amp;CE' },
+        { value: 110, suffix: '+', label: 'TOOLS · ELYSIA-AI VOICE AGENT' },
+        { value: 50, suffix: 'K+', label: 'GH STARS · OPEN SOURCE' },
+        { value: 10, suffix: '', label: 'AI ENGINEERS LED' }
     ]
 };
 
@@ -231,6 +237,17 @@ function renderSkills() {
             <div class="tag-row">
                 ${s.items.map(i => `<span class="tag tag-lg mono">${i}</span>`).join('')}
             </div>
+        </div>
+    `).join('');
+}
+
+function renderBenchmarks() {
+    const el = document.getElementById('bench-grid');
+    if (!el) return;
+    el.innerHTML = data.benchmarks.map(b => `
+        <div class="bench-item">
+            <span class="bench-num"><span data-count="${b.value}"${b.decimals ? ` data-decimals="${b.decimals}"` : ''}>0</span>${b.suffix}</span>
+            <span class="bench-label mono">${b.label}</span>
         </div>
     `).join('');
 }
@@ -673,6 +690,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderFeatured();
     renderAdditional();
     renderSkills();
+    renderBenchmarks();
     splitHeroName();
 
     setupTheme();
