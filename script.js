@@ -152,7 +152,7 @@ const data = {
             description: 'Reverse-engineered HP EC firmware to control battery charge limits — a safety fix shared openly for the community.',
             metric: 'EC FIRMWARE · 2023',
             links: [
-                { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20' }
+                { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20/battery-charge-limiter' }
             ]
         }
     ],

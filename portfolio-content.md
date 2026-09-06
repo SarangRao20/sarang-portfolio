@@ -96,7 +96,7 @@ Note: The Experience timeline is work-only. Education lives in the hero TRAINING
 
 ### HP Battery Charge Limiter — EC Firmware Hack
 - Reverse-engineered HP EC firmware to control battery charge limits; shared openly as a community safety fix (2023).
-**Repo:** https://github.com/SarangRao20
+**Repo:** https://github.com/SarangRao20/battery-charge-limiter
 
 ---
 
