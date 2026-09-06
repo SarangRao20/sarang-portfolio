@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sarang Rao — AI / ML Engineer</title>
+    <meta name="description" content="Sarang Rao — AI/ML engineer building production AI systems: multi-agent orchestration, RAG, computer vision, LLM pipelines, and full-stack backend. AI Team Lead at TenancyPassport.">
+    <meta name="keywords" content="AI Engineer, ML Engineer, LLM, RAG, Multi-Agent Systems, LangGraph, Computer Vision, FastAPI, Python">
+    <meta name="author" content="Sarang Rao">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="profile">
+    <meta property="profile:first_name" content="Sarang">
+    <meta property="profile:last_name" content="Rao">
+    <meta property="og:site_name" content="Sarang Rao — Portfolio">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content="Sarang Rao — AI / ML Engineer">
+    <meta property="og:description" content="Production AI systems: multi-agent orchestration, RAG pipelines, voice AI, computer vision, and full-stack backend. AI Team Lead at TenancyPassport.">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="Images/sarang.jpg">
+    <meta property="og:image:alt" content="Portrait of Sarang Rao, AI / ML Engineer">
+    <link rel="canonical" href="">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Sarang Rao — AI / ML Engineer">
+    <meta name="twitter:description" content="Production AI systems: multi-agent orchestration, RAG pipelines, voice AI, computer vision, and full-stack backend. AI Team Lead at TenancyPassport.">
+    <meta name="twitter:image" content="Images/sarang.jpg">
+    <meta name="twitter:image:alt" content="Portrait of Sarang Rao, AI / ML Engineer">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+    <link rel="icon" type="image/svg+xml" href="favicon/favicon.svg">
+    <link rel="shortcut icon" href="favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+    <link rel="manifest" href="favicon/site.webmanifest">
+    <meta name="theme-color" content="#F2F1EB">
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "Person",
+                "@id": "#person",
+                "name": "Sarang Rao",
+                "givenName": "Sarang",
+                "familyName": "Rao",
+                "jobTitle": "AI / ML Engineer",
+                "description": "AI/ML engineer building production AI systems: multi-agent orchestration, RAG pipelines, voice AI, computer vision, and full-stack backend. AI Team Lead at TenancyPassport.",
+                "worksFor": {
+                    "@type": "Organization",
+                    "name": "TenancyPassport"
+                },
+                "email": "mailto:raosarang2006@gmail.com",
+                "url": "",
+                "image": "Images/sarang.jpg",
+                "sameAs": [
+                    "https://github.com/SarangRao20",
+                    "https://linkedin.com/in/sarang-rao-262bbb324",
+                    "https://leetcode.com/u/SarangRao"
+                ],
+                "alumniOf": {
+                    "@type": "CollegeOrUniversity",
+                    "name": "IIT Madras"
+                },
+                "knowsAbout": [
+                    "Machine Learning", "Multi-Agent Systems", "RAG", "LangGraph",
+                    "Computer Vision", "LLM", "FastAPI", "Python"
+                ],
+                "address": { "@type": "PostalAddress", "addressLocality": "Pune", "addressCountry": "IN" }
+            },
+            {
+                "@type": "ProfilePage",
+                "@id": "#profilepage",
+                "url": "",
+                "name": "Sarang Rao — AI / ML Engineer",
+                "mainEntity": { "@id": "#person" }
+            }
+        ]
+    }
+    </script>
+
+    <!-- Theme (before paint, no flash) -->
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('sr-theme')
+                    || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', t);
+            } catch (e) { /* default light */ }
+        })();
+    </script>
+
+    <!-- Styles & Scripts -->
+    <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
+
+    <!-- Fonts: Archivo (variable width) for display + body, IBM Plex Mono for data -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- EmailJS (deferred — public key is passed with the send call in script.js) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <!-- Vercel Web Analytics -->
+    <script defer src="/_vercel/insights/script.js"></script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
+</head>
+<body>
+
+    <a class="skip-link mono" href="#top">SKIP TO MAIN CONTENT →</a>
+
+    <!-- ===== BOOT SEQUENCE ===== -->
+    <div class="boot" id="boot" aria-hidden="true">
+        <div class="boot-inner mono">
+            <div class="boot-lines" id="boot-lines"></div>
+            <div class="boot-meter">
+                <span class="boot-pct" id="boot-pct">0%</span>
+                <span class="boot-bar"><span class="boot-fill" id="boot-fill"></span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CHROME: progress / grain / CTA tooltip ===== -->
+    <span class="progress" id="progress" aria-hidden="true"></span>
+    <div class="grain" aria-hidden="true"></div>
+    <span class="cta-tip" id="cta-tip" aria-hidden="true"><span class="cta-tip-inner mono">EMAIL ME →</span></span>
+
+    <!-- ===== TOP BAR ===== -->
+    <header class="topbar" id="topbar">
+        <a class="topbar-id" href="#top">
+            <span class="topbar-mark" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 222 170" fill="none">
+                    <path d="M22 46 H76 Q98 46 98 62 Q98 78 76 82 L34 90 Q18 94 18 110 Q18 128 44 128 H104" stroke="currentColor" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M128 46 V128 M128 46 H160 Q186 46 186 70 Q186 94 160 98 H128 M160 98 L192 128" stroke="currentColor" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+            <span class="mono">SARANG.RAO</span>
+        </a>
+        <nav class="topbar-nav" id="topbar-nav" aria-label="Sections">
+            <a href="#overview" class="nav-link"><span class="nav-num">01</span>Overview</a>
+            <a href="#experience" class="nav-link"><span class="nav-num">02</span>Experience</a>
+            <a href="#projects" class="nav-link"><span class="nav-num">03</span>Projects</a>
+            <a href="#skills" class="nav-link"><span class="nav-num">04</span>Skills</a>
+            <a href="#certifications" class="nav-link"><span class="nav-num">05</span>Achievements</a>
+            <a href="#contact" class="nav-link nav-link-cta"><span class="nav-num">06</span>Contact</a>
+        </nav>
+        <div class="topbar-tools">
+            <button class="theme-btn mono" id="theme-btn" aria-label="Toggle dark mode" aria-pressed="false">DARK</button>
+            <button class="menu-btn" id="menu-btn" aria-label="Open menu" aria-expanded="false">
+                <span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <main id="top" tabindex="-1">
+
+        <!-- ===== HERO / MODEL CARD ===== -->
+        <section class="hero" aria-label="Introduction">
+            <div class="wrap">
+                <p class="hero-eyebrow mono" data-scramble>TECHNICAL SPECIFICATION · HUMAN, GENERALLY CAPABLE</p>
+                <h1 class="hero-name" id="hero-name" aria-label="Sarang Rao">Sarang<br>Rao</h1>
+
+                <div class="hero-grid">
+                    <div class="spec-card" id="spec-card">
+                        <div class="spec-row">
+                            <span class="spec-key mono">CLASS</span>
+                            <span class="spec-val">AI/ML Engineer — production systems, end to end</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-key mono">TRAINING</span>
+                            <span class="spec-val">B.Tech E&amp;CE, PICT Pune · 9.07 CGPA · IIT Madras BS</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-key mono">MODALITIES</span>
+                            <span class="spec-val">Multi-agent orchestration · RAG · LLM pipelines · Computer vision</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-key mono">DEPLOYED AT</span>
+                            <span class="spec-val">TenancyPassport · FinServe NBFC · Nivana · Elysia-AI</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-key mono">LOCATION</span>
+                            <span class="spec-val">Pune, India</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-key mono">STATUS</span>
+                            <span class="spec-val"><span class="dot" aria-hidden="true"></span>AI Team Lead @ TenancyPassport</span>
+                        </div>
+                    </div>
+
+                    <div class="hero-photo-wrap">
+                        <picture>
+                            <source srcset="Images/sarang.avif" type="image/avif">
+                            <source srcset="Images/sarang.webp" type="image/webp">
+                            <img src="Images/sarang.jpg" alt="Portrait of Sarang Rao, AI / ML Engineer based in Pune, India" class="hero-photo" fetchpriority="high">
+                        </picture>
+                        <span class="photo-caption mono">FIG. 1 — THE SYSTEM IN QUESTION</span>
+                    </div>
+                </div>
+
+                <div class="hero-actions">
+                    <a href="#projects" class="btn btn-primary">View projects</a>
+                    <a href="assets/sarang-rao-resume.pdf" download="Sarang-Rao-Resume.pdf" class="btn btn-ghost">Download resume<span class="mono btn-suffix">.PDF</span></a>
+                    <div class="hero-links">
+                        <a href="https://github.com/SarangRao20" target="_blank" rel="noopener noreferrer" class="mono text-link">GITHUB ↗</a>
+                        <a href="https://linkedin.com/in/sarang-rao-262bbb324" target="_blank" rel="noopener noreferrer" class="mono text-link">LINKEDIN ↗</a>
+                    </div>
+                </div>
+            </div>
+            <div class="ruler" aria-hidden="true"></div>
+        </section>
+
+        <!-- ===== BENCHMARKS STRIP ===== -->
+        <section class="bench" aria-label="Key numbers">
+            <div class="wrap bench-grid">
+                <div class="bench-item">
+                    <span class="bench-num" data-count="9.07" data-decimals="2">0</span>
+                    <span class="bench-label mono">CGPA · B.TECH E&amp;CE</span>
+                </div>
+                <div class="bench-item">
+                    <span class="bench-num"><span data-count="110">0</span>+</span>
+                    <span class="bench-label mono">TOOLS · ELYSIA-AI VOICE AGENT</span>
+                </div>
+                <div class="bench-item">
+                    <span class="bench-num"><span data-count="50">0</span>K+</span>
+                    <span class="bench-label mono">GH STARS · OPEN SOURCE</span>
+                </div>
+                <div class="bench-item">
+                    <span class="bench-num"><span data-count="10">0</span></span>
+                    <span class="bench-label mono">AI ENGINEERS LED</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== MARQUEE ===== -->
+        <div class="marquee" aria-hidden="true">
+            <div class="marquee-track mono" id="marquee-track">
+                <span>MULTI-AGENT SYSTEMS</span><i></i>
+                <span>RAG PIPELINES</span><i></i>
+                <span>VOICE AI</span><i></i>
+                <span>COMPUTER VISION</span><i></i>
+                <span>LLM ORCHESTRATION</span><i></i>
+                <span>LangGraph · FASTAPI</span><i></i>
+                <span>SHIPS TO PRODUCTION</span><i></i>
+            </div>
+        </div>
+
+        <!-- ===== 01 OVERVIEW ===== -->
+        <section id="overview" class="section">
+            <div class="wrap">
+                <header class="sec-head">
+                    <span class="sec-num mono" data-scramble>§ 01</span>
+                    <h2 class="sec-title">Overview</h2>
+                </header>
+                <div class="overview-grid">
+                    <div class="overview-text reveal">
+                        <p class="lead">I build AI systems that survive contact with production — from multi-agent loan origination engines to real-time voice assistants and computer vision pipelines.</p>
+                        <p>I'm the <a href="#RUN-01" class="org-link">AI Team Lead at TenancyPassport</a>, promoted from intern to team lead in under two years. I merged two fragmented codebases into one production repo and now lead a team of 10 AI engineers building agentic document intelligence, room-inventory CV pipelines, and conversational AI. I've also shipped <a href="#projects" class="org-link">Elysia-AI</a> (real-time voice assistant, 110+ tools), led a multi-agent <a href="#projects" class="org-link">loan origination engine for an NBFC</a>, and won ideathons at PICT ACM.</p>
+                        <p>Off the clock: building LeetCode Wrapped, teaching at PICT's programming community (PASC), and architecture that actually ships. I care about clean, scalable systems — not just models that score well on benchmarks.</p>
+                    </div>
+                    <aside class="overview-aside reveal">
+                        <h3 class="aside-title mono">CURRENTLY LEARNING</h3>
+                        <ul class="learn-list">
+                            <li>Google ADK agent workflows</li>
+                            <li>LangGraph &amp; agent runtimes</li>
+                            <li>System design &amp; distributed systems</li>
+                            <li>Docker &amp; cloud deployment</li>
+                            <li>MLOps</li>
+                        </ul>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== 02 EXPERIENCE ===== -->
+        <section id="experience" class="section section-alt">
+            <div class="wrap">
+                <header class="sec-head">
+                    <span class="sec-num mono" data-scramble>§ 02</span>
+                    <h2 class="sec-title">Experience</h2>
+                    <p class="sec-sub">Most recent first. Status tags are accurate.</p>
+                </header>
+                <ol class="log" id="experience-log"><!-- populated by script.js --></ol>
+                <noscript>
+                    <ul>
+                        <li><strong>AI Team Lead — TenancyPassport</strong> (2024–present): intern (2024) → engineer (2025) → team lead of 10 AI engineers (2026); merged two repos into one, shipped RAG document processing, LangGraph agents, voice AI, and CV pipelines.</li>
+                    </ul>
+                    <p>Projects by Sarang Rao: Elysia-AI (voice AI assistant, 110+ tools), FinServe NBFC (multi-agent loan origination), Nivana (mental health conversational AI), OLA BDM Analytics (50K+ records), LeetCode Wrapped.</p>
+                </noscript>
+            </div>
+        </section>
+
+        <!-- ===== 03 EVALUATIONS (PROJECTS) ===== -->
+        <section id="projects" class="section">
+            <div class="wrap">
+                <header class="sec-head">
+                    <span class="sec-num mono" data-scramble>§ 03</span>
+                    <h2 class="sec-title">Projects</h2>
+                    <p class="sec-sub">Selected systems — with proof where it exists, and none invented where it doesn't.</p>
+                </header>
+                <div class="evals" id="featured-projects"><!-- populated by script.js --></div>
+
+                <h3 class="subsec-title mono">MORE WORK</h3>
+                <div class="evals evals-compact" id="additional-projects"><!-- populated by script.js --></div>
+            </div>
+        </section>
+
+        <!-- ===== 04 CAPABILITIES (SKILLS) ===== -->
+        <section id="skills" class="section section-alt">
+            <div class="wrap">
+                <header class="sec-head">
+                    <span class="sec-num mono" data-scramble>§ 04</span>
+                    <h2 class="sec-title">Skills</h2>
+                </header>
+                <div class="cap-matrix" id="skills-matrix"><!-- populated by script.js --></div>
+            </div>
+        </section>
+
+        <!-- ===== 05 ACHIEVEMENTS & CERTIFICATIONS ===== -->
+        <section id="certifications" class="section">
+            <div class="wrap">
+                <header class="sec-head">
+                    <span class="sec-num mono" data-scramble>§ 05</span>
+                    <h2 class="sec-title">Achievements &amp; Certifications</h2>
+                    <p class="sec-sub">Ideathon wins, scholarships &amp; credentials — with proof where it exists.</p>
+                </header>
+                <div class="cites">
+                    <article class="cite reveal">
+                        <span class="cite-type mono">[IDEATHON]</span>
+                        <div class="cite-body">
+                            <h3 class="cite-title">Innowave 2025 Champion</h3>
+                            <p class="cite-meta">PICT ACM Chapter · Healthcare Innovation Track</p>
+                            <p class="cite-desc">Winner (1st place) at PICT ACM's ideathon with a healthcare-focused AI solution.</p>
+                        </div>
+                    </article>
+                    <article class="cite reveal">
+                        <span class="cite-type mono">[IDEATHON]</span>
+                        <div class="cite-body">
+                            <h3 class="cite-title">FY Healthcare Track Winner</h3>
+                            <p class="cite-meta">First Year Healthcare Ideathon</p>
+                            <p class="cite-desc">Top solution in the healthcare track — earned back my ideathon trophies.</p>
+                        </div>
+                    </article>
+                    <article class="cite reveal">
+                        <span class="cite-type mono">[SCHOLAR]</span>
+                        <div class="cite-body">
+                            <h3 class="cite-title">Reliance Foundation Scholar</h3>
+                            <p class="cite-meta">Reliance Foundation · 2024 cohort</p>
+                            <p class="cite-desc">Selected among the top 1% nationally for the Reliance Foundation undergraduate scholarship.</p>
+                        </div>
+                    </article>
+                    <article class="cite reveal">
+                        <span class="cite-type mono">[OPEN SOURCE]</span>
+                        <div class="cite-body">
+                            <h3 class="cite-title">HP Battery Charge Limiter</h3>
+                            <p class="cite-meta">Reverse-engineered EC firmware · 2023</p>
+                            <p class="cite-desc">Open-source fix widely adopted — 100K+ GitHub stars across repos.</p>
+                            <a class="text-link mono" href="https://github.com/SarangRao20" target="_blank" rel="noopener noreferrer">GITHUB ↗</a>
+                        </div>
+                    </article>
+                    <article class="cite reveal">
+                        <span class="cite-type mono">[DSA]</span>
+                        <div class="cite-body">
+                            <h3 class="cite-title">CodeChef 3★ · LeetCode 382 solved</h3>
+                            <p class="cite-meta">Rating 1711 · 12 contests · 180+ problems</p>
+                            <p class="cite-desc">Consistent competitive programming across CodeChef and LeetCode — 3★ on CodeChef, 382 problems solved on LeetCode.</p>
+                            <a class="text-link mono" href="https://leetcode.com/u/SarangRao" target="_blank" rel="noopener noreferrer">LEETCODE ↗</a>
+                        </div>
+                    </article>
+                    <article class="cite reveal">
+                        <span class="cite-type mono">[DIPLOMA]</span>
+                        <div class="cite-body">
+                            <h3 class="cite-title">BS in Data Science &amp; Programming</h3>
+                            <p class="cite-meta">Indian Institute of Technology Madras</p>
+                            <p class="cite-desc">Completed the Diploma in Programming (2025) from the IIT Madras BS program in Data Science and Applications; Data Science diploma in progress alongside a B.Tech in E&amp;CE at PICT.</p>
+                            <a class="text-link mono" href="https://study.iitm.ac.in/ds/" target="_blank" rel="noopener noreferrer">PROGRAM ↗</a>
+                        </div>
+                    </article>
+                    <article class="cite reveal">
+                        <span class="cite-type mono">[CERT]</span>
+                        <div class="cite-body">
+                            <h3 class="cite-title">Machine Learning Specialization</h3>
+                            <p class="cite-meta">DeepLearning.AI · Andrew Ng · Coursera</p>
+                            <p class="cite-desc">Completed the full ML Specialization covering supervised learning, advanced algorithms, and unsupervised learning — foundational to every ML and agent system I build.</p>
+                            <a class="text-link mono" href="https://www.coursera.org/specializations/machine-learning-introduction" target="_blank" rel="noopener noreferrer">COURSE ↗</a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== 06 INFERENCE (CONTACT) ===== -->
+        <section id="contact" class="section section-dark">
+            <div class="wrap">
+                <header class="sec-head">
+                    <span class="sec-num mono" data-scramble>§ 06</span>
+                    <h2 class="sec-title">Contact</h2>
+                    <p class="sec-sub">Recruiting, collaborating, or just talking systems — my inbox is open.</p>
+                </header>
+                <a href="mailto:raosarang2006@gmail.com" class="contact-big">
+                    <span class="contact-big-line">Let's build</span>
+                    <span class="contact-big-line">something real <span class="contact-big-arrow">→</span></span>
+                </a>
+                <div class="contact-grid">
+                    <div class="contact-meta">
+                        <div class="meta-row">
+                            <span class="spec-key mono">EMAIL</span>
+                            <span class="meta-email">
+                                <a href="mailto:raosarang2006@gmail.com">raosarang2006@gmail.com</a>
+                                <button type="button" class="copy-btn mono" id="copy-email" data-email="raosarang2006@gmail.com" aria-label="Copy email address to clipboard">COPY</button>
+                            </span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="spec-key mono">PHONE</span>
+                            <a href="tel:+919421140800">+91 94211 40800</a>
+                        </div>
+                        <div class="meta-row">
+                            <span class="spec-key mono">LINKEDIN</span>
+                            <a href="https://linkedin.com/in/sarang-rao-262bbb324" target="_blank" rel="noopener noreferrer">in/sarang-rao-262bbb324 ↗</a>
+                        </div>
+                        <div class="meta-row">
+                            <span class="spec-key mono">GITHUB</span>
+                            <a href="https://github.com/SarangRao20" target="_blank" rel="noopener noreferrer">@SarangRao20 ↗</a>
+                        </div>
+                        <div class="meta-row">
+                            <span class="spec-key mono">LEETCODE</span>
+                            <a href="https://leetcode.com/u/SarangRao" target="_blank" rel="noopener noreferrer">u/SarangRao ↗</a>
+                        </div>
+                    </div>
+                    <form id="contact-form" class="contact-form" novalidate>
+                        <div class="form-group">
+                            <label for="name" class="mono">Your Name</label>
+                            <input type="text" id="name" name="name" required maxlength="100" placeholder="Your name" autocomplete="name" aria-describedby="name-error">
+                            <span class="field-error mono" id="name-error" role="alert"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="mono">Your Email</label>
+                            <input type="email" id="email" name="email" required maxlength="150" placeholder="you@company.com" autocomplete="email" aria-describedby="email-error">
+                            <span class="field-error mono" id="email-error" role="alert"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="message" class="mono">Message</label>
+                            <textarea id="message" name="message" required maxlength="4000" placeholder="Tell me about the role, the problem, or the idea…" rows="6" aria-describedby="message-error"></textarea>
+                            <span class="field-error mono" id="message-error" role="alert"></span>
+                        </div>
+                        <div class="hp-field" aria-hidden="true">
+                            <label for="company">Company</label>
+                            <input type="text" id="company" name="company" tabindex="-1" autocomplete="off">
+                        </div>
+                        <button type="submit" class="btn btn-light btn-submit">Send message →</button>
+                        <p class="form-status mono" id="form-status" role="status" aria-live="polite"></p>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="wrap footer-grid">
+            <span class="mono">© 2026 SARANG RAO</span>
+            <span class="mono footer-mid">DESIGNED &amp; BUILT BY HAND · INDIA <span id="local-time">--:--:--</span></span>
+            <a href="#top" class="mono text-link">BACK TO TOP ↑</a>
+        </div>
+    </footer>
+
+</body>
+</html>

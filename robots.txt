@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://RAO-PORTFOLIO.vercel.app/sitemap.xml

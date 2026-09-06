@@ -1,0 +1,27 @@
+{
+  "name": "sarang-rao-portfolio",
+  "version": "1.0.0",
+  "description": "A modern, responsive portfolio website built with HTML, CSS, and JavaScript featuring a clean design, dark/light theme toggle, **9 different color palettes**, and scalable architecture for easy content management.",
+  "main": "app.js",
+  "scripts": {
+    "dev": "python3 -m http.server 8793",
+    "start": "python3 -m http.server 8793",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [],
+  "author": "Sarang Rao",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": ""
+  },
+  "homepage": "",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0"
+  }
+}
