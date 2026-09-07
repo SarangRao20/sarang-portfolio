@@ -1,31 +1,30 @@
 /* =====================================================
    SARANG RAO — MODEL CARD / SPEC SHEET · 2026
-   Palette:  paper #F2F1EB · surface #FBFAF6 · ink #16181D
-             working blue #1B2EE6 · status green #0B8A4F
-             signal lime #7CFF4D · coral #FF5E3A (ambient accents)
+   Palette:  paper #F5F3EC · surface #FCFAF5 · ink #1A1C22
+             electric blue #1F31D6 · status green #0D9A58
    Type:     Archivo (display: expanded 125%) · IBM Plex Mono (data)
    ===================================================== */
 
 :root {
-    --paper: #F2F1EB;
-    --surface: #FBFAF6;
-    --ink: #16181D;
-    --ink-soft: #4B4F57;
-    --ink-mute: #686B72;   /* ≥4.5:1 on paper (WCAG AA, small text) */
-    --blue: #1828CE;
-    --blue-soft: rgba(24, 40, 206, 0.07);
-    --green: #0B8A4F;
-    --lime: #7CFF4D;
-    --coral: #FF5E3A;
-    --line: #D9D7CC;
-    --line-strong: #AFADA1;
-    --dark: #131419;
-    --dark-line: #2C2E36;
-    --cream: #F2F1EB;            /* constant — for on-dark surfaces in both themes */
-    --topbar-bg: rgba(242, 241, 235, 0.88);
+    --paper: #F5F3EC;
+    --surface: #FCFAF5;
+    --ink: #1A1C22;
+    --ink-soft: #474C57;
+    --ink-mute: #646975;   /* ≥4.5:1 on paper (WCAG AA, small text) */
+    --blue: #1F31D6;
+    --blue-soft: rgba(31, 49, 214, 0.08);
+    --green: #0D9A58;
+    --lime: #2F9E3F;
+    --coral: #E05233;
+    --line: #DEDBD0;
+    --line-strong: #B7B4A5;
+    --dark: #14151B;
+    --dark-line: #2E313B;
+    --cream: #F5F3EC;            /* constant — for on-dark surfaces in both themes */
+    --topbar-bg: rgba(245, 243, 236, 0.88);
 
-    --glow: rgba(24, 40, 206, 0.16);
-    --spot: rgba(24, 40, 206, 0.11);
+    --glow: rgba(31, 49, 214, 0.15);
+    --spot: rgba(31, 49, 214, 0.10);
 
     --font-display: 'Archivo', -apple-system, sans-serif;
     --font-mono: 'IBM Plex Mono', 'Consolas', monospace;
@@ -52,22 +51,22 @@ body {
 
 /* ===== DARK THEME ===== */
 html[data-theme="dark"] {
-    --paper: #101116;
-    --surface: #16171D;
-    --ink: #E9E7DE;
-    --ink-soft: #B0B2B8;
-    --ink-mute: #7E828B;   /* ≥4.5:1 on dark paper (WCAG AA, small text) */
-    --blue: #8B96FF;
-    --blue-soft: rgba(139, 150, 255, 0.09);
+    --paper: #101119;
+    --surface: #171821;
+    --ink: #EAE8E0;
+    --ink-soft: #B3B6BE;
+    --ink-mute: #858995;   /* ≥4.5:1 on dark paper (WCAG AA, small text) */
+    --blue: #8E99FF;
+    --blue-soft: rgba(142, 153, 255, 0.1);
     --green: #34D399;
-    --line: #26272F;
-    --line-strong: #3A3C46;
+    --line: #262833;
+    --line-strong: #3B3E4A;
 
-    --glow: rgba(146, 160, 255, 0.18);
-    --spot: rgba(146, 160, 255, 0.10);
-    --dark: #0B0C0F;
-    --dark-line: #26272F;
-    --topbar-bg: rgba(16, 17, 22, 0.88);
+    --glow: rgba(150, 160, 255, 0.18);
+    --spot: rgba(150, 160, 255, 0.10);
+    --dark: #0C0D12;
+    --dark-line: #272A35;
+    --topbar-bg: rgba(16, 17, 25, 0.88);
 }
 html.theme-anim body,
 html.theme-anim .topbar,
@@ -200,8 +199,8 @@ a { color: inherit; }
     justify-content: space-between;
     padding: 0.85rem var(--pad);
     background: var(--topbar-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid transparent;
     transition: border-color 0.2s ease;
 }
@@ -308,7 +307,7 @@ a { color: inherit; }
 
 .hero-grid {
     display: grid;
-    grid-template-columns: 1.45fr 1fr;
+    grid-template-columns: 1fr 1.08fr;
     gap: clamp(1.5rem, 4vw, 3.5rem);
     align-items: start;
     margin-bottom: clamp(2rem, 5vh, 3rem);
@@ -344,7 +343,7 @@ a { color: inherit; }
 .hero-photo-wrap { position: relative; }
 .hero-photo {
     width: 100%;
-    aspect-ratio: 4 / 4.6;
+    aspect-ratio: 4 / 4.9;
     object-fit: cover;
     border: 1px solid var(--line-strong);
     transition: transform 0.25s ease;
@@ -383,7 +382,7 @@ a { color: inherit; }
 
 @media (max-width: 880px) {
     .hero-grid { grid-template-columns: 1fr; }
-    .hero-photo-wrap { max-width: 320px; }
+    .hero-photo-wrap { max-width: 380px; }
     .spec-row { grid-template-columns: 110px 1fr; }
     .hero-links { margin-left: 0; width: 100%; }
 }
