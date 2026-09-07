@@ -359,9 +359,10 @@ function setupNav() {
     sections.forEach(s => spy.observe(s));
 }
 
-window.SR = window.SR || {};
-SR.initForm = function (form, status) {
-    if (!form || !status) return;
+function setupForm() {
+    const form = document.getElementById('contact-form');
+    const status = document.getElementById('form-status');
+    if (!form) return;
 
     // EmailJS — replace with your own service/template/public key from emailjs.com
     const EMAILJS_PUBLIC_KEY = '3FTJumtq2gKLYBWT7';
@@ -453,13 +454,6 @@ SR.initForm = function (form, status) {
     });
 }
 
-function setupForm() {
-    const form = document.getElementById('contact-form');
-    const status = document.getElementById('form-status');
-    if (!form || !status) return;
-    SR.initForm(form, status);
-}
-
 // ===== AWARD LAYER =====
 const finePointer = window.matchMedia('(pointer: fine)').matches;
 if (!finePointer) document.documentElement.classList.add('no-pointer');
@@ -471,7 +465,6 @@ function runBoot(onDone) {
     if (!boot || skip) {
         if (boot) boot.remove();
         document.body.classList.add('booted');
-        document.dispatchEvent(new CustomEvent('sr.booted'));
         onDone();
         return;
     }
@@ -480,12 +473,11 @@ function runBoot(onDone) {
     const pctEl = document.getElementById('boot-pct');
     const fillEl = document.getElementById('boot-fill');
     const lines = [
-        'SARANGOS v2.7 — SARANG RAO',
+        'SARANG.RAO — SYSTEM INIT',
         'LOADING WEIGHTS ............. <span class="ok">OK</span>',
         'CALIBRATING TYPE ............ <span class="ok">OK</span>',
         'MOUNTING PROJECTS ........... <span class="ok">OK</span>',
-        'HUMAN VERIFIED .............. <span class="ok">OK</span>',
-        'ENTERING DESKTOP ............ <span class="ok">READY</span>'
+        'HUMAN VERIFIED .............. <span class="ok">OK</span>'
     ];
     lines.forEach((l, i) => setTimeout(() => {
         const div = document.createElement('div');
@@ -507,7 +499,6 @@ function runBoot(onDone) {
         document.body.classList.add('booted');
         setTimeout(() => boot.remove(), 750);
         onDone();
-        document.dispatchEvent(new CustomEvent('sr.booted'));
     };
     requestAnimationFrame(tick);
 }
@@ -710,10 +701,13 @@ function setupMaskReveal() {
 }
 
 // Interactive terminal — realistic shell behaviour, mobile-friendly
-window.SR = window.SR || {};
-SR.createTerminal = function (cfg) {
-    const { bar, body, screen, input, cmdEl, root, autoBoot } = cfg;
-    if (!body || !screen || !input || !cmdEl) return null;
+function setupTerminal() {
+    const bar = document.getElementById('term-toggle');
+    const body = document.getElementById('term-body');
+    const screen = document.getElementById('term-screen');
+    const input = document.getElementById('term-input');
+    const cmdEl = document.getElementById('term-cmd');
+    if (!bar || !body || !screen || !input || !cmdEl) return;
 
     const history = [];
     let hIdx = 0;
@@ -831,17 +825,15 @@ SR.createTerminal = function (cfg) {
         }
     };
 
-    if (bar) {
-        bar.addEventListener('click', () => {
-            const open = body.hidden;
-            body.hidden = !open;
-            bar.setAttribute('aria-expanded', String(open));
-            if (open) {
-                boot();
-                setTimeout(() => input.focus(), 80);
-            }
-        });
-    }
+    bar.addEventListener('click', () => {
+        const open = body.hidden;
+        body.hidden = !open;
+        bar.setAttribute('aria-expanded', String(open));
+        if (open) {
+            boot();
+            setTimeout(() => input.focus(), 80);
+        }
+    });
 
     input.addEventListener('input', () => { cmdEl.textContent = input.value; });
     input.addEventListener('keydown', e => {
@@ -868,25 +860,12 @@ SR.createTerminal = function (cfg) {
         }
     });
 
-    (root || document).querySelectorAll('.term-chip').forEach(chip => {
+    document.querySelectorAll('.term-chip').forEach(chip => {
         chip.addEventListener('click', () => {
-            if (body.hidden && bar) bar.click();
+            if (body.hidden) bar.click();
             run(chip.dataset.cmd);
         });
     });
-
-    if (autoBoot) boot();
-    return { run, boot };
-}
-
-function setupTerminal() {
-    const bar = document.getElementById('term-toggle');
-    const body = document.getElementById('term-body');
-    const screen = document.getElementById('term-screen');
-    const input = document.getElementById('term-input');
-    const cmdEl = document.getElementById('term-cmd');
-    if (!bar || !body || !screen || !input || !cmdEl) return;
-    SR.createTerminal({ bar, body, screen, input, cmdEl, root: document });
 }
 
 // Dark / light toggle, persisted
