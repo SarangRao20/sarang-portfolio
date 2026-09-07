@@ -105,6 +105,7 @@
 
     <!-- EmailJS (deferred — public key is passed with the send call in script.js) -->
     <script defer src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script defer src="os.js"></script>
     <!-- Vercel Web Analytics -->
     <script defer src="/_vercel/insights/script.js"></script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
@@ -500,6 +501,38 @@
             <a href="#top" class="mono text-link">BACK TO TOP ↑</a>
         </div>
     </footer>
+
+<!-- ===== SARANGOS — desktop overlay (fine-pointer desktops; classic site below) ===== -->
+    <div id="sarangos" hidden>
+        <div class="os-desktop">
+            <div class="os-wallpaper" aria-hidden="true"></div>
+            <div class="os-icons">
+                <button class="os-icon" data-app="welcome" aria-label="Open Welcome"><span class="os-glyph">◧</span><span class="os-label">WELCOME</span></button>
+                <button class="os-icon" data-app="projects" aria-label="Open Projects"><span class="os-glyph">▦</span><span class="os-label">PROJECTS</span></button>
+                <button class="os-icon" data-app="terminal" aria-label="Open Terminal"><span class="os-glyph">>_</span><span class="os-label">TERMINAL</span></button>
+                <button class="os-icon" data-app="cases" aria-label="Open Case studies"><span class="os-glyph">▤</span><span class="os-label">CASES</span></button>
+                <button class="os-icon" data-app="resume" aria-label="Open Resume"><span class="os-glyph">▬</span><span class="os-label">RESUME</span></button>
+                <button class="os-icon" data-app="contact" aria-label="Open Contact"><span class="os-glyph">✉</span><span class="os-label">CONTACT</span></button>
+            </div>
+            <div class="os-windows" id="os-windows" aria-live="polite"></div>
+        </div>
+        <div class="os-dock">
+            <button class="dock-logo" data-app="welcome" aria-label="SarangOS home">SR</button>
+            <div class="dock-apps">
+                <button class="dock-app" data-app="projects" aria-label="Projects">PROJ</button>
+                <button class="dock-app" data-app="terminal" aria-label="Terminal">TERM</button>
+                <button class="dock-app" data-app="cases" aria-label="Case studies">CASE</button>
+                <button class="dock-app" data-app="resume" aria-label="Resume">RESM</button>
+                <button class="dock-app" data-app="contact" aria-label="Contact">MAIL</button>
+            </div>
+            <div class="dock-right">
+                <span class="dock-meta mono" id="dock-up"></span>
+                <button id="os-theme-btn" class="dock-btn mono">THEME</button>
+                <button id="os-classic" class="dock-btn mono">CLASSIC</button>
+                <span class="dock-clock mono" id="os-clock">--:--</span>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>
