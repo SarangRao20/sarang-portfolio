@@ -15,7 +15,7 @@
     <meta property="og:description" content="In-depth case studies: voice AI desktop assistant, multi-agent loan origination, reverse-engineered EC firmware.">
     <meta property="og:url" content="https://sarangrao.vercel.app/case.html">
     <meta property="og:image" content="https://sarangrao.vercel.app/Images/sarang.jpg">
-    <link rel="canonical" href="https://sarangrao.vercel.app/index.html#projects">
+    <link rel="canonical" href="https://sarangrao.vercel.app/case.html">
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
@@ -112,6 +112,13 @@
 
             const p = new URLSearchParams(location.search).get('p') || 'elysia';
             renderCaseStudy(p);
+
+            const title = document.querySelector('#case-root .case-title');
+            if (title) {
+                title.classList.add('mask');
+                title.innerHTML = '<span>' + title.innerHTML + '</span>';
+                setTimeout(() => title.classList.add('is-in'), 60);
+            }
 
             let io;
             if ('IntersectionObserver' in window) {

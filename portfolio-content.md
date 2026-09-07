@@ -26,16 +26,16 @@ Also mirrored from `/home/sarang/resume/career.md` (authoritative long-form sour
 
 ## Short Bio (Use on Homepage)
 
-I'm an engineer who builds practical AI systems across the stack — from computer vision pipelines to multi-agent orchestration to backend APIs. I started as an intern and got promoted to lead a team within months. Currently AI Team Lead at TenancyPassport (Jan 2026–present), where I merged two fragmented codebases into one production repo and lead a team of 5 AI interns across document intelligence agents, room-inventory CV pipelines, and conversational AI. I care about systems that actually ship, not just models that score well on benchmarks.
+I'm an engineer who builds practical AI systems across the stack — from computer vision pipelines to multi-agent orchestration to backend APIs. Currently AI Team Lead at TenancyPassport (Jan 2026–present), where I consolidated two fragmented codebases into one production repo and lead a team of 5 AI interns. I ship production systems — a CV pipeline for room-inventory verification and conversational AI — and own FastAPI + ADK document-intelligence services. At PICT I'm a core member of PASC, running SIGs that teach C++, Python, Git, and ML to first-years. I care about systems that actually ship, not just models that score well on benchmarks.
 
 ---
 
 ## Experience
 
 ### TenancyPassport — AI Team Lead (Jan 2026 — present)
-- Leads a team of 5 AI interns.
-- Merged two fragmented codebases into a single production repository; owns LLM pipelines across rental agreements, KYC, and financial document processing.
-- Shipped RAG document processing, LangGraph agent workflows, real-time voice pipelines, and CV room-inventory systems — all in production.
+- Leads a team of 5 AI interns; owns FastAPI backend services for document-intelligence agents with Google ADK orchestration.
+- Consolidated two fragmented codebases into one maintained production repo; standardized structure, APIs, and onboarding docs.
+- Ships a production CV pipeline for property room-inventory verification; built conversational AI with session state persistence.
 
 Note: The Experience timeline is work-only. Education lives in the hero TRAINING row and the Certifications section.
 
@@ -156,6 +156,7 @@ Design notes:
 - Prefer action-oriented bullets and project cards with tags (AI, ML, LLM, Multi-Agent, CV, Backend).
 - Include external links for GitHub + deployed projects.
 - Do not add false metrics or fake employers.
+- Motion layer: pointer spotlight, section tracker, card cursor glow, hero typing line, heading line-reveal mask, marquee hover speed-up, blinking cursors. Interactive terminal (collapsible) with commands: help, about, experience, projects, skills, achievements, contact, resume, ls, whoami, pwd, sudo, clear. All JS motion respects prefers-reduced-motion & pointer-coarse.
 
 ---
 

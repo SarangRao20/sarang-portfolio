@@ -14,11 +14,11 @@ const data = {
             org: 'TenancyPassport',
             loc: 'Remote',
             points: [
-                'Leads a team of 5 AI interns building agentic document intelligence across rental agreements, KYC, and financial documents.',
-                'Merged two fragmented codebases into a single production repository; owns LLM pipelines for document processing.',
-                'Shipped RAG document processing, LangGraph agent workflows, real-time voice pipelines, and CV room-inventory systems — all in production.',
+                'Leads a team of 5 AI interns; owns FastAPI backend services for document-intelligence agents with Google ADK orchestration.',
+                'Consolidated two fragmented codebases into one maintained production repo; standardized structure, APIs, and onboarding docs.',
+                'Ships a production CV pipeline for property room-inventory verification; built conversational AI with session state persistence.',
             ],
-            tags: ['Team Lead', 'LangGraph', 'RAG', 'Voice AI', 'Computer Vision']
+            tags: ['Team Lead', 'LangGraph', 'Google ADK', 'FastAPI', 'OpenCV']
         },
     ],
 
@@ -678,6 +678,158 @@ function setupCardGlow() {
     });
 }
 
+// Hero terminal line that types itself, then loops
+function setupHeroTyping() {
+    const el = document.getElementById('hero-term');
+    if (!el || reducedMotion) return;
+    const cursor = document.createElement('span');
+    cursor.className = 'term-cursor';
+    const lines = [
+        '$ open sarang.rao --ai --production',
+        '> 5 interns · one repo · production green'
+    ];
+    let li = 0, ci = 0, typed = [];
+    const render = () => { el.textContent = typed.join('\n'); el.append(cursor); };
+    const tick = () => {
+        if (li >= lines.length) { setTimeout(start, 9000); return; }
+        if (ci <= lines[li].length) {
+            typed[li] = lines[li].slice(0, ci);
+            render();
+            ci++;
+            setTimeout(tick, ci <= 2 ? 480 : 16 + Math.random() * 34);
+        } else {
+            li++; ci = 0;
+            setTimeout(tick, 600);
+        }
+    };
+    const start = () => { typed = []; li = 0; ci = 0; tick(); };
+    start();
+}
+
+// Line-reveal mask on section/case headings on scroll
+function setupMaskReveal() {
+    const titles = document.querySelectorAll('.sec-title, .case-title');
+    if (!titles.length) return;
+    titles.forEach(h => {
+        h.classList.add('mask');
+        h.innerHTML = `<span>${h.innerHTML}</span>`;
+    });
+    if (reducedMotion || !('IntersectionObserver' in window)) {
+        titles.forEach(h => h.classList.add('is-in'));
+        return;
+    }
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (e.isIntersecting) { e.target.classList.add('is-in'); obs.unobserve(e.target); }
+        });
+    }, { threshold: 0.2 });
+    titles.forEach(h => obs.observe(h));
+}
+
+// Interactive terminal — commands + chips, mobile-friendly
+function setupTerminal() {
+    const bar = document.getElementById('term-toggle');
+    const body = document.getElementById('term-body');
+    const screen = document.getElementById('term-screen');
+    const input = document.getElementById('term-input');
+    if (!bar || !body || !screen || !input) return;
+
+    const link = (label, url) => `<a class="text-link mono term-hl" href="${url}" target="_blank" rel="noopener noreferrer">${label} ↗</a>`;
+    const out = (html) => {
+        const d = document.createElement('div');
+        d.className = 'term-out';
+        d.innerHTML = html;
+        screen.appendChild(d);
+        screen.scrollTop = screen.scrollHeight;
+    };
+    const line = (html) => {
+        const d = document.createElement('div');
+        d.className = 'term-line';
+        d.innerHTML = html;
+        screen.appendChild(d);
+        screen.scrollTop = screen.scrollHeight;
+    };
+
+    const boot = () => {
+        if (screen.dataset.booted) return;
+        screen.dataset.booted = '1';
+        const b = [
+            '<span class="term-muted">> sarang.rao v2.6 — booting profile...</span>',
+            '<span class="term-muted">> modules: agentic-doc · cv-inventory · conversational-ai</span>',
+            '<span class="term-ok">> all systems operational. type <span class="term-hl">help</span></span>'
+        ];
+        screen.innerHTML = b.join('');
+        screen.scrollTop = screen.scrollHeight;
+    };
+
+    const CMD = {
+        help: () => out('available: <span class="term-hl">about · experience · projects · skills · achievements · contact · resume · ls · whoami · pwd · sudo · clear · help</span>'),
+        about: () => out('AI/ML engineer building production systems: multi-agent orchestration, RAG, voice AI, computer vision, full-stack backend. AI Team Lead @ TenancyPassport.'),
+        experience: () => out(
+            '<span class="term-ok">RUN-01 · RUNNING</span> — AI Team Lead @ TenancyPassport (Jan 2026–present)<br>' +
+            '&nbsp;&nbsp;&nbsp;· leads 5 AI interns · FastAPI + Google ADK document intelligence<br>' +
+            '&nbsp;&nbsp;&nbsp;· consolidated 2 fragmented repos → 1 production repo<br>' +
+            '&nbsp;&nbsp;&nbsp;· ships production CV room-inventory pipeline + conversational AI'),
+        projects: () => out(
+            '<span class="term-hl">P-01</span> Elysia-AI — voice assistant · 110+ tools ' + link('GITHUB', 'https://github.com/SarangRao20/Elysia-AI') + ' ' + link('CASE STUDY', 'case.html?p=elysia') + '<br>' +
+            '<span class="term-hl">P-02</span> FinServe NBFC — multi-agent loan origination ' + link('LIVE', 'https://nbfc-inc.vercel.app/') + ' ' + link('CASE STUDY', 'case.html?p=nbfc') + '<br>' +
+            '<span class="term-hl">P-03</span> Nivana — mental health conversational AI<br>' +
+            '<span class="term-hl">P-04</span> LeetCode Wrapped — dev data viz<br>' +
+            '<span class="term-hl">P-09</span> HP Battery Charge Limiter — flagship, EC firmware ' + link('GITHUB', 'https://github.com/SarangRao20/battery-charge-limiter') + ' ' + link('CASE STUDY', 'case.html?p=battery')),
+        skills: () => out(
+            'LANGUAGES: Python · C++ · SQL · JS/TS<br>' +
+            'AI/ML: LangGraph · Gemini API · RAG · LLM orchestration · OpenCV · YOLO · OCR<br>' +
+            'BACKEND: FastAPI · Flask · PostgreSQL · MongoDB · Redis · Celery<br>' +
+            'TOOLS: Git · Linux · Docker · Google ADK · Playwright'),
+        achievements: () => out('2× ideathon wins (Innowave 2025 + FY Healthcare) · Reliance Foundation Scholar (top 1% nationally) · PASC core member — SIGs teaching C++, Python, Git, ML'),
+        contact: () => out(
+            'email&nbsp;&nbsp; ' + link('raosarang2006@gmail.com', 'mailto:raosarang2006@gmail.com') + '<br>' +
+            'github&nbsp; ' + link('github.com/SarangRao20', 'https://github.com/SarangRao20') + '<br>' +
+            'linkedin ' + link('in/sarang-rao-262bbb324', 'https://linkedin.com/in/sarang-rao-262bbb324') + '<br>' +
+            'leetcode ' + link('u/SarangRao', 'https://leetcode.com/u/SarangRao')),
+        resume: () => out('download the PDF → ' + link('sarang-rao-resume.pdf', 'assets/sarang-rao-resume.pdf')),
+        ls: () => out('<span class="term-ok">agentic-doc/</span>&nbsp; cv-inventory/&nbsp; conversational-ai/&nbsp; elysia/&nbsp; nbfc/&nbsp; battery/&nbsp; playground/'),
+        whoami: () => out('sarang.rao — AI/ML engineer, generally capable'),
+        pwd: () => out('/home/sarang/systems/production'),
+        sudo: () => out('<span class="term-ok">permission granted.</span> with great power comes great responsibility.'),
+        clear: () => { screen.innerHTML = ''; },
+        '?': () => CMD.help()
+    };
+
+    const run = (raw) => {
+        const cmd = (raw || '').trim().replace(/^[$>]\s*/, '').toLowerCase();
+        line('<span class="term-ok">$</span> <span class="term-hl">' + raw.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])) + '</span>');
+        if (!cmd) return;
+        const handler = CMD[cmd];
+        if (handler) handler();
+        else out('<span class="term-muted">command not found: <span class="term-hl">' + cmd + '</span> — type <span class="term-hl">help</span></span>');
+    };
+
+    bar.addEventListener('click', () => {
+        const open = body.hidden;
+        body.hidden = !open;
+        bar.setAttribute('aria-expanded', String(open));
+        if (open) {
+            boot();
+            setTimeout(() => input.focus(), 30);
+        }
+    });
+
+    input.addEventListener('keydown', e => {
+        if (e.key !== 'Enter') return;
+        const v = input.value;
+        input.value = '';
+        if (v.trim()) run(v);
+    });
+
+    document.querySelectorAll('.term-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            if (body.hidden) bar.click();
+            run(chip.dataset.cmd);
+        });
+    });
+}
+
 // Dark / light toggle, persisted
 function setupTheme() {
     const btn = document.getElementById('theme-btn');
@@ -766,6 +918,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setupCardGlow();
     setupSpotlight();
     setupSectionTracker();
+    setupMaskReveal();
+    setupTerminal();
     setupKineticName();
     consoleEgg();
 
@@ -775,5 +929,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setupReveals();
         setupCounters();
         setupScramble();
+        setupHeroTyping();
     });
 });

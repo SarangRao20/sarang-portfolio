@@ -169,6 +169,7 @@
             <div class="wrap">
                 <p class="hero-eyebrow mono" data-scramble>TECHNICAL SPECIFICATION · HUMAN, GENERALLY CAPABLE</p>
                 <h1 class="hero-name" id="hero-name" aria-label="Sarang Rao">Sarang<br>Rao</h1>
+                <p class="hero-term mono" id="hero-term" aria-hidden="true"></p>
 
                 <div class="hero-grid">
                     <div class="spec-card" id="spec-card">
@@ -247,6 +248,34 @@
             </div>
         </div>
 
+        <!-- ===== INTERACTIVE TERMINAL ===== -->
+        <section class="term-shell" aria-label="Interactive terminal">
+            <div class="wrap">
+                <div class="term-window" id="term-window">
+                    <button class="term-bar mono" id="term-toggle" aria-expanded="false" aria-controls="term-body">
+                        <span class="term-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                        <span class="term-title">interactive://sarang.rao</span>
+                        <span class="term-state">RUN ▾</span>
+                    </button>
+                    <div class="term-body" id="term-body" hidden>
+                        <div class="term-screen" id="term-screen" role="log" aria-live="polite"></div>
+                        <div class="term-prompt-row mono">
+                            <span class="term-ps1">sarang@sarango:~$</span>
+                            <input class="term-input mono" id="term-input" type="text" autocomplete="off" spellcheck="false" aria-label="terminal command" placeholder="type 'help'">
+                        </div>
+                        <div class="term-chips" aria-label="quick commands">
+                            <button class="term-chip mono" data-cmd="help">help</button>
+                            <button class="term-chip mono" data-cmd="projects">projects</button>
+                            <button class="term-chip mono" data-cmd="skills">skills</button>
+                            <button class="term-chip mono" data-cmd="experience">experience</button>
+                            <button class="term-chip mono" data-cmd="contact">contact</button>
+                            <button class="term-chip mono" data-cmd="resume">resume</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- ===== 01 OVERVIEW ===== -->
         <section id="overview" class="section">
             <div class="wrap">
@@ -256,9 +285,9 @@
                 </header>
                 <div class="overview-grid">
                     <div class="overview-text reveal">
-                        <p class="lead">I build AI systems that survive contact with production — from multi-agent loan origination engines to real-time voice assistants and computer vision pipelines.</p>
-                        <p>I'm the <a href="#RUN-01" class="org-link">AI Team Lead at TenancyPassport</a>, where I merged two fragmented codebases into one production repo and now lead a team of 5 AI interns building agentic document intelligence, room-inventory CV pipelines, and conversational AI. I've also shipped <a href="#projects" class="org-link">Elysia-AI</a> (real-time voice assistant, 110+ tools), led a multi-agent <a href="#projects" class="org-link">loan origination engine for an NBFC</a>, and won ideathons at PICT ACM.</p>
-                        <p>Off the clock: building LeetCode Wrapped, teaching at PICT's programming community (PASC), and architecture that actually ships. I care about clean, scalable systems — not just models that score well on benchmarks.</p>
+                        <p class="lead">I build AI systems that survive contact with production — from computer-vision pipelines and conversational AI to real-time voice assistants and multi-agent orchestration.</p>
+                        <p>I'm the <a href="#RUN-01" class="org-link">AI Team Lead at TenancyPassport</a>, where I lead a team of 5 AI interns, consolidated two fragmented codebases into one maintained production repo, and ship production systems — a computer-vision pipeline for property room-inventory verification and conversational AI for tenant/landlord self-service — while owning the FastAPI backend services for agentic document intelligence with Google ADK orchestration. I've also shipped <a href="#projects" class="org-link">Elysia-AI</a> (real-time voice assistant, 110+ tools) and led a multi-agent <a href="#projects" class="org-link">loan origination engine for an NBFC</a>.</p>
+                        <p>At PICT I'm a core member of PASC, running SIGs that give first-years a headstart — I've taught C++, Python, Git, and ML. Off the clock: LeetCode Wrapped, and architecture that actually ships — not just models that score well on benchmarks.</p>
                     </div>
                     <aside class="overview-aside reveal">
                         <h3 class="aside-title mono">CURRENTLY LEARNING</h3>
@@ -285,7 +314,7 @@
                 <ol class="log" id="experience-log"><!-- populated by script.js --></ol>
                 <noscript>
                     <ul>
-                        <li><strong>AI Team Lead — TenancyPassport</strong> (Jan 2026–present): merged two fragmented repos into one production platform; team lead of 5 AI interns; shipped RAG document processing, LangGraph agents, voice AI, and CV pipelines.</li>
+                        <li><strong>AI Team Lead — TenancyPassport</strong> (Jan 2026–present): consolidated two fragmented repos into one maintained production repo; team lead of 5 AI interns; ships a production CV pipeline for room-inventory verification and conversational AI; owns FastAPI + ADK document-intelligence services.</li>
                     </ul>
                     <p>Projects by Sarang Rao: Elysia-AI (voice AI assistant, 110+ tools), FinServe NBFC (multi-agent loan origination), Nivana (mental health conversational AI), OLA BDM Analytics (50K+ records), LeetCode Wrapped.</p>
                 </noscript>
