@@ -477,6 +477,7 @@ function runBoot(onDone) {
         'LOADING WEIGHTS ............. <span class="ok">OK</span>',
         'CALIBRATING TYPE ............ <span class="ok">OK</span>',
         'MOUNTING PROJECTS ........... <span class="ok">OK</span>',
+        'MOUNTING DESKTOP ............ <span class="ok">OK</span>',
         'HUMAN VERIFIED .............. <span class="ok">OK</span>'
     ];
     lines.forEach((l, i) => setTimeout(() => {

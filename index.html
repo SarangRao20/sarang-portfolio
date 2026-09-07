@@ -97,6 +97,7 @@
     <!-- Styles & Scripts -->
     <link rel="stylesheet" href="style.css">
     <script defer src="script.js"></script>
+    <script defer src="os.js"></script>
 
     <!-- Fonts: Archivo (variable width) for display + body, IBM Plex Mono for data -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -500,6 +501,25 @@
             <a href="#top" class="mono text-link">BACK TO TOP ↑</a>
         </div>
     </footer>
+
+    <!-- ===== SARANG OS — DESKTOP OVERLAY (large, fine-pointer only) ===== -->
+    <div id="sarangos" aria-hidden="true">
+        <div class="os-wallpaper" aria-hidden="true"></div>
+        <div class="os-icons" id="os-icons" role="toolbar" aria-label="Desktop"></div>
+        <div class="os-layer" id="os-layer"></div>
+        <div class="os-start" id="os-start" role="menu"></div>
+        <div class="os-taskbar" id="os-taskbar">
+            <button class="os-startbtn mono" id="os-startbtn" type="button" aria-expanded="false" aria-label="Open Start menu">SR</button>
+            <div class="os-tasks" id="os-tasks" role="toolbar" aria-label="Running apps"></div>
+            <div class="os-tray mono">
+                <span class="os-led" id="os-led"><span class="dot" aria-hidden="true"></span>SYSTEMS NOMINAL</span>
+                <button class="os-tray-key" id="os-theme" type="button" aria-label="Toggle dark mode">DARK</button>
+                <span class="os-clock" id="os-clock" aria-label="Indian Standard Time">--:--:--</span>
+                <button class="os-tray-key" id="os-classic" type="button" aria-label="Exit to classic layout">CLASSIC</button>
+            </div>
+        </div>
+    </div>
+    <button class="os-relaunch mono" id="os-relaunch" type="button" hidden>SARANG OS →</button>
 
 </body>
 </html>
