@@ -456,6 +456,7 @@ function setupForm() {
 
 // ===== AWARD LAYER =====
 const finePointer = window.matchMedia('(pointer: fine)').matches;
+if (!finePointer) document.documentElement.classList.add('no-pointer');
 
 // Boot sequence — once per session, skipped for reduced motion
 function runBoot(onDone) {
@@ -632,6 +633,51 @@ function setupTilt() {
     wrap.addEventListener('pointerleave', () => { img.style.transform = ''; });
 }
 
+// Pointer-following spotlight glow across the page
+function setupSpotlight() {
+    const sp = document.getElementById('spotlight');
+    if (!sp || !finePointer || reducedMotion) return;
+    let idle = null;
+    document.addEventListener('pointermove', e => {
+        sp.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+        sp.style.opacity = '1';
+        clearTimeout(idle);
+        idle = setTimeout(() => { sp.style.opacity = '0'; }, 1600);
+    }, { passive: true });
+}
+
+// Right-edge section tracker: §number + scroll progress rail
+function setupSectionTracker() {
+    const label = document.getElementById('sec-tracker-label');
+    const fill = document.getElementById('sec-tracker-fill');
+    const sections = document.querySelectorAll('main section[id]');
+    if (!label || !fill || !sections.length) return;
+    let cur = 0, raf = null;
+    const update = () => {
+        raf = null;
+        const st = window.scrollY;
+        let next = 0;
+        sections.forEach((s, i) => { if (s.offsetTop - 160 <= st) next = i; });
+        if (next !== cur) { cur = next; label.textContent = '§' + String(next + 1).padStart(2, '0'); }
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        fill.style.height = (max > 0 ? (st / max) * 100 : 0) + '%';
+    };
+    window.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(update); }, { passive: true });
+    update();
+}
+
+// Cursor-positioned glow inside featured cards
+function setupCardGlow() {
+    if (!finePointer || reducedMotion) return;
+    document.querySelectorAll('.feat-card').forEach(card => {
+        card.addEventListener('pointermove', e => {
+            const r = card.getBoundingClientRect();
+            card.style.setProperty('--mx', (e.clientX - r.left).toFixed(0) + 'px');
+            card.style.setProperty('--my', (e.clientY - r.top).toFixed(0) + 'px');
+        }, { passive: true });
+    });
+}
+
 // Dark / light toggle, persisted
 function setupTheme() {
     const btn = document.getElementById('theme-btn');
@@ -717,6 +763,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setupCtaTip();
     setupMagnetic();
     setupTilt();
+    setupCardGlow();
+    setupSpotlight();
+    setupSectionTracker();
     setupKineticName();
     consoleEgg();
 

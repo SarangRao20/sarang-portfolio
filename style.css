@@ -21,6 +21,9 @@
     --cream: #F2F1EB;            /* constant — for on-dark surfaces in both themes */
     --topbar-bg: rgba(242, 241, 235, 0.88);
 
+    --glow: rgba(24, 40, 206, 0.16);
+    --spot: rgba(24, 40, 206, 0.11);
+
     --font-display: 'Archivo', -apple-system, sans-serif;
     --font-mono: 'IBM Plex Mono', 'Consolas', monospace;
 
@@ -56,6 +59,9 @@ html[data-theme="dark"] {
     --green: #34D399;
     --line: #26272F;
     --line-strong: #3A3C46;
+
+    --glow: rgba(146, 160, 255, 0.18);
+    --spot: rgba(146, 160, 255, 0.10);
     --dark: #0B0C0F;
     --dark-line: #26272F;
     --topbar-bg: rgba(16, 17, 22, 0.88);
@@ -1114,6 +1120,106 @@ body.booting { overflow: hidden; }
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>");
 }
 html[data-theme="dark"] .grain { opacity: 0.07; }
+
+/* =====================================================
+   MOTION: POINTER SPOTLIGHT
+   ===================================================== */
+.spotlight {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    width: 560px;
+    height: 560px;
+    margin: -280px 0 0 -280px;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    background: radial-gradient(closest-side, var(--spot), transparent 72%);
+    will-change: transform, opacity;
+}
+html.no-pointer .spotlight { display: none; }
+
+/* =====================================================
+   MOTION: SECTION TRACKER
+   ===================================================== */
+.sec-tracker {
+    position: fixed;
+    right: 1.1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.65rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    color: var(--ink-mute);
+}
+.sec-tracker-rail {
+    width: 1px;
+    height: 96px;
+    background: var(--line);
+    overflow: hidden;
+    position: relative;
+}
+.sec-tracker-fill {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 0%;
+    background: var(--blue);
+    transition: height 0.1s linear;
+}
+@media (max-width: 900px), (pointer: coarse) {
+    .sec-tracker { display: none; }
+}
+
+/* =====================================================
+   MOTION: BLINKING TERMINAL CURSOR
+   ===================================================== */
+.sec-num,
+.aside-title,
+.case-steps .case-head { position: relative; }
+.sec-num::after,
+.aside-title::after,
+.case-title::after {
+    content: '';
+    display: inline-block;
+    width: 0.5em;
+    height: 1.05em;
+    margin-left: 0.4em;
+    vertical-align: -0.12em;
+    background: var(--blue);
+    animation: blink 1.15s steps(2, start) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* =====================================================
+   MOTION: FEAT CARD CURSOR GLOW
+   ===================================================== */
+.feat-card { position: relative; overflow: hidden; }
+.feat-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%), var(--glow), transparent 70%);
+}
+.feat-card:hover::after { opacity: 1; }
+.feat-card > * { position: relative; z-index: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+    .spotlight { display: none; }
+    .sec-num::after,
+    .aside-title::after,
+    .case-title::after { animation: none; }
+    .sec-tracker { display: none; }
+}
 
 /* =====================================================
    HERO NAME — split letters, kinetic type
