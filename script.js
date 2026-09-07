@@ -678,33 +678,7 @@ function setupCardGlow() {
     });
 }
 
-// Hero terminal line that types itself, then loops
-function setupHeroTyping() {
-    const el = document.getElementById('hero-term');
-    if (!el || reducedMotion) return;
-    const cursor = document.createElement('span');
-    cursor.className = 'term-cursor';
-    const lines = [
-        '$ open sarang.rao --ai --production',
-        '> 5 interns · one repo · production green'
-    ];
-    let li = 0, ci = 0, typed = [];
-    const render = () => { el.textContent = typed.join('\n'); el.append(cursor); };
-    const tick = () => {
-        if (li >= lines.length) { setTimeout(start, 9000); return; }
-        if (ci <= lines[li].length) {
-            typed[li] = lines[li].slice(0, ci);
-            render();
-            ci++;
-            setTimeout(tick, ci <= 2 ? 480 : 16 + Math.random() * 34);
-        } else {
-            li++; ci = 0;
-            setTimeout(tick, 600);
-        }
-    };
-    const start = () => { typed = []; li = 0; ci = 0; tick(); };
-    start();
-}
+function setupHeroTyping() {}
 
 // Line-reveal mask on section/case headings on scroll
 function setupMaskReveal() {
@@ -929,6 +903,5 @@ document.addEventListener('DOMContentLoaded', () => {
         setupReveals();
         setupCounters();
         setupScramble();
-        setupHeroTyping();
     });
 });

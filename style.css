@@ -1219,28 +1219,6 @@ html.no-pointer .spotlight { display: none; }
     .aside-title::after,
     .case-title::after { animation: none; }
     .sec-tracker { display: none; }
-    .hero-term { display: none; }
-}
-
-/* =====================================================
-   MOTION: HERO TERM TYPING LINE
-   ===================================================== */
-.hero-term {
-    margin-top: 1.15rem;
-    font-size: clamp(0.72rem, 1.8vw, 0.82rem);
-    letter-spacing: 0.06em;
-    color: var(--ink-soft);
-    min-height: 1.4em;
-}
-.hero-term .term-prompt { color: var(--blue); }
-.term-cursor {
-    display: inline-block;
-    width: 0.55em;
-    height: 1.05em;
-    margin-left: 0.3em;
-    vertical-align: -0.12em;
-    background: var(--blue);
-    animation: blink 1s steps(2, start) infinite;
 }
 
 /* =====================================================
