@@ -700,83 +700,129 @@ function setupMaskReveal() {
     titles.forEach(h => obs.observe(h));
 }
 
-// Interactive terminal — commands + chips, mobile-friendly
+// Interactive terminal — realistic shell behaviour, mobile-friendly
 function setupTerminal() {
     const bar = document.getElementById('term-toggle');
     const body = document.getElementById('term-body');
     const screen = document.getElementById('term-screen');
     const input = document.getElementById('term-input');
-    if (!bar || !body || !screen || !input) return;
+    const cmdEl = document.getElementById('term-cmd');
+    if (!bar || !body || !screen || !input || !cmdEl) return;
 
+    const history = [];
+    let hIdx = 0;
+    const esc = s => s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
     const link = (label, url) => `<a class="text-link mono term-hl" href="${url}" target="_blank" rel="noopener noreferrer">${label} ↗</a>`;
-    const out = (html) => {
+    const push = (className, html) => {
         const d = document.createElement('div');
-        d.className = 'term-out';
+        d.className = className;
         d.innerHTML = html;
         screen.appendChild(d);
         screen.scrollTop = screen.scrollHeight;
+        return d;
     };
-    const line = (html) => {
-        const d = document.createElement('div');
-        d.className = 'term-line';
-        d.innerHTML = html;
-        screen.appendChild(d);
-        screen.scrollTop = screen.scrollHeight;
-    };
+    const out = html => push('term-out', html);
+    const line = html => push('term-line', html);
+    const wait = ms => new Promise(r => setTimeout(r, ms));
 
-    const boot = () => {
+    const boot = async () => {
         if (screen.dataset.booted) return;
         screen.dataset.booted = '1';
-        const b = [
-            '<span class="term-muted">> sarang.rao v2.6 — booting profile...</span>',
-            '<span class="term-muted">> modules: agentic-doc · cv-inventory · conversational-ai</span>',
-            '<span class="term-ok">> all systems operational. type <span class="term-hl">help</span></span>'
+        screen.innerHTML = '';
+        const steps = [
+            ['term-muted', '&gt; sarang.rao v2.7 — booting profile...'],
+            ['term-muted', '&gt; loading modules: agentic-doc ✓ cv-inventory ✓ conversational-ai ✓'],
+            ['term-muted', '&gt; verifying human: 9.07 CGPA · IITM BS · PASC SIG lead ✓'],
+            ['term-ok', '&gt; all systems operational. <span class="term-hl">help</span> to list commands.']
         ];
-        screen.innerHTML = b.join('');
-        screen.scrollTop = screen.scrollHeight;
+        for (const [cls, html] of steps) { out(`<span class="${cls}">${html}</span>`); await wait(150); }
     };
 
     const CMD = {
-        help: () => out('available: <span class="term-hl">about · experience · projects · skills · achievements · contact · resume · ls · whoami · pwd · sudo · clear · help</span>'),
-        about: () => out('AI/ML engineer building production systems: multi-agent orchestration, RAG, voice AI, computer vision, full-stack backend. AI Team Lead @ TenancyPassport.'),
+        help: () => out(
+            '<span class="term-hl">usage:</span> <span class="term-muted">&lt;command&gt;</span>&nbsp;&nbsp;<span class="term-dim">· try ↑ for history</span><br>' +
+            '&nbsp;&nbsp;projects ....... shipped systems + links<br>' +
+            '&nbsp;&nbsp;experience ..... current role &amp; work<br>' +
+            '&nbsp;&nbsp;skills ......... tech stack<br>' +
+            '&nbsp;&nbsp;achievements ... awards &amp; community<br>' +
+            '&nbsp;&nbsp;contact ......... reach me directly<br>' +
+            '&nbsp;&nbsp;resume .......... download the PDF<br>' +
+            '&nbsp;&nbsp;ls / pwd / whoami / date / uname / neofetch / ping / cat<br>' +
+            '&nbsp;&nbsp;sudo ........... proceed with caution<br>' +
+            '&nbsp;&nbsp;clear .......... wipe the screen'),
+        about: () => out(
+            'sarang.rao — AI/ML engineer building production systems.<br>' +
+            'multi-agent orchestration · RAG · voice AI · computer vision · full-stack backend.<br>' +
+            'currently: <span class="term-ok">AI Team Lead @ TenancyPassport</span> · 5 interns · JAN 2026 — PRESENT'),
         experience: () => out(
-            '<span class="term-ok">RUN-01 · RUNNING</span> — AI Team Lead @ TenancyPassport (Jan 2026–present)<br>' +
-            '&nbsp;&nbsp;&nbsp;· leads 5 AI interns · FastAPI + Google ADK document intelligence<br>' +
-            '&nbsp;&nbsp;&nbsp;· consolidated 2 fragmented repos → 1 production repo<br>' +
-            '&nbsp;&nbsp;&nbsp;· ships production CV room-inventory pipeline + conversational AI'),
+            '<span class="term-hl">RUN-01</span> <span class="term-ok">● RUNNING</span> — AI Team Lead · TenancyPassport<br>' +
+            '&nbsp;&nbsp;· leads 5 AI interns · FastAPI + Google ADK document intelligence<br>' +
+            '&nbsp;&nbsp;· consolidated 2 fragmented repos → 1 maintained production repo<br>' +
+            '&nbsp;&nbsp;· ships production CV room-inventory pipeline + conversational AI'),
         projects: () => out(
-            '<span class="term-hl">P-01</span> Elysia-AI — voice assistant · 110+ tools ' + link('GITHUB', 'https://github.com/SarangRao20/Elysia-AI') + ' ' + link('CASE STUDY', 'case.html?p=elysia') + '<br>' +
-            '<span class="term-hl">P-02</span> FinServe NBFC — multi-agent loan origination ' + link('LIVE', 'https://nbfc-inc.vercel.app/') + ' ' + link('CASE STUDY', 'case.html?p=nbfc') + '<br>' +
-            '<span class="term-hl">P-03</span> Nivana — mental health conversational AI<br>' +
-            '<span class="term-hl">P-04</span> LeetCode Wrapped — dev data viz<br>' +
-            '<span class="term-hl">P-09</span> HP Battery Charge Limiter — flagship, EC firmware ' + link('GITHUB', 'https://github.com/SarangRao20/battery-charge-limiter') + ' ' + link('CASE STUDY', 'case.html?p=battery')),
+            '<span class="term-hl">P-01</span> Elysia-AI ........... voice assistant · 110+ tools <span class="term-muted">[solo]</span> ' + link('CASE STUDY', 'case.html?p=elysia') + '<br>' +
+            '<span class="term-hl">P-02</span> FinServe NBFC ...... multi-agent loan origination <span class="term-muted">[live]</span> ' + link('CASE STUDY', 'case.html?p=nbfc') + ' ' + link('DEMO', 'https://nbfc-inc.vercel.app/') + '<br>' +
+            '<span class="term-hl">P-03</span> Nivana .............. mental health conversational AI<br>' +
+            '<span class="term-hl">P-04</span> LeetCode Wrapped .. dev data viz<br>' +
+            '<span class="term-hl">P-09</span> HP Battery Limiter . EC firmware · flagship ' + link('CASE STUDY', 'case.html?p=battery') + ' ' + link('GITHUB', 'https://github.com/SarangRao20/battery-charge-limiter')),
         skills: () => out(
-            'LANGUAGES: Python · C++ · SQL · JS/TS<br>' +
-            'AI/ML: LangGraph · Gemini API · RAG · LLM orchestration · OpenCV · YOLO · OCR<br>' +
-            'BACKEND: FastAPI · Flask · PostgreSQL · MongoDB · Redis · Celery<br>' +
-            'TOOLS: Git · Linux · Docker · Google ADK · Playwright'),
-        achievements: () => out('2× ideathon wins (Innowave 2025 + FY Healthcare) · Reliance Foundation Scholar (top 1% nationally) · PASC core member — SIGs teaching C++, Python, Git, ML'),
+            '<span class="term-hl">LANGUAGES</span> Python · C++ · SQL · JS/TS<br>' +
+            '<span class="term-hl">AI/ML</span> LangGraph · Gemini API · RAG · LLM orchestration · OpenCV · YOLO · OCR<br>' +
+            '<span class="term-hl">BACKEND</span> FastAPI · Flask · PostgreSQL · MongoDB · Redis · Celery<br>' +
+            '<span class="term-hl">TOOLS</span> Git · Linux · Docker · Google ADK · Playwright'),
+        achievements: () => out(
+            '<span class="term-ok">✓</span> Innowave 2025 Champion — PICT ACM<br>' +
+            '<span class="term-ok">✓</span> FY Healthcare Ideathon — track winner<br>' +
+            '<span class="term-ok">✓</span> Reliance Foundation Scholar — top 1% nationally<br>' +
+            '<span class="term-ok">✓</span> PASC core member — SIGs: C++ · Python · Git · ML'),
         contact: () => out(
             'email&nbsp;&nbsp; ' + link('raosarang2006@gmail.com', 'mailto:raosarang2006@gmail.com') + '<br>' +
             'github&nbsp; ' + link('github.com/SarangRao20', 'https://github.com/SarangRao20') + '<br>' +
             'linkedin ' + link('in/sarang-rao-262bbb324', 'https://linkedin.com/in/sarang-rao-262bbb324') + '<br>' +
             'leetcode ' + link('u/SarangRao', 'https://leetcode.com/u/SarangRao')),
-        resume: () => out('download the PDF → ' + link('sarang-rao-resume.pdf', 'assets/sarang-rao-resume.pdf')),
+        resume: () => out('downloading → ' + link('sarang-rao-resume.pdf', 'assets/sarang-rao-resume.pdf')),
         ls: () => out('<span class="term-ok">agentic-doc/</span>&nbsp; cv-inventory/&nbsp; conversational-ai/&nbsp; elysia/&nbsp; nbfc/&nbsp; battery/&nbsp; playground/'),
-        whoami: () => out('sarang.rao — AI/ML engineer, generally capable'),
         pwd: () => out('/home/sarang/systems/production'),
-        sudo: () => out('<span class="term-ok">permission granted.</span> with great power comes great responsibility.'),
+        whoami: () => out('sarang.rao — AI/ML engineer, generally capable'),
+        date: () => out(new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false }) + ' IST'),
+        uname: () => out('Linux hp-arch 6.12-GNU x86_64 · Sarang Rao, AI Team Lead'),
+        neofetch: () => out(
+            '<span class="term-ok">oop25@portfolio</span><br>' +
+            '&nbsp;&nbsp;OS: Arch Linux · HP Omen 15<br>' +
+            '&nbsp;&nbsp;Shell: zsh · resolution 2560×1440<br>' +
+            '&nbsp;&nbsp;Languages: Python · C++ · TypeScript<br>' +
+            '&nbsp;&nbsp;CPU: overthinking @ 4.2 GHz · Memory: RAG + patterns'),
+        ping: () => out(
+            'PING sarang.rao (pune.in): 56 data bytes<br>' +
+            '64 bytes: icmp_seq=1 ttl=64 9ms &nbsp; 9ms &nbsp; 9ms<br>' +
+            '64 bytes: icmp_seq=2 ttl=64 8ms &nbsp; 9ms &nbsp; 8ms<br>' +
+            '--- sarang.rao ping statistics ---<br>' +
+            '4 packets transmitted, 0% packet loss <span class="term-ok">· quality assured</span>'),
+        cat: () => out(
+            'experience.txt<br>' +
+            '<span class="term-ok">AI Team Lead @ TenancyPassport — 2026</span><br>' +
+            '&nbsp;&nbsp;· 5 interns led · repos consolidated · production CV + conversational AI'),
+        sudo: () => out('<span class="term-muted">[sudo] password for sarang: ********</span><br><span class="term-ok">permission granted.</span> with great power comes great responsibility.'),
+        coffee: () => out('<span class="term-ok">brewing</span> <span class="term-dim">[|||||||||-----]</span> almost there...'),
+        cls: () => { screen.innerHTML = ''; },
         clear: () => { screen.innerHTML = ''; },
         '?': () => CMD.help()
     };
 
-    const run = (raw) => {
-        const cmd = (raw || '').trim().replace(/^[$>]\s*/, '').toLowerCase();
-        line('<span class="term-ok">$</span> <span class="term-hl">' + raw.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])) + '</span>');
-        if (!cmd) return;
-        const handler = CMD[cmd];
-        if (handler) handler();
-        else out('<span class="term-muted">command not found: <span class="term-hl">' + cmd + '</span> — type <span class="term-hl">help</span></span>');
+    const run = async (raw) => {
+        const typed = (raw || '').trim();
+        line('<span class="term-ok">$</span> <span class="term-hl">' + esc(typed) + '</span>');
+        const clean = typed.replace(/^[$>]\s*/, '').trim().toLowerCase();
+        if (clean) { history.push(typed.trim()); hIdx = history.length; }
+        if (!clean) return;
+        const name = clean.split(/\s+/)[0];
+        const handler = CMD[name];
+        if (handler) {
+            await wait(150);
+            handler();
+        } else {
+            out('<span class="term-err">bash: ' + esc(name) + ': command not found</span><span class="term-dim"><br>exit: 127</span>');
+        }
     };
 
     bar.addEventListener('click', () => {
@@ -785,15 +831,33 @@ function setupTerminal() {
         bar.setAttribute('aria-expanded', String(open));
         if (open) {
             boot();
-            setTimeout(() => input.focus(), 30);
+            setTimeout(() => input.focus(), 80);
         }
     });
 
+    input.addEventListener('input', () => { cmdEl.textContent = input.value; });
     input.addEventListener('keydown', e => {
-        if (e.key !== 'Enter') return;
-        const v = input.value;
-        input.value = '';
-        if (v.trim()) run(v);
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const v = input.value;
+            input.value = '';
+            cmdEl.textContent = '';
+            if (v.trim()) run(v);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (history.length && hIdx > 0) {
+                hIdx--;
+                input.value = history[hIdx] || '';
+                cmdEl.textContent = input.value;
+            }
+        } else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (hIdx < history.length) {
+                hIdx++;
+                input.value = history[hIdx] || '';
+                cmdEl.textContent = input.value;
+            }
+        }
     });
 
     document.querySelectorAll('.term-chip').forEach(chip => {

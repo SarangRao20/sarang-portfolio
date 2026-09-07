@@ -105,6 +105,10 @@
 
     <!-- EmailJS (deferred — public key is passed with the send call in script.js) -->
     <script defer src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <!-- Scroll choreography: GSAP + ScrollTrigger, then the scene driver -->
+    <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+    <script defer src="scene.js"></script>
     <!-- Vercel Web Analytics -->
     <script defer src="/_vercel/insights/script.js"></script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
@@ -128,6 +132,8 @@
     <span class="progress" id="progress" aria-hidden="true"></span>
     <div class="grain" aria-hidden="true"></div>
     <span class="spotlight" id="spotlight" aria-hidden="true"></span>
+    <span class="monogram" aria-hidden="true">SR</span>
+    <span class="ambient" aria-hidden="true"></span>
     <span class="sec-tracker mono" id="sec-tracker" aria-hidden="true">
         <span id="sec-tracker-label">§01</span>
         <span class="sec-tracker-rail"><span class="sec-tracker-fill" id="sec-tracker-fill"></span></span>
@@ -259,8 +265,10 @@
                     <div class="term-body" id="term-body" hidden>
                         <div class="term-screen" id="term-screen" role="log" aria-live="polite"></div>
                         <div class="term-prompt-row mono">
-                            <span class="term-ps1">sarang@sarango:~$</span>
-                            <input class="term-input mono" id="term-input" type="text" autocomplete="off" spellcheck="false" aria-label="terminal command" placeholder="type 'help'">
+                            <span class="term-ps1">sarang@portfolio:~$</span>
+                            <span class="term-cmd" id="term-cmd" aria-hidden="true"></span>
+                            <span class="term-cursor" id="term-cursor" aria-hidden="true"></span>
+                            <input class="term-input mono" id="term-input" type="text" autocomplete="off" spellcheck="false" aria-label="terminal command" tabindex="0">
                         </div>
                         <div class="term-chips" aria-label="quick commands">
                             <button class="term-chip mono" data-cmd="help">help</button>
@@ -322,18 +330,22 @@
 
         <!-- ===== 03 EVALUATIONS (PROJECTS) ===== -->
         <section id="projects" class="section">
-            <div class="wrap">
-                <header class="sec-head">
-                    <span class="sec-num mono" data-scramble>§ 03</span>
-                    <h2 class="sec-title">Projects</h2>
-                    <p class="sec-sub">Selected systems — with proof where it exists, and none invented where it doesn't.</p>
-                </header>
-                <div class="feat-grid" id="featured-grid"><!-- populated by script.js --></div>
+            <div class="proj-scroll" id="proj-scroll">
+                <div class="wrap proj-wrap">
+                    <header class="sec-head">
+                        <span class="sec-num mono" data-scramble>§ 03</span>
+                        <h2 class="sec-title">Projects</h2>
+                        <p class="sec-sub">Selected systems — with proof where it exists, and none invented where it doesn't.</p>
+                    </header>
+                    <div class="proj-track" id="proj-track">
+                        <div class="feat-grid" id="featured-grid"><!-- populated by script.js --></div>
 
-                <details class="more-work">
-                    <summary class="more-summary mono">MORE WORK <span class="more-count mono" id="more-count"></span><span class="more-chevron" aria-hidden="true">▾</span></summary>
-                    <ul class="more-list" id="more-work"><!-- populated by script.js --></ul>
-                </details>
+                        <details class="more-work">
+                            <summary class="more-summary mono">MORE WORK <span class="more-count mono" id="more-count"></span><span class="more-chevron" aria-hidden="true">▾</span></summary>
+                            <ul class="more-list" id="more-work"><!-- populated by script.js --></ul>
+                        </details>
+                    </div>
+                </div>
             </div>
         </section>
 
