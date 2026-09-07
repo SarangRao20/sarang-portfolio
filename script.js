@@ -934,6 +934,90 @@ function consoleEgg() {
     );
 }
 
+// ===== HERO SCENE: ambient typed terminal (Neel-style, decorative) =====
+function setupHeroTerm() {
+    const line = document.getElementById('ht-line');
+    const log = document.getElementById('ht-log');
+    if (!line || !log) return;
+    const lines = [
+        'sarang@rao:~$ whoami',
+        'AI/ML ENG · PICT PUNE',
+        'sarang@rao:~$ status',
+        'agents: 3/3 · systems: green',
+        'sarang@rao:~$ deploy --prod',
+        'SHIPPED ✓',
+    ];
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reduced) {
+        line.textContent = lines.join(' · ');
+        return;
+    }
+
+    let li = 0, ch = 0, hold = false;
+    (function tick() {
+        const cur = lines[li];
+        if (!hold) {
+            ch += 1;
+            line.textContent = cur.slice(0, ch);
+            if (ch >= cur.length) {
+                hold = true;
+                setTimeout(tick, 900);
+            } else {
+                setTimeout(tick, 34 + Math.random() * 26);
+            }
+            return;
+        }
+        const prev = document.createElement('div');
+        prev.textContent = cur;
+        log.appendChild(prev);
+        while (log.childElementCount > 2) log.firstElementChild.remove();
+        hold = false;
+        li = (li + 1) % lines.length;
+        ch = 0;
+        setTimeout(tick, 240);
+    })();
+}
+
+// ===== CUSTOM TRAILING CURSOR (fine pointers only) =====
+function setupCursor() {
+    const fine = matchMedia('(pointer: fine)').matches;
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!fine || reduced) return;
+
+    const dot = document.getElementById('cur-dot');
+    const ring = document.getElementById('cur-ring');
+    if (!dot || !ring) return;
+
+    document.documentElement.classList.add('custom-cursor');
+
+    let mx = innerWidth / 2, my = innerHeight / 2;
+    let rx = mx, ry = my;
+
+    const frame = () => {
+        rx += (mx - rx) * 0.18;
+        ry += (my - ry) * 0.18;
+        dot.style.transform = `translate(${mx}px, ${my}px)`;
+        ring.style.transform = `translate(${rx}px, ${ry}px)`;
+        requestAnimationFrame(frame);
+    };
+
+    window.addEventListener('pointermove', e => {
+        mx = e.clientX; my = e.clientY;
+        rx = mx; ry = my;
+    });
+    document.addEventListener('mouseleave', () => {
+        dot.style.opacity = '0';
+        ring.style.opacity = '0';
+    });
+    document.addEventListener('mouseenter', () => {
+        dot.style.opacity = '1';
+        ring.style.opacity = '1';
+    });
+
+    requestAnimationFrame(frame);
+}
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
     renderExperience();
@@ -959,6 +1043,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setupMaskReveal();
     setupTerminal();
     setupKineticName();
+    setupHeroTerm();
+    setupCursor();
     consoleEgg();
 
     // Choreography that should wait for the boot screen to lift
