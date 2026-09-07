@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Study · Sarang Rao</title>
+    <meta name="description" content="Sarang Rao — in-depth case studies: voice AI desktop assistant, multi-agent loan origination, and reverse-engineered EC firmware.">
+    <meta name="author" content="Sarang Rao">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Sarang Rao — Portfolio">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content="Case Study · Sarang Rao">
+    <meta property="og:description" content="In-depth case studies: voice AI desktop assistant, multi-agent loan origination, reverse-engineered EC firmware.">
+    <meta property="og:url" content="https://sarangrao.vercel.app/case.html">
+    <meta property="og:image" content="https://sarangrao.vercel.app/Images/sarang.jpg">
+    <link rel="canonical" href="https://sarangrao.vercel.app/index.html#projects">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+    <link rel="icon" type="image/svg+xml" href="favicon/favicon.svg">
+    <link rel="shortcut icon" href="favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+    <link rel="manifest" href="favicon/site.webmanifest">
+    <meta name="theme-color" content="#F2F1EB">
+
+    <!-- Theme (before paint, no flash) -->
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('sr-theme')
+                    || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', t);
+            } catch (e) { /* default light */ }
+        })();
+    </script>
+
+    <!-- Styles & Data -->
+    <link rel="stylesheet" href="style.css">
+    <script defer src="case-data.js"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Vercel Web Analytics -->
+    <script defer src="/_vercel/insights/script.js"></script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
+</head>
+<body class="case-page">
+
+    <div class="grain" aria-hidden="true"></div>
+
+    <!-- ===== TOP BAR ===== -->
+    <header class="topbar case-topbar">
+        <a class="topbar-id" href="index.html">
+            <span class="topbar-mark" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 222 170" fill="none">
+                    <path d="M22 46 H76 Q98 46 98 62 Q98 78 76 82 L34 90 Q18 94 18 110 Q18 128 44 128 H104" stroke="currentColor" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M128 46 V128 M128 46 H160 Q186 46 186 70 Q186 94 160 98 H128 M160 98 L192 128" stroke="currentColor" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+            <span class="mono">SARANG.RAO</span>
+        </a>
+        <nav class="topbar-nav" aria-label="Sections">
+            <a href="index.html" class="nav-link nav-link-cta"><span class="nav-num">←</span>BACK TO WORK</a>
+        </nav>
+        <div class="topbar-tools">
+            <button class="theme-btn mono" id="theme-btn" aria-label="Toggle dark mode" aria-pressed="false">DARK</button>
+        </div>
+    </header>
+
+    <main id="top" tabindex="-1">
+        <div class="wrap case-wrap" id="case-root"><!-- populated by case-data.js --></div>
+    </main>
+
+    <footer class="footer">
+        <div class="wrap footer-grid">
+            <span class="mono">© 2026 SARANG RAO</span>
+            <span class="mono footer-mid">CASE STUDY ARCHIVE · INDIA</span>
+            <a href="index.html" class="mono text-link">← BACK TO WORK</a>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            const STYLES = {
+                light: { paper: '#F2F1EB', ink: '#101116', blue: '#1828CE' },
+                dark: { paper: '#101116', ink: '#F2F1EB', blue: '#A0A9FF' }
+            };
+            const btn = document.getElementById('theme-btn');
+            const root = document.documentElement;
+            const apply = (mode, animate) => {
+                if (animate) {
+                    root.classList.add('theme-anim');
+                    setTimeout(() => root.classList.remove('theme-anim'), 400);
+                }
+                root.setAttribute('data-theme', mode);
+                btn.textContent = mode === 'dark' ? 'LIGHT' : 'DARK';
+                btn.setAttribute('aria-pressed', String(mode === 'dark'));
+                const meta = document.querySelector('meta[name="theme-color"]');
+                if (meta) meta.setAttribute('content', STYLES[mode].paper);
+            };
+            apply(root.getAttribute('data-theme') || 'light', false);
+            btn.addEventListener('click', () => {
+                const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                try { localStorage.setItem('sr-theme', next); } catch (e) { /* private mode */ }
+                apply(next, true);
+            });
+
+            const p = new URLSearchParams(location.search).get('p') || 'elysia';
+            renderCaseStudy(p);
+
+            let io;
+            if ('IntersectionObserver' in window) {
+                io = new IntersectionObserver(entries => {
+                    entries.forEach(e => {
+                        if (e.isIntersecting) {
+                            e.target.classList.add('in');
+                            io.unobserve(e.target);
+                        }
+                    });
+                }, { threshold: 0.15 });
+            }
+            document.querySelectorAll('.reveal').forEach(el => { if (io) io.observe(el); });
+        })();
+    </script>
+</body>
+</html>

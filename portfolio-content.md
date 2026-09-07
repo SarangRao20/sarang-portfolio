@@ -140,12 +140,12 @@ Build a portfolio website that includes:
 1. Home (Headline + short bio + featured projects)
 2. Overview (longer bio + currently learning)
 3. Experience (timeline)
-4. Projects ("Project Registry"):
-   - Filter chips: ALL / AI AGENTS / COMPUTER VISION / DATA VIZ / FULL STACK
-   - Featured (4) = build tickets with tabs: STACK · METRICS · SHIP LOG
-   - Additional (5) = compact tickets with metric chip
-   - Featured: Elysia-AI (AI AGENTS), FinServe NBFC (AI AGENTS), Nivana (AI AGENTS), LeetCode Wrapped (DATA VIZ)
-   - Additional: OLA BDM (DATA VIZ), Hospital (FULL STACK), Temple Run (CV), Reading Hall (CV), HP Battery Limiter (TOOLS & SYSTEMS)
+4. Projects (featured + archive):
+   - Featured (4) = clean cards: title, subtitle, description, stack tags, links. Flagship cards also get "CASE STUDY ↗".
+   - MORE WORK (collapsible) = 5 compact rows: id, category badge, title, metric tag, links.
+   - Featured: Elysia-AI (AI AGENTS, CASE STUDY), FinServe NBFC (AI AGENTS, CASE STUDY), Nivana (AI AGENTS), LeetCode Wrapped (DATA VIZ)
+   - Additional: OLA BDM (DATA VIZ), Hospital (FULL STACK), Temple Run (CV), Reading Hall (CV), HP Battery Limiter (TOOLS & SYSTEMS, CASE STUDY)
+   - Case studies live on case.html?p=<slug> (single data-driven template, content in case-data.js). Flagship set: elysia, nbfc, battery. Any project becomes a case study by adding a `caseStudy` slug to its data entry.
 5. Achievements (Ideathon wins, scholarships, DSA)
 6. Certifications (IITM Diploma, ML Specialization)
 7. Skills (grouped)

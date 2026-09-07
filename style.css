@@ -945,6 +945,116 @@ a { color: inherit; }
 }
 
 /* =====================================================
+   CASE STUDY PAGE
+   ===================================================== */
+.case-page { padding-top: 6rem; }
+.case-wrap {
+    padding-bottom: 0;
+    max-width: 920px;
+}
+.case-head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 2.5rem 0 2rem;
+    border-bottom: 1px solid var(--line-strong);
+    margin-bottom: 2.2rem;
+}
+.case-title {
+    font-stretch: 124%;
+    font-weight: 850;
+    font-size: clamp(2.4rem, 7vw, 4rem);
+    line-height: 0.96;
+    letter-spacing: -0.025em;
+}
+.case-tagline {
+    font-size: 1.05rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+}
+.case-section {
+    margin-bottom: 2.6rem;
+}
+.case-section .sec-label { margin-bottom: 1.1rem; }
+.case-body {
+    font-size: 1.02rem;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    font-stretch: 102%;
+}
+.case-steps {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--line);
+}
+.case-step {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 1.6rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--line);
+}
+.case-step-id {
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    color: var(--blue);
+    padding-top: 0.35rem;
+}
+.case-step .case-body { margin: 0; }
+.case-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    border: 1px solid var(--line-strong);
+}
+.case-metric {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 1.1rem 1.2rem;
+    border-left: 1px solid var(--line);
+}
+.case-metric:first-child { border-left: none; }
+.case-metric .metric-v { font-size: 1.7rem; }
+.case-lessons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--ink-soft);
+}
+.case-lessons li {
+    padding-left: 1.6rem;
+    position: relative;
+}
+.case-lessons li::before {
+    content: '>';
+    position: absolute;
+    left: 0;
+    color: var(--blue);
+    font-family: 'IBM Plex Mono', monospace;
+}
+.case-cta {
+    display: flex;
+    justify-content: center;
+    padding: 3rem 0 4.5rem;
+    border-top: 1px solid var(--line);
+    margin-top: 2rem;
+}
+
+@media (max-width: 720px) {
+    .case-step {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    .case-page { padding-top: 5.4rem; }
+}
+
+/* =====================================================
    BOOT SEQUENCE
    ===================================================== */
 .boot {

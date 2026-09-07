@@ -26,6 +26,7 @@ const data = {
         {
             title: 'Elysia-AI',
             category: 'AI AGENTS',
+            caseStudy: 'elysia',
             subtitle: 'Real-time voice AI desktop assistant · Solo project',
             description: 'Built a real-time voice AI assistant using Gemini Live API with bidirectional audio streaming, wake word detection, screen sharing, and text fallback across a 3-process architecture. ~110 tools across 21 modules covering browser automation, file system, terminal, system control, clipboard, OCR, and Google integrations — with persistent memory, canvas visualizer, and video character states.',
             metrics: [
@@ -46,6 +47,7 @@ const data = {
         {
             title: 'FinServe NBFC',
             category: 'AI AGENTS',
+            caseStudy: 'nbfc',
             subtitle: 'Multi-agent loan origination · Team lead',
             description: 'Led a team building a multi-agent loan origination system using LangGraph connecting KYC, fraud detection, underwriting, and sanction agents with structured state passing. Gemini Vision and OCR for financial document extraction with confidence-based validation and manual review fallback. FastAPI + MongoDB + Redis on Vercel with CI/CD.',
             metrics: [
@@ -149,6 +151,7 @@ const data = {
         {
             title: 'HP Battery Charge Limiter',
             category: 'TOOLS & SYSTEMS',
+            caseStudy: 'battery',
             description: 'Reverse-engineered HP EC firmware to control battery charge limits — a safety fix shared openly for the community.',
             metric: 'EC FIRMWARE · 2023',
             links: [
@@ -212,7 +215,8 @@ function renderFeatured() {
             <p class="feat-desc">${p.description}</p>
             <footer class="feat-foot">
                 <div class="tag-row">${p.tags.map(t => `<span class="tag mono">${t}</span>`).join('')}</div>
-                <div class="link-row">${p.links.map(l =>
+                <div class="link-row">${p.caseStudy ?
+                    `<a class="text-link mono" href="case.html?p=${p.caseStudy}">CASE STUDY ↗</a>` : ''}${p.links.map(l =>
                     `<a class="text-link mono" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`).join('')}</div>
             </footer>
         </article>
@@ -231,7 +235,8 @@ function renderMore() {
             <span class="more-cat mono">${p.category}</span>
             <h4 class="more-title">${p.title}</h4>
             <span class="tag mono">${p.metric}</span>
-            ${p.links.length ? `<div class="link-row">${p.links.map(l =>
+            ${p.links.length ? `<div class="link-row">${p.caseStudy ?
+                `<a class="text-link mono" href="case.html?p=${p.caseStudy}">CASE STUDY ↗</a>` : ''}${p.links.map(l =>
                 `<a class="text-link mono" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`).join('')}</div>` : ''}
         </li>
     `).join('');
