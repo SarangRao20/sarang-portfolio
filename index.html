@@ -105,6 +105,9 @@
 
     <!-- EmailJS (deferred — public key is passed with the send call in script.js) -->
     <script defer src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <!-- Three.js — WebGL particle scene behind the hero -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script defer src="scene.js"></script>
     <!-- Vercel Web Analytics -->
     <script defer src="/_vercel/insights/script.js"></script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
@@ -168,6 +171,7 @@
 
         <!-- ===== HERO / MODEL CARD ===== -->
         <section class="hero" aria-label="Introduction">
+            <canvas id="bg-scene" aria-hidden="true"></canvas>
             <div class="wrap">
                 <p class="hero-eyebrow mono" data-scramble>TECHNICAL SPECIFICATION · HUMAN, GENERALLY CAPABLE</p>
                 <h1 class="hero-name" id="hero-name" aria-label="Sarang Rao">Sarang<br>Rao</h1>
@@ -215,24 +219,6 @@
                             <source srcset="Images/sarang.webp" type="image/webp">
                             <img src="Images/sarang.jpg" alt="Portrait of Sarang Rao, AI / ML Engineer based in Pune, India" class="hero-photo" fetchpriority="high">
                         </picture>
-                        <i class="brk brk-tl" aria-hidden="true"></i>
-                        <i class="brk brk-tr" aria-hidden="true"></i>
-                        <i class="brk brk-bl" aria-hidden="true"></i>
-                        <i class="brk brk-br" aria-hidden="true"></i>
-                        <span class="hero-scan" aria-hidden="true"></span>
-                        <span class="fnode fn-1" aria-hidden="true"></span>
-                        <span class="fnode fn-2" aria-hidden="true"></span>
-                        <span class="fnode fn-3" aria-hidden="true"></span>
-                        <span class="ftag mono ft-1">RAG PIPELINES · ACTIVE</span>
-                        <span class="ftag mono ft-2">CV: DETECTED</span>
-                        <span class="ftag mono ft-3">VOICE AI · READY</span>
-                        <div class="hero-term" aria-hidden="true">
-                            <div class="ht-head mono">
-                                <span class="ht-dots"><i></i><i></i><i></i></span>
-                                <span class="ht-title">SARANG/RAO — TTY2</span>
-                            </div>
-                            <div class="ht-body mono" id="ht-body" aria-hidden="true"><div class="ht-log" id="ht-log"></div><span class="ht-cur" id="ht-line"></span><span class="ht-caret"></span></div>
-                        </div>
                         <span class="photo-caption mono">FIG. 1 — THE SYSTEM IN QUESTION</span>
                     </div>
                 </div>
