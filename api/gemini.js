@@ -24,28 +24,38 @@ module.exports = async (req, res) => {
   if (!prompt.trim()) return res.status(400).json({ ok: false, error: 'empty-prompt' });
 
   const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(key);
-  try {
-    const payload = { contents: [{ role: 'user', parts: [{ text: prompt }] }] };
-    if (sys) payload.system_instruction = { parts: [{ text: sys }] };
-    const r = await fetch(url, {
-      method: 'POST',
-      signal: AbortSignal.timeout(25000),
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+  const payload = { contents: [{ role: 'user', parts: [{ text: prompt }] }] };
+  if (sys) payload.system_instruction = { parts: [{ text: sys }] };
+  const RETRYABLE = /high demand|try again later|temporarily|429|500|502|503|overloaded|unavailable/i;
+  const attempts = [0, 900, 2200]; // backoff between retries (ms)
+  for (let i = 0; i < attempts.length; i++) {
+    if (i > 0) await new Promise(r2 => setTimeout(r2, attempts[i]));
+    let r;
+    try {
+      r = await fetch(url, {
+        method: 'POST',
+        signal: AbortSignal.timeout(25000),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch (e) {
+      if (e && (e.name === 'TimeoutError' || e.name === 'AbortError')) {
+        // timeout: retry once, then surface
+        if (i < attempts.length - 1) continue;
+        return res.status(504).json({ ok: false, error: 'upstream-timeout', hint: 'Google took too long — try again in a moment' });
+      }
+      return res.status(502).json({ ok: false, error: 'upstream-fetch-failed', detail: String((e && e.message) || e) });
+    }
     const data = await r.json().catch(() => ({}));
-    if (!r.ok) {
-      const msg = (data && data.error && data.error.message) || ('upstream HTTP ' + r.status);
-      return res.status(r.status).json({ ok: false, error: 'upstream', detail: msg });
+    if (r.ok) {
+      const text = ((data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [])
+        .map(p => p.text || '').join('').trim();
+      if (!text) return res.status(502).json({ ok: false, error: 'empty-upstream' });
+      return res.status(200).json({ ok: true, text });
     }
-    const text = ((data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [])
-      .map(p => p.text || '').join('').trim();
-    if (!text) return res.status(502).json({ ok: false, error: 'empty-upstream' });
-    return res.status(200).json({ ok: true, text });
-  } catch (e) {
-    if (e && (e.name === 'TimeoutError' || e.name === 'AbortError')) {
-      return res.status(504).json({ ok: false, error: 'upstream-timeout', hint: 'Google took too long — try again in a moment' });
-    }
-    return res.status(502).json({ ok: false, error: 'upstream-fetch-failed', detail: String((e && e.message) || e) });
+    const msg = (data && data.error && data.error.message) || ('upstream HTTP ' + r.status);
+    if (RETRYABLE.test(msg + ' ' + r.status) && i < attempts.length - 1) continue; // transient -> retry
+    return res.status(r.status === 429 ? 429 : r.status).json({ ok: false, error: 'upstream', detail: msg });
   }
+  return res.status(502).json({ ok: false, error: 'upstream-exhausted', detail: 'retries exhausted' });
 };
