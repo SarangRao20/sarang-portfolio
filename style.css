@@ -1562,7 +1562,7 @@ html.os-mode .sec-tracker,
 html.os-mode .progress,
 html.os-mode .spotlight,
 html.os-mode .cta-tip { display: none; }
-html.os-mode #cur-dot, html.os-mode #cur-ring { display: none; }
+html.os-mode #cur-dot, html.os-mode #cur-ring { display: block; z-index: 3000; }
 
 #sarangos { display: none; }
 html.os-mode #sarangos {
