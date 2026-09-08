@@ -497,8 +497,10 @@
             screen.dataset.b = '1';
             setTimeout(() => out('<span class="os-muted">sarang.rao v2.7 — booting... ok. <span class="os-term-hl">help</span> for commands.</span>'), 80);
         };
+        const gemKey = () => { try { return localStorage.getItem('sr-gemini-key') || ''; } catch (e) { return ''; } };
+        const GEM_MODEL = 'gemini-2.5-flash';
         const CMD = {
-            help: () => out('projects · experience · skills · achievements · contact · resume · ls · whoami · date · neofetch · sudo · clear'),
+            help: () => out('projects · experience · skills · achievements · contact · resume · ls · whoami · date · neofetch · sudo · clear<br>AI: <span class="os-term-hl">ask</span> "…" · <span class="os-term-hl">gemini</span> "…" · <span class="os-term-hl">keys</span> · <span class="os-term-hl">key</span> &lt;API_KEY&gt;'),
             about: () => out('sarang.rao — AI/ML engineer building production systems.<br>multi-agent orchestration · RAG · voice AI · CV · full-stack backend.'),
             projects: () => {
                 const feats = (D.featuredProjects || []).map(p => `<span class="os-term-hl">${esc(p.title)}</span> <span class="os-muted">— ${esc(p.category)}</span>`).join('<br>');
@@ -522,6 +524,53 @@
             uname: () => out('Linux hp-arch 6.12-GNU x86_64 · Sarang Rao, AI Team Lead'),
             neofetch: () => out('<span class="os-ok">oop25@desktop</span><br>OS: Arch · HP Omen 15 · CPU: overthinking @ 4.2 GHz · Memory: RAG + patterns'),
             sudo: () => out('<span class="os-muted">[sudo] password for sarang: ********</span><br><span class="os-ok">permission granted.</span>'),
+            keys: () => {
+                const k = gemKey();
+                out(k
+                    ? `✓ Gemini AI: <span class="os-ok">SET</span> (${esc(k.slice(0, 4))}…${esc(k.slice(-4))}) — stored in your browser only`
+                    : 'AI MODE OFF — run: <span class="os-term-hl">key</span> &lt;your_GEMINI_API_KEY&gt;<br><span class="os-muted">the key stays in localStorage — never sent to github or the repo.</span>');
+            },
+            key: (arg) => {
+                const a = (arg || '').trim();
+                if (!a) return out('usage: <span class="os-term-hl">key</span> &lt;GEMINI_API_KEY&gt; &nbsp;|&nbsp; key clear');
+                if (a === 'clear') {
+                    try { localStorage.removeItem('sr-gemini-key'); } catch (e) { /* ignore */ }
+                    return out('✓ API key cleared.');
+                }
+                if (!/^AIza[0-9A-Za-z_-]{20,}$/.test(a)) return out('✗ that does not look like a Gemini API key (starts with AIza…).');
+                try { localStorage.setItem('sr-gemini-key', a); } catch (e) { return out('✗ could not save (private mode?) — run key again.'); }
+                out(`✓ key saved — browser local only.<br><span class="os-muted">try: ask "why use multi-agent orchestration?"</span>`);
+            },
+            ask: async (arg) => {
+                const q = (arg || '').replace(/^["“”']|["“”']$/g, '').trim();
+                if (!q) return out('usage: <span class="os-term-hl">ask</span> &lt;&quot;your question&quot;&gt;');
+                const k = gemKey();
+                if (!k) return out('NO API KEY — run: <span class="os-term-hl">key</span> &lt;your_GEMINI_API_KEY&gt;');
+                out('<span class="os-ok">ask ›</span> ' + esc(q));
+                const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + GEM_MODEL + ':generateContent';
+                try {
+                    const ctl = new AbortController();
+                    const to = setTimeout(() => ctl.abort(), 30000);
+                    const r = await fetch(url + '?key=' + encodeURIComponent(k), {
+                        method: 'POST', signal: ctl.signal, headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            system_instruction: { parts: [{ text: 'You are the SARANG OS terminal assistant. Answer like a sharp hacker engineer. Max 6 lines, plain text, no markdown, no emoji, be precise and concrete.' }] },
+                            contents: [{ role: 'user', parts: [{ text: q }] }]
+                        })
+                    });
+                    clearTimeout(to);
+                    const j = await r.json();
+                    if (!r.ok) throw new Error(j.error?.message || 'http ' + r.status);
+                    const txt = j.candidates && j.candidates[0] && j.candidates[0].content
+                        ? j.candidates[0].content.parts.map(p => p.text || '').join('')
+                        : '(no response)';
+                    out('<span class="os-ok">ai ›</span> ' + esc(txt).replace(/\n/g, '<br>'));
+                } catch (e) {
+                    out('<span class="os-term-err">✗ ' + esc(e.name === 'AbortError' ? 'request timed out (30s)' : (e.message || 'request failed')) + '</span>');
+                }
+            },
+            gemini: async (arg) => CMD.ask(arg),
+            ai: async (arg) => CMD.ask(arg),
             clear: () => { screen.innerHTML = ''; },
             cls: () => { screen.innerHTML = ''; },
         };
@@ -534,9 +583,11 @@
                 if (!v) return;
                 hline(esc(v));
                 his.push(v); hi = his.length;
-                const n = v.toLowerCase().split(/\s+/)[0];
+                const parts = v.split(/\s+/);
+                const n = parts[0].toLowerCase();
+                const rest = parts.slice(1).join(' ');
                 const f = CMD[n];
-                if (f) f(); else out(`<span class="os-term-err">bash: ${esc(n)}: command not found</span>`);
+                if (f) f(rest); else out(`<span class="os-term-err">bash: ${esc(n)}: command not found</span>`);
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
                 if (his.length && hi > 0) { hi--; input.value = his[hi] || ''; cmdEl.textContent = input.value; }
@@ -607,9 +658,197 @@
         }
     }
 
+    // ===== KEYBOARD / BOOT: TV-style boot sequence =====
+    const OSBoot = (function () {
+        let self;
+        function el() { return document.getElementById('os-boot'); }
+        function stage() { return document.getElementById('os-boot-stage'); }
+
+        const BIOS = [
+            'SARANG SYSTEMS BIOS — v2.7',
+            'CPU  : OVERTHINKING @ 4.20GHz x64  ·  CACHE : RAG-16MB',
+            'MEM  : <b id="os-bios-ram">0000000M OK</b>',
+            'BOOT : [SSD: SARANG-OS v2.7]',
+            'ML PIPELINES .......... <span class="ok">READY</span>',
+            'INTERNS CUES .......... <span class="ok">MOUNTED</span>'
+        ];
+        const LOAD_LINES = [
+            'loading kernel image……',
+            'mounting /home/sarang/systems/production',
+            'starting window manager……',
+            'agents warmed · systems nominal……'
+        ];
+
+        self = {
+            sel: 0, timers: [], phase: 'idle', cb: null,
+
+            _clear() { this.timers.forEach(t => clearInterval(t)); this.timers = []; },
+
+            run(done) {
+                this.cb = done;
+                if (rm() || sessionStorage.getItem('sr-osboot2')) { this.finish(true); return; }
+                const b = el();
+                if (!b) { this.finish(true); return; }
+                b.hidden = false;
+                b.setAttribute('aria-hidden', 'false');
+                this.phase = 'bios';
+                this.renderBios();
+                window.addEventListener('keydown', this.onKey);
+            },
+
+            renderBios() {
+                const s = stage();
+                s.classList.remove('os-grub', 'os-load');
+                s.innerHTML = `<div class="os-bios mono">${BIOS.map(l => `<p>${l}</p>`).join('')}</div>`;
+                const p = s.querySelectorAll('p');
+                p.forEach((pEl, i) => pEl.style.animationDelay = (0.12 + i * 0.09) + 's');
+                let mem = 0;
+                const t = setInterval(() => {
+                    mem += 2048;
+                    const r = s.querySelector('#os-bios-ram');
+                    if (r) r.textContent = String(mem).padStart(7, '0') + 'M OK';
+                    if (mem >= 8192) {
+                        clearInterval(t);
+                        setTimeout(() => this.menu(), 260);
+                    }
+                }, 60);
+                this.timers.push(t);
+            },
+
+            menu() {
+                if (this.phase !== 'bios') return;
+                this.phase = 'menu';
+                const s = stage();
+                s.classList.add('os-grub');
+                s.innerHTML = `
+                    <div class="os-grub mono">
+                        <div class="os-grub-brand">SR · SARANG OS v2.7</div>
+                        <div class="os-grub-label">PICK A BOOT TARGET</div>
+                        <div class="os-grub-row is-sel" data-t="about">
+                            <span class="os-grub-caret">▸</span> SARANG OS
+                            <span class="os-grub-dim">(desktop)</span>
+                        </div>
+                        <div class="os-grub-row" data-t="terminal">
+                            <span class="os-grub-caret"> </span> Terminal — rescue shell
+                            <span class="os-grub-dim">(no desktop)</span>
+                        </div>
+                        <div class="os-grub-count">AUTO-BOOT SARANG OS IN <b id="os-boot-cd">4</b>s</div>
+                        <div class="os-grub-hint">↑/↓ choose · ENTER boot · ESC skip</div>
+                    </div>`;
+                let cd = 4;
+                const t = setInterval(() => {
+                    cd--;
+                    const c = document.getElementById('os-boot-cd');
+                    if (c) c.textContent = cd;
+                    if (cd <= 0) {
+                        clearInterval(t);
+                        if (this.phase === 'menu') this.boot();
+                    }
+                }, 1000);
+                this.timers.push(t);
+                this.paintMenu();
+            },
+
+            paintMenu() {
+                const rows = document.querySelectorAll('.os-grub-row');
+                rows.forEach((r, i) => {
+                    r.classList.toggle('is-sel', i === this.sel);
+                    r.querySelector('.os-grub-caret').textContent = i === this.sel ? '▸' : ' ';
+                });
+            },
+
+            target() { return this.sel === 0 ? 'about' : 'terminal'; },
+
+            boot() {
+                if (this.phase !== 'menu') return;
+                this.phase = 'load';
+                this._clear();
+                const s = stage();
+                s.classList.remove('os-grub');
+                s.classList.add('os-load');
+                s.innerHTML = `
+                    <div class="os-load mono">
+                        <p class="os-load-title">Booting ${this.sel === 0 ? 'SARANG OS' : 'RESCUE SHELL'} ...</p>
+                        <div class="os-load-bar"><span id="os-load-fill"></span></div>
+                        <p class="os-load-line" id="os-load-line">${LOAD_LINES[0]}</p>
+                    </div>`;
+                const fill = s.querySelector('#os-load-fill');
+                const line = s.querySelector('#os-load-line');
+                const t0 = performance.now();
+                const DUR = 720;
+                let li = 0;
+                const il = setInterval(() => {
+                    li++;
+                    if (line && LOAD_LINES[li]) line.textContent = LOAD_LINES[li];
+                }, 220);
+                this.timers.push(il);
+                const tick = now => {
+                    const p = Math.min((now - t0) / DUR, 1);
+                    if (fill) fill.style.width = p * 100 + '%';
+                    if (p < 1) requestAnimationFrame(tick); else this.finish();
+                };
+                requestAnimationFrame(tick);
+            },
+
+            finish(skipFade) {
+                if (this.phase === 'done') return;
+                this.phase = 'done';
+                this._clear();
+                window.removeEventListener('keydown', this.onKey);
+                const b = el();
+                const target = this.target();
+                if (!b) return this._done(target);
+                b.classList.add('os-boot-done');
+                b.setAttribute('aria-hidden', 'true');
+                const done = () => { b.remove(); this._done(target); };
+                if (skipFade) return done();
+                setTimeout(done, 320);
+            },
+
+            _done(target) {
+                sessionStorage.setItem('sr-osboot2', '1');
+                if (this.cb) this.cb(target);
+            },
+
+            onKey(e) {
+                if (!document.getElementById('os-boot')) return;
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (!self.phase.match(/bios|menu/)) return;
+                    if (self.phase === 'bios') { self.phase = 'menu'; return self.menu(); }
+                    self.sel = Number(self.sel) === 0 ? 1 : 0;
+                    self.paintMenu();
+                } else if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    if (self.phase === 'bios') self.menu();
+                    else if (self.phase === 'menu') self.boot();
+                    else if (self.phase === 'load') self.finish(true);
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    self.finish();
+                }
+            }
+        };
+        el().addEventListener('click', () => {
+            if (self.phase === 'bios') self.menu();
+            else if (self.phase === 'menu') self.boot();
+            else if (self.phase === 'load') self.finish(true);
+        });
+        return self;
+    })();
+
     // ===== INIT (after script.js has rendered the page data) =====
     document.addEventListener('DOMContentLoaded', () => {
         enterOS();
-        WM.open('about');
+        OSBoot.run(target => {
+            WM.open(target);
+            if (target === 'terminal') {
+                const w = WM.wins.terminal;
+                if (w) {
+                    w.style.width = Math.min(860, innerWidth - 120) + 'px';
+                    w.style.height = Math.min(560, innerHeight - 160) + 'px';
+                }
+            }
+        });
     });
 })();

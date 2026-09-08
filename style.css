@@ -1867,6 +1867,69 @@ textarea.os-field { resize: vertical; }
 .os-start-foot i { flex: 1; height: 1px; background: rgba(255,255,255,.08); }
 .os-start-foot em { font-style: normal; color: #9AA6FF; }
 
+/* ===== OS BOOT SEQUENCE (BIOS → GRUB-style menu → loading) ===== */
+.os-boot {
+    position: fixed; inset: 0; z-index: 950;
+    display: grid; place-items: center;
+    background:
+        radial-gradient(900px 500px at 50% -10%, rgba(31, 49, 214, .10), transparent 60%),
+        #05060A;
+    color: #E9E7DE;
+    font-family: var(--mono, "IBM Plex Mono", monospace);
+    cursor: default;
+    transition: opacity .3s ease;
+}
+.os-boot[hidden] { display: none; }
+.os-boot.os-boot-done { opacity: 0; }
+.os-boot-stage { width: min(680px, 88vw); }
+.os-boot-corner {
+    position: absolute; left: 16px; bottom: 12px;
+    font-size: .56rem; letter-spacing: .14em; color: rgba(255,255,255,.28);
+}
+
+/* BIOS POST */
+.os-bios { font-size: .8rem; line-height: 1.85; letter-spacing: .04em; }
+.os-bios p { opacity: 0; animation: osBiosLine .18s ease forwards; }
+.os-bios .os-bios-title { color: #9AA6FF; letter-spacing: .2em; margin-bottom: .7rem; }
+.os-bios .ok { color: #4ADE80; }
+@keyframes osBiosLine { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+
+/* Boot menu (GRUB vibe) */
+.os-grub .os-grub { font-size: .84rem; user-select: none; }
+.os-grub-brand { font-size: 1.05rem; letter-spacing: .28em; color: #fff; margin-bottom: 1.4rem; }
+.os-grub-label { font-size: .62rem; letter-spacing: .22em; color: rgba(255,255,255,.45); margin-bottom: .6rem; }
+.os-grub-row {
+    display: flex; align-items: center; gap: .55rem;
+    padding: .6rem .8rem; margin: .25rem 0;
+    background: transparent; color: rgba(233,231,222,.7);
+    animation: osBiosLine .2s ease forwards;
+}
+.os-grub-row:nth-child(3) { animation-delay: .05s; }
+.os-grub-row:nth-child(4) { animation-delay: .12s; }
+.os-grub-row .os-grub-caret { width: 1em; display: inline-block; }
+.os-grub-row.is-sel {
+    background: #E9E7DE; color: #0B0C12; font-weight: 500;
+}
+.os-grub-row.is-sel .os-grub-dim { color: rgba(11,12,18,.5); }
+.os-grub-dim { color: rgba(255,255,255,.35); font-size: .72rem; }
+.os-grub-count { margin-top: 1.1rem; font-size: .66rem; color: rgba(255,255,255,.6); }
+.os-grub-count b { color: #4ADE80; font-weight: 500; }
+.os-grub-hint { margin-top: .3rem; font-size: .6rem; letter-spacing: .1em; color: rgba(255,255,255,.32); }
+
+/* Loading */
+.os-load .os-load { width: min(480px, 86vw); }
+.os-load-title { font-size: .82rem; letter-spacing: .18em; color: #fff; margin-bottom: 1.1rem; }
+.os-load-bar {
+    height: 20px; border: 1px solid rgba(255,255,255,.25);
+    padding: 3px; animation: osBiosLine .25s ease forwards;
+}
+.os-load-bar span {
+    display: block; height: 100%; width: 0;
+    background: repeating-linear-gradient(90deg, #1F31D6 0 14px, #4A5BDC 14px 28px);
+    transition: width .12s linear;
+}
+.os-load-line { margin-top: .7rem; font-size: .66rem; color: rgba(255,255,255,.5); min-height: 1em; }
+
 /* ===== RELAUNCH PILL (post-CLASSIC) ===== */
 .os-relaunch {
     position: fixed; right: 18px; bottom: 18px; z-index: 850;
