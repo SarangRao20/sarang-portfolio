@@ -1169,8 +1169,8 @@
             keys: () => {
                 const k = gemKey();
                 out(k
-                    ? `✓ Gemini AI: <span class="os-ok">SET</span> (${esc(k.slice(0, 4))}…${esc(k.slice(-4))}) — stored in your browser only`
-                    : 'AI MODE OFF — run: <span class="os-term-hl">key</span> &lt;your_GEMINI_API_KEY&gt;<br><span class="os-muted">the key stays in localStorage — never sent to github or the repo.</span>');
+                    ? `✓ Gemini AI: <span class="os-ok">SET</span> (${esc(k.slice(0, 4))}…${esc(k.slice(-4))}) — browser-local key (fallback). Server proxy uses GEMINI_API_KEY if configured.`
+                    : '<span class="os-term-hl">ask</span> works via the server key (GEMINI_API_KEY) when deployed; optional browser key: <span class="os-term-hl">key</span> &lt;your_GEMINI_API_KEY&gt;<br><span class="os-muted">browser keys stay in localStorage — never sent to github or the repo.</span>');
             },
             key: (arg) => {
                 const a = (arg || '').trim();
@@ -1186,21 +1186,43 @@
             ask: async (arg) => {
                 const q = (arg || '').replace(/^["“”']|["“”']$/g, '').trim();
                 if (!q) return out('usage: <span class="os-term-hl">ask</span> &lt;&quot;your question&quot;&gt;');
-                const k = gemKey();
-                if (!k) return out('NO API KEY — run: <span class="os-term-hl">key</span> &lt;your_GEMINI_API_KEY&gt;');
                 out('<span class="os-ok">ask ›</span> ' + esc(q));
-                const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + GEM_MODEL + ':generateContent';
-                try {
+                const sys = 'You are the SARANG OS terminal assistant. Answer like a sharp hacker engineer. Max 6 lines, plain text, no markdown, no emoji, be precise and concrete.';
+                const askGoogle = async (model, body) => {
                     const ctl = new AbortController();
                     const to = setTimeout(() => ctl.abort(), 30000);
-                    const r = await fetch(url + '?key=' + encodeURIComponent(k), {
-                        method: 'POST', signal: ctl.signal, headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            system_instruction: { parts: [{ text: 'You are the SARANG OS terminal assistant. Answer like a sharp hacker engineer. Max 6 lines, plain text, no markdown, no emoji, be precise and concrete.' }] },
-                            contents: [{ role: 'user', parts: [{ text: q }] }]
-                        })
+                    try {
+                        const r = await fetch(model, { method: 'POST', signal: ctl.signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+                        clearTimeout(to);
+                        return r;
+                    } catch (e) {
+                        clearTimeout(to);
+                        throw e;
+                    }
+                };
+                let usedProxy = false;
+                try {
+                    const r = await askGoogle('/api/gemini', { model: GEM_MODEL, system: sys, prompt: q });
+                    usedProxy = true;
+                    let j = null;
+                    try { j = await r.json(); } catch (e) { /* non-json (e.g. static 404) */ }
+                    if (j && j.ok) return out('<span class="os-ok">ai ›</span> ' + esc(String(j.text)).replace(/\n/g, '<br>'));
+                    if (r.status === 404) usedProxy = false;      // no function deployed (e.g. static hosting)
+                    else if (j && j.error === 'server-key-missing') usedProxy = false;
+                    else return out('<span class="os-term-err">✗ proxy: ' + esc((j && (j.detail || j.error)) || ('http ' + r.status)) + '</span>');
+                } catch (e) {
+                    if (e && e.name === 'AbortError') return out('<span class="os-term-err">✗ request timed out (30s)</span>');
+                    usedProxy = false;                              // network error / proxy absent → local fallback
+                }
+                const k = gemKey();
+                if (!k) return out(usedProxy
+                    ? '<span class="os-term-err">✗ AI offline — server key not set.</span> add <span class="os-term-hl">GEMINI_API_KEY</span> on Vercel, or set a browser key: <span class="os-term-hl">key</span> &lt;KEY&gt;'
+                    : 'NO API KEY — run: <span class="os-term-hl">key</span> &lt;your_GEMINI_API_KEY&gt;');
+                try {
+                    const r = await askGoogle('https://generativelanguage.googleapis.com/v1beta/models/' + GEM_MODEL + ':generateContent?key=' + encodeURIComponent(k), {
+                        system_instruction: { parts: [{ text: sys }] },
+                        contents: [{ role: 'user', parts: [{ text: q }] }]
                     });
-                    clearTimeout(to);
                     const j = await r.json();
                     if (!r.ok) throw new Error(j.error?.message || 'http ' + r.status);
                     const txt = j.candidates && j.candidates[0] && j.candidates[0].content
