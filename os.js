@@ -498,7 +498,7 @@
             setTimeout(() => out('<span class="os-muted">sarang.rao v2.7 — booting... ok. <span class="os-term-hl">help</span> for commands.</span>'), 80);
         };
         const gemKey = () => { try { return localStorage.getItem('sr-gemini-key') || ''; } catch (e) { return ''; } };
-        const GEM_MODEL = 'gemini-2.5-flash';
+        const GEM_MODEL = 'gemini-3.6-flash';
         const CMD = {
             help: () => out('projects · experience · skills · achievements · contact · resume · ls · whoami · date · neofetch · sudo · clear<br>AI: <span class="os-term-hl">ask</span> "…" · <span class="os-term-hl">gemini</span> "…" · <span class="os-term-hl">keys</span> · <span class="os-term-hl">key</span> &lt;API_KEY&gt;'),
             about: () => out('sarang.rao — AI/ML engineer building production systems.<br>multi-agent orchestration · RAG · voice AI · CV · full-stack backend.'),
@@ -537,7 +537,7 @@
                     try { localStorage.removeItem('sr-gemini-key'); } catch (e) { /* ignore */ }
                     return out('✓ API key cleared.');
                 }
-                if (!/^AIza[0-9A-Za-z_-]{20,}$/.test(a)) return out('✗ that does not look like a Gemini API key (starts with AIza…).');
+                if (!/^(AIza|AQ\.)[0-9A-Za-z._-]{10,}$/.test(a)) return out('✗ that does not look like a Gemini API key (starts with AIza… or AQ.…).');
                 try { localStorage.setItem('sr-gemini-key', a); } catch (e) { return out('✗ could not save (private mode?) — run key again.'); }
                 out(`✓ key saved — browser local only.<br><span class="os-muted">try: ask "why use multi-agent orchestration?"</span>`);
             },
