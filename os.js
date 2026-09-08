@@ -26,11 +26,109 @@
         `<a class="text-link mono os-link" href="${url}"${off ? ' target="_blank" rel="noopener noreferrer"' : ''}>${label}</a>`;
     const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
+    // ===== PERSISTED SETTINGS (localStorage only) =====
+    const SET = {
+        get(k, d) { try { return localStorage.getItem('sr-' + k) === null ? d : localStorage.getItem('sr-' + k); } catch (e) { return d; } },
+        set(k, v) { try { localStorage.setItem('sr-' + k, v); } catch (e) { /* private mode */ } }
+    };
+
+    // ===== SOUNDS (WebAudio, no assets) =====
+    const SND = (() => {
+        let ac = null, on = SET.get('sound', '1') === '1', armed = false, pending = false;
+        const tone = (f, o) => {
+            if (!on || !armed || typeof AudioContext === 'undefined') return;
+            try {
+                ac = ac || new AudioContext();
+                if (ac.state === 'suspended') ac.resume();
+                const t = ac.currentTime + (o.t || 0), d = o.dur || 0.07;
+                const osc = ac.createOscillator(), g = ac.createGain();
+                osc.type = o.type || 'square';
+                osc.frequency.value = f;
+                if (o.slide) osc.frequency.exponentialRampToValueAtTime(o.slide, t + d);
+                g.gain.setValueAtTime(o.v || 0.025, t);
+                g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+                osc.connect(g); g.connect(ac.destination);
+                osc.start(t); osc.stop(t + d + 0.03);
+            } catch (e) { /* audio blocked */ }
+        };
+        return {
+            arm() {
+                armed = true;
+                try { ac = ac || new AudioContext(); if (ac.state === 'suspended') ac.resume(); } catch (e) {}
+                if (pending) { pending = false; this.chime(); }
+            },
+            prime() {
+                if (!on) return;
+                pending = true;
+                let c = 0;
+                const t = setInterval(() => {
+                    if (armed) { pending = false; clearInterval(t); this.chime(); }
+                    else if (++c > 8) { pending = false; clearInterval(t); }
+                }, 250);
+            },
+            isOn: () => on, setOn(v) { on = !!v; SET.set('sound', on ? '1' : '0'); },
+            click: () => tone(560, { dur: 0.04, v: 0.018 }),
+            open: () => { tone(640, {}); tone(900, { t: 0.05, dur: 0.07 }); },
+            close: () => tone(320, { dur: 0.09, type: 'triangle', v: 0.03 }),
+            min: () => tone(240, { dur: 0.05, type: 'triangle', v: 0.02 }),
+            max: () => { tone(700, { dur: 0.06 }); tone(1000, { t: 0.04, dur: 0.06 }); },
+            togg: () => tone(420, { dur: 0.05, type: 'triangle' }),
+            chime() {
+                tone(523, { dur: 0.4, type: 'sine', v: 0.05 });
+                tone(659, { t: 0.1, dur: 0.45, type: 'sine', v: 0.05 });
+                tone(784, { t: 0.2, dur: 0.8, type: 'sine', v: 0.05 });
+            }
+        };
+    })();
+
+    // ===== ONE-TIME WELCOME SPLASH STATS (marketing on mount) =====
+    const SPLASH_STATS = [
+        ['ROLE', 'AI TEAM LEAD — TENANCYPASS'],
+        ['SHIPPED', (((typeof data !== 'undefined' && data.featuredProjects) || []).length || 0) + ' SYSTEMS ROI-READY'],
+        ['GROWS', '5 AI INTERNS IN PRODUCTION'],
+        ['STACK', 'RAG · MULTI-AGENT · VOICE AI · CV']
+    ];
+
     // ===== ICON GLYPHS (monospace — no assets needed) =====
     const GLYPH = {
         about: '◉', projects: '▦', experience: '⌂', cases: '▤',
-        terminal: '>_', resume: '⤓', contact: '@'
+        terminal: '>_', resume: '⤓', contact: '@', settings: '⚙',
+        explorer: '⧉', notepad: '✎', paint: '◐', calculator: '∑'
     };
+
+    // ===== TXT RESUME (for export / cat resume) =====
+    function buildTextResume() {
+        const L = [];
+        L.push('SARANG RAO — AI/ML ENGINEER');
+        L.push('Production systems · multi-agent orchestration · RAG · voice AI · CV');
+        L.push('');
+        L.push('EMAIL   raosarang2006@gmail.com');
+        L.push('PHONE   +91 94211 40800');
+        L.push('GITHUB  https://github.com/SarangRao20');
+        L.push('LINKEDIN https://linkedin.com/in/sarang-rao-262bbb324');
+        L.push('');
+        L.push('EXPERIENCE');
+        ((typeof data !== 'undefined' && data.experience) || []).forEach(x => {
+            L.push('· ' + x.role + ' — ' + x.org + ' (' + x.date + ')');
+            (x.points || []).forEach(p => L.push('    - ' + p));
+        });
+        L.push('');
+        L.push('SELECTED SYSTEMS');
+        ((typeof data !== 'undefined' && data.featuredProjects) || []).forEach(p => {
+            L.push('· ' + p.title + ' — ' + (p.category || ''));
+            if (p.description) L.push('    ' + p.description);
+            L.push('    stack: ' + ((p.tags || []).join(', ') || '-'));
+        });
+        L.push('');
+        L.push('SKILLS');
+        ((typeof data !== 'undefined' && data.skills) || []).forEach(s => L.push('· ' + s.group + ': ' + s.items.join(', ')));
+        L.push('');
+        L.push('ACHIEVEMENTS');
+        L.push('· 2 ideathons won · Reliance Foundation Scholar — top 1%');
+        L.push('');
+        L.push('— generated from the SARANG OS resume panel —');
+        return L.join('\n');
+    }
 
     // ===== APPS =====
     function cloneDoc(id) {
@@ -132,24 +230,306 @@
             }
         },
 
+        notepad: {
+            title: 'NOTEPAD — STICKY NOTES',
+            width: 560, height: 430,
+            body() {
+                const wrap = document.createElement('div');
+                wrap.className = 'os-app os-notepad';
+                wrap.innerHTML = `
+                    <textarea class="os-note-area mono" spellcheck="false" aria-label="notepad"></textarea>
+                    <div class="os-note-foot mono">
+                        <span class="os-note-count">0 CHARS</span>
+                        <span class="os-note-save"></span>
+                        <button class="os-tray-key os-note-clear" type="button">CLEAR</button>
+                    </div>`;
+                const ta = wrap.querySelector('.os-note-area');
+                const ct = wrap.querySelector('.os-note-count');
+                const sv = wrap.querySelector('.os-note-save');
+                ta.value = SET.get('note', '');
+                ct.textContent = ta.value.length + ' CHARS';
+                let t;
+                ta.addEventListener('input', () => {
+                    ct.textContent = ta.value.length + ' CHARS';
+                    sv.textContent = '...';
+                    clearTimeout(t);
+                    t = setTimeout(() => { SET.set('note', ta.value); sv.textContent = 'SAVED ✓'; }, 400);
+                });
+                wrap.querySelector('.os-note-clear').addEventListener('click', () => {
+                    ta.value = '';
+                    ct.textContent = '0 CHARS';
+                    SET.set('note', '');
+                    sv.textContent = 'CLEARED';
+                });
+                return wrap;
+            }
+        },
+
+        explorer: {
+            title: 'FILE EXPLORER — DATA VAULT',
+            width: 640, height: 540,
+            body() {
+                const wrap = document.createElement('div');
+                wrap.className = 'os-app os-explorer';
+                const files = [
+                    ['[DOC]', 'about.sys', 'SYSTEM PROFILE', '4.2 KB', 'about'],
+                    ['[DOC]', 'featured-systems.doc', 'PROJECTS — SELECTED SYSTEMS', '12.6 KB', 'projects'],
+                    ['[LOG]', 'run-log-2025.lst', 'EXPERIENCE — RUN LOG', '8.9 KB', 'experience'],
+                    ['[CASE]', 'case-studies.db', 'DEEP DIVES', '6.4 KB', 'cases'],
+                    ['[BIN]', 'sticky-notes.bin', 'NOTEPAD DATA', '0.2 KB', 'notepad'],
+                    ['[TXT]', 'sarang-resume.txt', 'RESUME — CONTROL PANEL', '16.0 KB', 'resume'],
+                    ['[SH]', 'terminal.sh', 'INTERACTIVE SHELL', 'N/A', 'terminal'],
+                    ['[CFG]', 'desktop.settings', 'SETTINGS — SYSTEM CONTROL', '1.1 KB', 'settings'],
+                    ['[ART]', 'sketchbook.paint', 'PAINT — PIXEL FORGE', '3.3 KB', 'paint'],
+                    ['[CALC]', 'compute.calc', 'CALCULATOR — MATH UNIT', '0.9 KB', 'calculator']
+                ];
+                wrap.innerHTML = `
+                    <div class="os-exp-path mono"><span>→ C:\</span><span>SYS</span><span>SARANGOS</span><span>v2.7</span></div>
+                    <div class="os-exp-list">
+                        ${files.map(f => `
+                            <div class="os-exp-item mono" data-open="${f[4]}" tabindex="0" role="button">
+                                <span class="os-exp-glyph">${f[0]}</span>
+                                <span><b>${f[1]}</b><i class="os-muted"> — ${f[2]}</i></span>
+                                <span class="os-exp-meta">${f[3]}</span>
+                            </div>`).join('')}
+                    </div>`;
+                $$('.os-exp-item', wrap).forEach(it =>
+                    it.addEventListener('click', () => WM.open(it.dataset.open)));
+                return wrap;
+            }
+        },
+
+        paint: {
+            title: 'PAINT — PIXEL FORGE',
+            width: 660, height: 540,
+            body() {
+                const wrap = document.createElement('div');
+                wrap.className = 'os-app os-paint';
+                wrap.innerHTML = `
+                    <div class="os-paint-bar mono">
+                        <span class="os-muted">INK</span>
+                        ${['#11141C', '#1F31D6', '#0D9A58', '#E05233', '#F0C939', '#fff'].map((c, i) =>
+                            `<button class="os-paint-swatch" data-c="${c}" style="background:${c}" aria-label="color ${i}"></button>`).join('')}
+                        <span class="os-muted">SIZE</span>
+                        ${[3, 8, 16].map(s => `<button class="os-paint-size" data-s="${s}" type="button">${s}</button>`).join('')}
+                        <button class="os-tray-key os-paint-clear" type="button">CLEAR</button>
+                        <button class="os-tray-key os-paint-save" type="button">SAVE PNG</button>
+                    </div>
+                    <canvas class="os-paint-canvas" width="620" height="420" aria-label="paint canvas"></canvas>`;
+                const cv = wrap.querySelector('canvas');
+                const ctx0 = cv.getContext('2d');
+                ctx0.fillStyle = '#fff';
+                ctx0.fillRect(0, 0, cv.width, cv.height);
+                let color = '#11141C', size = 8, drawing = false;
+                let last = null;
+                const pos = e => {
+                    const r = cv.getBoundingClientRect();
+                    return { x: (e.clientX - r.left) * (cv.width / r.width), y: (e.clientY - r.top) * (cv.height / r.height) };
+                };
+                cv.addEventListener('pointerdown', e => {
+                    drawing = true; last = pos(e);
+                    cv.setPointerCapture(e.pointerId);
+                    SND.click();
+                });
+                cv.addEventListener('pointermove', e => {
+                    if (!drawing) return;
+                    const p = pos(e);
+                    ctx0.lineWidth = size; ctx0.lineCap = 'round'; ctx0.lineJoin = 'round';
+                    ctx0.strokeStyle = color;
+                    ctx0.beginPath();
+                    ctx0.moveTo(last.x, last.y);
+                    ctx0.lineTo(p.x, p.y);
+                    ctx0.stroke();
+                    last = p;
+                });
+                cv.addEventListener('pointerup', () => drawing = false);
+                $$('.os-paint-swatch', wrap).forEach(b =>
+                    b.addEventListener('click', () => { color = b.dataset.c; SND.togg(); }));
+                $$('.os-paint-size', wrap).forEach(b =>
+                    b.addEventListener('click', () => { size = +b.dataset.s; SND.togg(); }));
+                wrap.querySelector('.os-paint-clear').addEventListener('click', () => {
+                    ctx0.fillStyle = '#fff'; ctx0.fillRect(0, 0, cv.width, cv.height);
+                });
+                wrap.querySelector('.os-paint-save').addEventListener('click', () => {
+                    const a = document.createElement('a');
+                    a.href = cv.toDataURL('image/png');
+                    a.download = 'sarang-sketch.png';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                });
+                return wrap;
+            }
+        },
+
+        calculator: {
+            title: 'CALCULATOR — MATH UNIT',
+            width: 360, height: 500,
+            body() {
+                const wrap = document.createElement('div');
+                wrap.className = 'os-app os-calculator';
+                const keys = ['C', '±', '%', '÷', '7', '8', '9', '×', '4', '5', '6', '−', '1', '2', '3', '+', '0', '.', '=', '⌫'];
+                wrap.innerHTML = `
+                    <div class="os-calc-display mono">0</div>
+                    <div class="os-calc-grid">
+                        ${keys.map(k => `<button class="mono${'+-×÷='.indexOf(k) > -1 ? ' op' : ''}${k === '=' ? ' eq' : ''}" data-k="${k}" type="button">${k}</button>`).join('')}
+                    </div>`;
+                const disp = wrap.querySelector('.os-calc-display');
+                let a = null, op = null, cur = '0';
+                const render = () => { disp.textContent = (cur === '' ? '0' : cur); };
+                const fmt = v => String(parseFloat(v.toFixed(10)));
+                wrap.querySelectorAll('.os-calc-grid button').forEach(b => {
+                    b.addEventListener('click', () => {
+                        const k = b.dataset.k;
+                        SND.click();
+                        if (/[0-9]/.test(k)) {
+                            cur = cur === '0' ? k : (cur.length < 16 ? cur + k : cur);
+                        } else if (k === '.') {
+                            if (cur.indexOf('.') < 0) cur += '.';
+                        } else if (k === '⌫') {
+                            cur = cur.length > 1 ? cur.slice(0, -1) : '0';
+                        } else if (k === 'C') {
+                            a = null; op = null; cur = '0';
+                        } else if (k === '±') {
+                            cur = cur && cur !== '0' ? (cur[0] === '-' ? cur.slice(1) : '-' + cur) : cur;
+                        } else if (k === '%') {
+                            cur = fmt(parseFloat(cur || '0') / 100);
+                        } else if (['+', '−', '×', '÷'].indexOf(k) > -1) {
+                            if (op && cur !== '') { a = calc(a, parseFloat(cur), op); cur = ''; }
+                            else a = parseFloat(cur || '0'), cur = '';
+                            op = k;
+                        } else if (k === '=') {
+                            if (op !== null) {
+                                cur = fmt(calc(a, parseFloat(cur || '0'), op));
+                                a = null; op = null;
+                            }
+                        }
+                        render();
+                    });
+                });
+                function calc(x, y, o) {
+                    switch (o) {
+                        case '+': return x + y;
+                        case '−': return x - y;
+                        case '×': return x * y;
+                        case '÷': return y === 0 ? NaN : x / y;
+                    }
+                }
+                return wrap;
+            }
+        },
+
+        settings: {
+            title: 'SETTINGS — SYSTEM CONTROL',
+            width: 660, height: 620,
+            body() {
+                const wrap = document.createElement('div');
+                wrap.className = 'os-app os-settings';
+                const theme = root.getAttribute('data-theme');
+                const accent = root.getAttribute('data-accent');
+                const wall = root.getAttribute('data-wall');
+                const seg = (items, curVal, onChange) =>
+                    `<div class="os-set-seg">${items.map(i =>
+                        `<button type="button" data-v="${i}" class="${i === curVal ? 'is-on' : ''}">${i}</button>`).join('')}</div>`;
+                wrap.innerHTML = `
+                    <div class="os-set-row"><span class="os-set-label">THEME</span>${seg(['LIGHT', 'DARK', 'AMOLED'], theme.toUpperCase(), 'theme')}</div>
+                    <div class="os-set-row"><span class="os-set-label">ACCENT</span>
+                        <div class="os-set-accents">${ACCENTS.map(a =>
+                            `<button class="os-set-swatch is-${a}${a === accent ? ' is-on' : ''}" data-a="${a}" aria-label="accent ${a}"
+                                style="background:${({ blue: '#1F31D6', green: '#0D9A58', coral: '#E05233', purple: '#7C3AED', lime: '#2F9E3F' })[a]}"></button>`).join('')}</div></div>
+                    <div class="os-set-row"><span class="os-set-label">WALLPAPER</span>${seg(['GRID', 'PULSE', 'CODE'], wall.toUpperCase(), 'wall')}</div>
+                    <div class="os-set-row"><span class="os-set-label">STARTUP SOUND</span>${seg(['ON', 'OFF'], SND.isOn() ? 'ON' : 'OFF', 'sound')}</div>
+                    <div class="os-set-row"><span class="os-set-label">CRT SCANLINES</span>${seg(['ON', 'OFF'], SET.get('crt', '0') === '1' ? 'ON' : 'OFF', 'crt')}</div>
+                    <div class="os-set-row"><span class="os-set-label">DIM ROOM</span>${seg(['ON', 'OFF'], SET.get('dim', '0') === '1' ? 'ON' : 'OFF', 'dim')}</div>
+                    <div class="os-set-row"><span class="os-set-label">CLOCK WIDGET</span>${seg(['ON', 'OFF'], (SET.get('clock', '1') === '1' ? 'ON' : 'OFF'), 'clock')}</div>
+                    <div class="os-set-row"><span class="os-set-label">PERSISTENCE</span><span class="os-muted">all choices saved to this browser (localStorage) — reboot-safe.</span></div>`;
+                const touch = () => { hideCtx(); SND.togg(); };
+                wrap.querySelectorAll('.os-set-row').forEach(row => {
+                    row.querySelectorAll('button[data-v]').forEach(b => {
+                        b.addEventListener('click', () => {
+                            const key = row.querySelector('.os-set-label').textContent.toLowerCase().replace(/ /g, '');
+                            const v = b.dataset.v;
+                            row.querySelectorAll('button').forEach(x => x.classList.remove('is-on'));
+                            b.classList.add('is-on');
+                            if (key === 'theme') applyTheme(v.toLowerCase());
+                            else if (key === 'wallpaper') applyWall(v.toLowerCase());
+                            else if (key === 'startupsound') SND.setOn(v === 'ON');
+                            else if (key === 'crtscanlines') { SET.set('crt', v === 'ON' ? '1' : '0'); applyFX(); }
+                            else if (key === 'dimroom') { SET.set('dim', v === 'ON' ? '1' : '0'); applyFX(); }
+                            else if (key === 'clockwidget') { SET.set('clock', v === 'ON' ? '1' : '0'); wclock.hidden = v !== 'ON'; }
+                            touch();
+                        });
+                    });
+                });
+                wrap.querySelectorAll('.os-set-swatch').forEach(s =>
+                    s.addEventListener('click', () => {
+                        wrap.querySelectorAll('.os-set-swatch').forEach(x => x.classList.remove('is-on'));
+                        s.classList.add('is-on');
+                        applyAccent(s.dataset.a);
+                        touch();
+                    }));
+                return wrap;
+            }
+        },
+
         resume: {
-            title: 'RESUME — CURRICULUM VITAE',
-            width: 480, height: 380,
+            title: 'RESUME — CONTROL PANEL',
+            width: 880, height: 640,
             body() {
                 const wrap = document.createElement('div');
                 wrap.className = 'os-app os-resume';
                 wrap.innerHTML = `
-                    <p class="os-lead">Sarang Rao — AI/ML engineer.</p>
-                    <p class="os-muted mono">PDF, one page. Honest numbers, production systems.</p>
-                    <div class="os-resume-actions">
-                        <a class="btn btn-primary" href="assets/sarang-rao-resume.pdf" download="Sarang-Rao-Resume.pdf">Download resume<span class="mono btn-suffix">.PDF</span></a>
-                        <button class="btn btn-ghost" data-open="contact" type="button">Request a tailored version</button>
+                    <div class="os-tabs mono">
+                        <button type="button" class="os-tab is-on" data-p="pdf">VIEW PDF</button>
+                        <button type="button" class="os-tab" data-p="sum">QUICK SUMMARY</button>
                     </div>
-                    <div class="os-resume-links mono">
-                        ${link('GITHUB ↗', 'https://github.com/SarangRao20', true)}<br>
-                        ${link('LINKEDIN ↗', 'https://linkedin.com/in/sarang-rao-262bbb324', true)}<br>
-                        ${link('LEETCODE ↗', 'https://leetcode.com/u/SarangRao', true)}
+                    <div class="os-resume-panels">
+                        <div class="os-panel os-resume-pdf" data-p="pdf">
+                            <div class="os-resume-toolbar mono">
+                                <span class="os-resume-file">SARANG_RAO_RESUME_OS.PDF</span>
+                                <a class="btn btn-ghost os-resume-dl" href="assets/sarang-rao-resume-os.pdf" download="Sarang-Rao-Resume-OS.pdf">DOWNLOAD<span class="mono btn-suffix">.PDF</span></a>
+                                <a class="btn btn-ghost os-resume-mail" href="mailto:raosarang2006@gmail.com?subject=Role%20for%20you%20—%20Sarang%20Rao">EMAIL A ROLE</a>
+                            </div>
+                            <iframe class="os-resume-frame" src="assets/sarang-rao-resume-os.pdf" title="Sarang Rao — OS-styled resume"></iframe>
+                            <div class="os-resume-fallback mono">no pdf viewer? <a href="assets/sarang-rao-resume-os.pdf" download="Sarang-Rao-Resume-OS.pdf">download instead</a></div>
+                        </div>
+                        <div class="os-panel" data-p="sum" hidden>
+                            <div class="os-resume-kv mono">
+                                <div class="kv"><span>NAME</span><b>Sarang Rao</b></div>
+                                <div class="kv"><span>ROLE</span><b>AI / ML Engineer — end to end</b></div>
+                                <div class="kv"><span>BASE</span><b>Pune, India · IST</b></div>
+                                <div class="kv"><span>EMAIL</span><b>raosarang2006@gmail.com</b></div>
+                                <div class="kv"><span>GITHUB</span><b>@SarangRao20</b></div>
+                                <div class="kv"><span>SIGNAL</span><b>+91 94211 40800</b></div>
+                            </div>
+                            <div class="os-resume-exports">
+                                <button class="btn btn-primary os-export-txt" type="button">Export as .TXT<span class="mono btn-suffix">.TXT</span></button>
+                                <p class="os-muted">plain-text copy — for ATS, portals &amp; quick paste, not just the PDF.</p>
+                            </div>
+                        </div>
                     </div>`;
+                const tabs = $$('.os-tab', wrap);
+                const panels = $$('.os-panel', wrap);
+                const sel = p => {
+                    tabs.forEach(t => t.classList.toggle('is-on', t.dataset.p === p));
+                    panels.forEach(pl => { pl.hidden = pl.dataset.p !== p; });
+                };
+                tabs.forEach(t => t.addEventListener('click', () => sel(t.dataset.p)));
+                wrap.querySelector('.os-export-txt').addEventListener('click', () => {
+                    const txt = buildTextResume();
+                    const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = 'Sarang-Rao-Resume.txt';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+                    const b = wrap.querySelector('.os-export-txt');
+                    b.textContent = 'EXPORTED ✓';
+                    setTimeout(() => { b.textContent = 'Export as .TXT.TXT'; }, 1800);
+                });
+                buildTextResume.wrapRef = wrap;
                 return wrap;
             }
         },
@@ -205,7 +585,8 @@
         }
     };
 
-    const DESKTOP = ['about', 'projects', 'experience', 'cases', 'terminal', 'resume', 'contact'];
+    const DESKTOP = ['about', 'projects', 'experience', 'cases', 'terminal', 'explorer', 'notepad', 'settings', 'resume', 'contact'];
+    const ALL_APPS = DESKTOP.concat(['paint', 'calculator']);
 
     // ===== WINDOW MANAGER =====
     const layer = $('#os-layer');
@@ -246,6 +627,7 @@
             this.order.push(id);
             this.focus(id);
             this.renderTasks();
+            SND.open();
             if (rm()) win.classList.add('no-anim');
             return win;
         },
@@ -258,6 +640,11 @@
             this.idx(id, this.order.length - 1);
             if (this.active) this.active.classList.remove('active');
             (this.active = win).classList.add('active');
+            if (!rm()) {
+                win.classList.remove('os-flash');
+                void win.offsetWidth;
+                win.classList.add('os-flash');
+            }
             this.renderTasks();
         },
 
@@ -293,8 +680,24 @@
         minimize(id) {
             const win = this.wins[id];
             if (!win) return;
-            this.min[id] = true;
-            win.classList.add('os-minimized');
+            SND.min();
+            const r = win.getBoundingClientRect();
+            const btn = tasksEl.querySelector('.os-task[data-app="' + id + '"]');
+            const t = btn ? btn.getBoundingClientRect() : { left: innerWidth / 2, top: innerHeight - 26, width: 0, height: 20 };
+            const dx = t.left + t.width / 2 - (r.left + r.width / 2);
+            const dy = t.top + t.height / 2 - (r.top + r.height / 2);
+            this.min[id] = { dx, dy };
+            if (rm()) {
+                win.classList.add('os-minimized');
+            } else {
+                win.classList.add('os-no-anim');
+                win.animate([
+                    { transform: 'none' },
+                    { transform: `translate(${dx}px,${dy}px) scale(.1)` },
+                    { transform: `translate(${dx}px,${dy}px) scale(0)`, opacity: 0 }
+                ], { duration: 250, easing: 'cubic-bezier(.6,0,.85,.35)' }).onfinish =
+                    () => { win.classList.add('os-minimized'); win.classList.remove('os-no-anim'); };
+            }
             if (this.active === win) {
                 this.active = null;
                 const last = this.order[this.order.length - 1];
@@ -306,9 +709,77 @@
         restore(id) {
             const win = this.wins[id];
             if (!win) return;
+            const m = this.min[id];
             this.min[id] = false;
             win.classList.remove('os-minimized');
+            if (!rm() && m) {
+                win.classList.add('os-no-anim');
+                win.animate([
+                    { transform: `translate(${m.dx}px,${m.dy}px) scale(.08)`, opacity: 0 },
+                    { transform: 'none', opacity: 1 }
+                ], { duration: 230, easing: 'cubic-bezier(.2,.8,.25,1)' }).onfinish = () => win.classList.remove('os-no-anim');
+            }
             this.focus(id);
+        },
+
+        maxed: {},
+
+        maximize(id) {
+            const win = this.wins[id];
+            if (!win || win.classList.contains('os-minimized')) return;
+            if (this.maxed[id]) return this.unmax(id);
+            win.dataset.prev = JSON.stringify({ l: win.style.left, t: win.style.top, w: win.style.width, h: win.style.height });
+            this.maxed[id] = true;
+            win.classList.add('os-maxed');
+            win.style.left = '0';
+            win.style.top = '0';
+            win.style.width = '100%';
+            win.style.height = 'calc(100% - 52px)';
+            SND.max();
+            this.focus(id);
+        },
+
+        unmax(id) {
+            const win = this.wins[id];
+            if (!win || !this.maxed[id]) return;
+            this.maxed[id] = false;
+            win.classList.remove('os-maxed');
+            let p = {};
+            try { p = JSON.parse(win.dataset.prev || '{}'); } catch (e) { p = {}; }
+            if (p.l) win.style.left = p.l;
+            if (p.t) win.style.top = p.t;
+            if (p.w) win.style.width = p.w;
+            if (p.h) win.style.height = p.h;
+            this.focus(id);
+        },
+
+        snap(id, side) {
+            const win = this.wins[id];
+            if (!win) return;
+            if (!win.dataset.prev) {
+                win.dataset.prev = JSON.stringify({ l: win.style.left, t: win.style.top, w: win.style.width, h: win.style.height });
+            }
+            win.classList.remove('os-snap-l', 'os-snap-r');
+            win.style.left = side === 'r' ? '50vw' : '0';
+            win.style.top = '0';
+            win.style.width = '50vw';
+            win.style.height = 'calc(100% - 52px)';
+            win.style.maxWidth = 'none';
+            win.classList.add(side === 'r' ? 'os-snap-r' : 'os-snap-l');
+            SND.max();
+            this.focus(id);
+        },
+
+        unsnap(id) {
+            const win = this.wins[id];
+            if (!win) return;
+            win.classList.remove('os-snap-l', 'os-snap-r');
+            let p = {};
+            try { p = JSON.parse(win.dataset.prev || '{}'); } catch (e) { p = {}; }
+            if (p.l) win.style.left = p.l;
+            if (p.t) win.style.top = p.t;
+            if (p.w) win.style.width = p.w;
+            if (p.h) win.style.height = p.h;
         },
 
         renderTasks() {
@@ -326,6 +797,7 @@
     layer.addEventListener('pointerdown', e => {
         if (e.target.closest('.os-close')) {
             const w = e.target.closest('.os-window');
+            SND.close();
             WM.close(w.dataset.app);
         } else if (e.target.closest('.os-min')) {
             const w = e.target.closest('.os-window');
@@ -342,13 +814,16 @@
         if (d) WM.open(d.dataset.open);
     });
 
-    // Drag via titlebar
+    // Drag via titlebar (with top-edge maximize + left/right snap)
     const dragState = { win: null, dx: 0, dy: 0, moved: false };
     layer.addEventListener('pointerdown', e => {
         const t = e.target.closest('.os-title');
         if (!t || e.target.closest('button')) return;
         const win = t.closest('.os-window');
         WM.focus(win.dataset.app);
+        const id = win.dataset.app;
+        if (WM.maxed[id]) WM.unmax(id);
+        else if (win.classList.contains('os-snap-l') || win.classList.contains('os-snap-r')) WM.unsnap(id);
         const r = win.getBoundingClientRect();
         dragState.win = win;
         dragState.dx = e.clientX - r.left;
@@ -356,6 +831,11 @@
         dragState.moved = false;
         win.setPointerCapture(e.pointerId);
         win.classList.add('os-dragging');
+    });
+    layer.addEventListener('dblclick', e => {
+        const t = e.target.closest('.os-title');
+        if (!t || e.target.closest('button')) return;
+        WM.maximize(t.closest('.os-window').dataset.app);
     });
     layer.addEventListener('pointermove', e => {
         const w = dragState.win;
@@ -365,11 +845,21 @@
         const r = w.getBoundingClientRect();
         w.style.left = clamp(e.clientX - dragState.dx, -(r.width - 140), innerWidth - 60) + 'px';
         w.style.top = clamp(e.clientY - dragState.dy, 0, innerHeight - 52) + 'px';
+        root.classList.toggle('os-zone-top', (e.clientY - dragState.dy) < 6);
     });
     layer.addEventListener('pointerup', e => {
-        if (dragState.win) {
-            dragState.win.classList.remove('os-dragging');
+        const w = dragState.win;
+        if (w) {
             dragState.win = null;
+            w.classList.remove('os-dragging');
+            root.classList.remove('os-zone-top');
+            if (dragState.moved) {
+                const r = w.getBoundingClientRect();
+                const id = w.dataset.app;
+                if (r.top < 6) WM.maximize(id);
+                else if (r.left <= 3) WM.snap(id, 'l');
+                else if (innerWidth - (r.left + r.width) <= 3) WM.snap(id, 'r');
+            }
         }
     });
 
@@ -401,7 +891,7 @@
             <div class="os-start-head mono"><span class="os-start-logo">SR</span>
                 <span>Sarang Rao <i class="os-start-sub">— AI/ML engineer</i></span></div>
             <div class="os-start-apps">
-                ${DESKTOP.map(id => `
+                ${ALL_APPS.map(id => `
                     <button class="os-start-app mono" data-app="${id}" type="button">
                         <span class="os-task-glyph">${GLYPH[id]}</span>
                         <span class="os-start-app-n">${id[0].toUpperCase() + id.slice(1)}</span>
@@ -446,20 +936,140 @@
     setInterval(tickClock, 1000);
 
     const themeBtn = $('#os-theme');
-    function applyTheme(mode, store) {
-        root.setAttribute('data-theme', mode);
-        themeBtn.textContent = mode === 'dark' ? 'LIGHT' : 'DARK';
+
+    const THEMES = ['light', 'dark', 'amoled'];
+    const ACCENTS = ['blue', 'green', 'coral', 'purple', 'lime'];
+    const WALLS = ['grid', 'pulse', 'code'];
+    const cur = i => typeof i === 'string' ? i : 'grid';
+
+    function applyTheme(mode) {
+        const m = THEMES.indexOf(mode) > -1 ? mode : 'light';
+        root.setAttribute('data-theme', m);
+        themeBtn.textContent = m === 'amoled' ? 'AMOLED' : m === 'dark' ? 'LIGHT' : 'DARK';
         const meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) meta.setAttribute('content', mode === 'dark' ? '#101119' : '#F5F3EC');
-        if (store) { try { localStorage.setItem('sr-theme', mode); } catch (e) { } }
+        if (meta) meta.setAttribute('content', m === 'dark' ? '#101119' : m === 'amoled' ? '#000' : '#F5F3EC');
+        SET.set('theme', m);
     }
-    applyTheme(root.getAttribute('data-theme') || 'light', false);
-    themeBtn.addEventListener('click', () => {
-        const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        applyTheme(next, true);
+    function applyAccent(a) {
+        root.setAttribute('data-accent', ACCENTS.indexOf(a) > -1 ? a : 'blue');
+        SET.set('accent', root.getAttribute('data-accent'));
+    }
+    function applyWall(w) {
+        root.setAttribute('data-wall', WALLS.indexOf(w) > -1 ? w : 'grid');
+        SET.set('wall', root.getAttribute('data-wall'));
+    }
+    function nextWall() {
+        const list = WALLS;
+        const i = list.indexOf(root.getAttribute('data-wall'));
+        applyWall(list[(i + 1) % list.length]);
+        SND.togg();
+    }
+    function applyFX() { /* crt + dim toggles */
+        document.getElementById('os-crt').hidden = SET.get('crt', '0') !== '1';
+        document.getElementById('os-dim').hidden = SET.get('dim', '0') !== '1';
+    }
+    function cycleTheme() {
+        const cur = root.getAttribute('data-theme');
+        applyTheme(cur === 'light' ? 'dark' : cur === 'dark' ? 'amoled' : 'light');
         root.classList.add('theme-anim');
         setTimeout(() => root.classList.remove('theme-anim'), 400);
+        SND.togg();
+    }
+    themeBtn.addEventListener('click', cycleTheme);
+
+    // init from persisted settings
+    applyTheme(SET.get('theme', root.getAttribute('data-theme') || 'light'));
+    applyAccent(SET.get('accent', 'blue'));
+    applyWall(SET.get('wall', 'grid'));
+    applyFX();
+
+    // ===== SETTINGS APP (launcher) =====
+    $('#os-settings').addEventListener('click', () => WM.open('settings'));
+
+    // ===== DESKTOP CLOCK WIDGET (click = next wallpaper) =====
+    const wclock = $('#os-wclock');
+    if (wclock) {
+        const wt = $('#os-wclock-t'), wd = $('#os-wclock-d');
+        const dateFmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kolkata', weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+        const fillClock = () => {
+            const now = new Date();
+            if (wt) wt.textContent = clockFmt.format(now);
+            if (wd) wd.textContent = dateFmt.format(now).toUpperCase();
+        };
+        fillClock();
+        setInterval(fillClock, 1000);
+        wclock.addEventListener('click', nextWall);
+    }
+
+    // ===== GLOBAL UI SOUNDS + AUDIO ARM =====
+    document.addEventListener('pointerdown', () => SND.arm(), { once: true });
+    document.addEventListener('click', e => {
+        if (e.target.closest('button, .os-icon, .os-task, .os-start-app, .os-exp-item')) SND.click();
     });
+
+    // ===== DESKTOP CONTEXT MENU =====
+    const ctx = $('#os-ctx');
+    function buildCtx() {
+        const theme = root.getAttribute('data-theme');
+        const wall = root.getAttribute('data-wall');
+        const cx = {
+            WALLPAPER: [nextWall, wall.toUpperCase() + ' →'],
+            THEME: [cycleTheme, theme.toUpperCase() + ' →'],
+            'OPEN SETTINGS': [() => { WM.open('settings'); hideCtx(); }, '⚙'],
+            'OPEN TERMINAL': [() => { WM.open('terminal'); hideCtx(); }, '>_'],
+            'REBOOT SYSTEM': [() => { try { sessionStorage.removeItem('sr-osboot2'); } catch (e) {} location.reload(); }, '↻'],
+            'EXIT — CLASSIC LAYOUT': [() => { root.classList.remove('os-mode'); SARANGOS.hidden = true; pill.hidden = false; }, '↦']
+        };
+        ctx.innerHTML = '<div class="os-ctx-head">SYSTEM DESKTOP</div>' +
+            Object.keys(cx).map(k =>
+                `<button type="button" data-k="${esc(k)}"><span class="os-ctx-n">${esc(k)}</span><span class="os-ctx-ok">${cx[k][1]}</span></button>`).join('') +
+            '<div class="os-ctx-sep"></div><button type="button" data-k="CLASSIC">CLOSE MENU</button>';
+        ctx.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+            const k = b.dataset.k;
+            if (k === 'CLASSIC') return hideCtx();
+            if (cx[k]) cx[k][0]();
+            hideCtx();
+        }));
+    }
+    function showCtx(x, y) {
+        buildCtx();
+        ctx.hidden = false;
+        ctx.style.left = clamp(x, 4, innerWidth - 250) + 'px';
+        ctx.style.top = clamp(y, 4, innerHeight - 300) + 'px';
+        SND.click();
+    }
+    function hideCtx() { ctx.hidden = true; }
+    SARANGOS.addEventListener('contextmenu', e => {
+        if (e.target.closest('.os-window') || e.target.closest('#os-taskbar') || e.target.closest('#os-start')) return;
+        e.preventDefault();
+        showCtx(e.clientX, e.clientY);
+    });
+    document.addEventListener('pointerdown', e => {
+        if (!ctx.hidden && !e.target.closest('#os-ctx')) hideCtx();
+    });
+
+    // ===== WELCOME SPLASH (marketing, one per session) =====
+    const splash = $('#os-splash');
+    function showSplash() {
+        if (!splash) return;
+        let seen = false;
+        try { seen = sessionStorage.getItem('sr-splash') === '1'; } catch (e) { seen = true; }
+        if (seen) return;
+        try { sessionStorage.setItem('sr-splash', '1'); } catch (e) {}
+        splash.innerHTML = `
+            <h3>SYS-OP · ONLINE</h3>
+            ${SPLASH_STATS.map(s => `<div class="os-splash-stat"><span>${s[0]}</span><b>${s[1]}</b></div>`).join('')}
+            <div class="os-splash-hint">right-click the desktop · type <b>help</b> in the terminal · try dragging a window to the top edge</div>
+            <button class="os-splash-close" type="button">DISMISS</button>`;
+        splash.hidden = false;
+        requestAnimationFrame(() => splash.classList.add('os-on'));
+        splash.querySelector('.os-splash-close').addEventListener('click', hideSplash);
+        setTimeout(hideSplash, 9000);
+    }
+    function hideSplash() {
+        splash.classList.remove('os-on');
+        setTimeout(() => { splash.hidden = true; }, 320);
+    }
 
     // ===== CLASSIC <-> OS SWITCH =====
     const pill = $('#os-relaunch');
@@ -500,7 +1110,7 @@
         const gemKey = () => { try { return localStorage.getItem('sr-gemini-key') || ''; } catch (e) { return ''; } };
         const GEM_MODEL = 'gemini-3.6-flash';
         const CMD = {
-            help: () => out('projects · experience · skills · achievements · contact · resume · ls · whoami · date · neofetch · sudo · clear<br>AI: <span class="os-term-hl">ask</span> "…" · <span class="os-term-hl">gemini</span> "…" · <span class="os-term-hl">keys</span> · <span class="os-term-hl">key</span> &lt;API_KEY&gt;'),
+            help: () => out('apps: <span class="os-term-hl">open</span> &lt;app&gt; · projects · experience · skills · achievements · contact · resume<br>shell: ls · cat resume.txt · whoami · date · uname · uptime · neofetch · sudo · open<br>AI: <span class="os-term-hl">ask</span> "…" · <span class="os-term-hl">gemini</span> "…" · <span class="os-term-hl">keys</span> · <span class="os-term-hl">key</span> &lt;API_KEY&gt;<br>system: reboot · clear · konami'),
             about: () => out('sarang.rao — AI/ML engineer building production systems.<br>multi-agent orchestration · RAG · voice AI · CV · full-stack backend.'),
             projects: () => {
                 const feats = (D.featuredProjects || []).map(p => `<span class="os-term-hl">${esc(p.title)}</span> <span class="os-muted">— ${esc(p.category)}</span>`).join('<br>');
@@ -516,14 +1126,46 @@
             },
             achievements: () => out('2 ideathons won (Innowave 2025 — PICT ACM, FY Healthcare) · Reliance Foundation Scholar — top 1%'),
             contact: () => out(`email ${link('raosarang2006@gmail.com', 'mailto:raosarang2006@gmail.com')} · github ${link('@SarangRao20', 'https://github.com/SarangRao20', true)}`),
-            resume: () => out(`→ ${link('sarang-rao-resume.pdf', 'assets/sarang-rao-resume.pdf')}`),
-            ls: () => out('<span class="os-ok">agentic-doc/</span>&nbsp; cv-inventory/&nbsp; elysia/&nbsp; nbfc/&nbsp; nivana/&nbsp; battery/'),
+            resume: () => out(`→ ${link('sarang-rao-resume-os.pdf', 'assets/sarang-rao-resume-os.pdf')} · <span class="os-term-hl">cat resume.txt</span> for plain text`),
+            open: (a) => {
+                const t = (a || '').trim().toLowerCase();
+                if (!t) return out('usage: <span class="os-term-hl">open</span> &lt;app&gt; — try: ' + ALL_APPS.join(' · '));
+                if (!APPS[t]) return out(`✗ no such app: <span class="os-term-hl">${esc(t)}</span> (see help)`);
+                WM.open(t);
+                out(`<span class="os-ok">✓</span> opening ${esc(t)} …`);
+            },
+            cat: (a) => {
+                const f = (a || '').trim().toLowerCase().replace(/\.txt$/, '');
+                if (f === 'resume') {
+                    out(buildTextResume().replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])).replace(/\n/g, '<br>'));
+                    return;
+                }
+                out(`<span class="os-term-err">cat: ${esc(a || '')}: no such file</span> — try "cat resume.txt"`);
+            },
+            ls: () => out(`drwxr-xr-x  sarang  sarang  4.0K  <span class="os-ok">agentic-doc/</span>\ndrwxr-xr-x  sarang  sarang  4.0K  <span class="os-ok">cv-inventory/</span>\ndrwxr-xr-x  sarang  sarang  4.0K  <span class="os-ok">elysia/</span>\ndrwxr-xr-x  sarang  sarang  4.0K  <span class="os-ok">nbfc/</span>\ndrwxr-xr-x  sarang  sarang  4.0K  <span class="os-ok">nivana/</span>\ndrwxr-xr-x  sarang  sarang  4.0K  <span class="os-ok">battery/</span>
+-rw-r--r--  sarang  sarang  16K   sarang-resume.txt`),
             pwd: () => out('/home/sarang/systems/production'),
-            whoami: () => out('sarang.rao — AI/ML engineer, generally capable'),
+            whoami: () => out('sarang.rao — AI/ML engineer, AI Team Lead'),
             date: () => out(new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false }) + ' IST'),
             uname: () => out('Linux hp-arch 6.12-GNU x86_64 · Sarang Rao, AI Team Lead'),
-            neofetch: () => out('<span class="os-ok">oop25@desktop</span><br>OS: Arch · HP Omen 15 · CPU: overthinking @ 4.2 GHz · Memory: RAG + patterns'),
+            uptime: () => out('up 3 years-ish — but who\'s counting. 2 ideathons fought, 1 scholarship won, ∞ rewrites.'),cd: () => out('nice try. you can\'t leave /home/sarang — the desktop is your home.'),
+            reboot: () => { out('rebooting…'); try { sessionStorage.removeItem('sr-osboot2'); } catch (e) {} setTimeout(() => location.reload(), 500); },
+            version: () => out('SARANG OS v2.7 · build 6b8a692 · SARANG SYSTEMS · 2026'),
+            konami: () => out('→ ↑↑↓↓←→←→BA → <span class="os-ok">ROOT ACCESS GRANTED.</span> you already owned this thought.'),
             sudo: () => out('<span class="os-muted">[sudo] password for sarang: ********</span><br><span class="os-ok">permission granted.</span>'),
+            rm: () => out('rm: cannot remove / — the system says: your career is fine.'),
+            neofetch: () => {
+                const feats = (D.featuredProjects || []).length;
+                const interns = (D.experience || []).length;
+                out(`   ____   ___  
+  / __ \\ /   \\   <span class="os-ok">sarang@desktop</span>
+ ( (_) \\/ /\\\\\\ |  <span class="os-muted">os: sarang.os v2.7</span>
+  \\___/ /_/\\_\\\\|  <span class="os-muted">host: hp-omen-15</span>
+                <span class="os-muted">cpu: overthinking @ 4.20 ghz</span>
+                <span class="os-muted">memory: rag + patterns · 32gb/24 usable</span>
+                <span class="os-ok">shipped: ${feats} systems</span>
+                <span class="os-ok">interns: ${interns} reporting</span>`);
+            },
             keys: () => {
                 const k = gemKey();
                 out(k
@@ -670,12 +1312,15 @@
             'MEM  : <b id="os-bios-ram">0000000M OK</b>',
             'BOOT : [SSD: SARANG-OS v2.7]',
             'ML PIPELINES .......... <span class="ok">READY</span>',
-            'INTERNS CUES .......... <span class="ok">MOUNTED</span>'
+            'INTERNS CUES .......... <span class="ok">MOUNTED</span>',
+            'SHIPPED SYSTEMS ....... <span class="ok">ONLINE</span>'
         ];
         const LOAD_LINES = [
             'loading kernel image……',
             'mounting /home/sarang/systems/production',
             'starting window manager……',
+            'waking multi-agent pipeline…',
+            'warming cv-inventory / nbfc / nivana……',
             'agents warmed · systems nominal……'
         ];
 
@@ -849,6 +1494,8 @@
                     w.style.height = Math.min(560, innerHeight - 160) + 'px';
                 }
             }
+            SND.prime();
+            showSplash();
         });
     });
 })();

@@ -507,17 +507,26 @@
         <div class="os-wallpaper" aria-hidden="true"></div>
         <div class="os-icons" id="os-icons" role="toolbar" aria-label="Desktop"></div>
         <div class="os-layer" id="os-layer"></div>
+        <div class="os-wclock mono" id="os-wclock" role="img" aria-label="Desktop clock, IST" data-tip="click: change wallpaper">
+            <span id="os-wclock-t">--:--:--</span>
+            <span id="os-wclock-d">—</span>
+        </div>
         <div class="os-start" id="os-start" role="menu"></div>
+        <div class="os-ctx mono" id="os-ctx" hidden role="menu" aria-label="Desktop menu"></div>
         <div class="os-taskbar" id="os-taskbar">
             <button class="os-startbtn mono" id="os-startbtn" type="button" aria-expanded="false" aria-label="Open Start menu">SR</button>
             <div class="os-tasks" id="os-tasks" role="toolbar" aria-label="Running apps"></div>
             <div class="os-tray mono">
                 <span class="os-led" id="os-led"><span class="dot" aria-hidden="true"></span>SYSTEMS NOMINAL</span>
-                <button class="os-tray-key" id="os-theme" type="button" aria-label="Toggle dark mode">DARK</button>
+                <button class="os-tray-key" id="os-theme" type="button" aria-label="Toggle theme">DARK</button>
+                <button class="os-tray-key" id="os-settings" type="button" aria-label="Open Settings">⚙</button>
                 <span class="os-clock" id="os-clock" aria-label="Indian Standard Time">--:--:--</span>
                 <button class="os-tray-key" id="os-classic" type="button" aria-label="Exit to classic layout">CLASSIC</button>
             </div>
         </div>
+        <div class="os-crt" id="os-crt" aria-hidden="true" hidden></div>
+        <div class="os-dim" id="os-dim" aria-hidden="true" hidden></div>
+        <div class="os-splash mono" id="os-splash" hidden aria-hidden="true"></div>
     </div>
     <!-- ===== OS BOOT SEQUENCE (BIOS → boot menu → loading) ===== -->
     <div class="os-boot" id="os-boot" hidden aria-hidden="true">
