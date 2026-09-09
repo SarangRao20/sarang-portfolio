@@ -966,7 +966,7 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
                     </button>`).join('')}
             </div>
             <div class="os-start-foot mono">
-                <span>SARANG OS v2.9.4</span><i></i><span>PUNE · INDIA</span><i></i><span>IST <em id="os-start-clock">--:--:--</em></span>
+                <span>SARANG OS v2.9.5</span><i></i><span>PUNE · INDIA</span><i></i><span>IST <em id="os-start-clock">--:--:--</em></span>
             </div>
             <p class="os-start-tip mono">F1 = guide · ESC = close window · right-click desktop = wallpaper</p>`;
         START.querySelectorAll('.os-start-app').forEach(b =>
@@ -1143,7 +1143,7 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
             THEME: [cycleTheme, theme.toUpperCase() + ' →'],
             'OPEN SETTINGS': [() => { WM.open('settings'); hideCtx(); }, '⚙'],
             'OPEN TERMINAL': [() => { WM.open('terminal'); hideCtx(); }, '>_'],
-            'REBOOT SYSTEM': [() => { try { sessionStorage.removeItem('sr-osboot2'); } catch (e) {} location.reload(); }, '↻'],
+            'REBOOT SYSTEM': [() => osNav(true), '↻'],
             'EXIT — CLASSIC LAYOUT': [() => { root.classList.remove('os-mode'); SARANGOS.hidden = true; pill.hidden = false; }, '↦']
         };
         ctx.innerHTML = '<div class="os-ctx-head">SYSTEM DESKTOP</div>' +
@@ -1205,6 +1205,12 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
         window.scrollTo(0, 0);
         pill.hidden = true;
         maybeStarter();
+    }
+    function osNav(replay) {
+        try { replay ? sessionStorage.removeItem('sr-osboot2') : sessionStorage.setItem('sr-osboot2', '1'); } catch (e) {}
+        const u = new URL(location.href);
+        u.searchParams.set('os', '1');
+        location.href = u.href;
     }
     function maybeStarter() {
         try { if (localStorage.getItem('sr-seen-starter')) return; } catch (e) { return; }
@@ -1272,7 +1278,7 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
         const boot = () => {
             if (screen.dataset.b) return;
             screen.dataset.b = '1';
-            setTimeout(() => out('<span class="os-muted">sarang.rao v2.9.4 — booting... ok. <span class="os-term-hl">help</span> for commands.</span>'), 80);
+            setTimeout(() => out('<span class="os-muted">sarang.rao v2.9.5 — booting... ok. <span class="os-term-hl">help</span> for commands.</span>'), 80);
         };
         const gemKey = () => { try { return localStorage.getItem('sr-gemini-key') || ''; } catch (e) { return ''; } };
         const CMD = {
@@ -1347,7 +1353,7 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
                 '   ___) |   <  (_) | | (_| | | | | (_| |  <br>' +
                 '  |____/|_|\_\\\\___/|_|\__,_|_| |_|\__,_|  <br>' +
                 '</span><span class="os-muted">sarang.rao — AI/ML engineer · the system betrays nothing.</span>'),
-            reload: () => { out('reloading…'); setTimeout(() => location.reload(), 450); },
+            reload: () => { out('reloading…'); setTimeout(() => osNav(false), 450); },
             about: () => out('sarang.rao — AI/ML engineer building production systems.<br>multi-agent orchestration · RAG · voice AI · CV · full-stack backend.'),
             projects: () => {
                 const feats = (D.featuredProjects || []).map(p => `<span class="os-term-hl">${esc(p.title)}</span> <span class="os-muted">— ${esc(p.category)}</span>`).join('<br>');
@@ -1386,8 +1392,8 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
             date: () => out(new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false }) + ' IST'),
             uname: () => out('Linux hp-arch 6.12-GNU x86_64 · Sarang Rao, AI Team Lead'),
             uptime: () => out('up 3 years-ish — but who\'s counting. 2 ideathons fought, 1 scholarship won, ∞ rewrites.'),cd: () => out('nice try. you can\'t leave /home/sarang — the desktop is your home.'),
-            reboot: () => { out('rebooting…'); try { sessionStorage.removeItem('sr-osboot2'); } catch (e) {} setTimeout(() => location.reload(), 500); },
-            version: () => out('SARANG OS v2.9.4 · build 9c2e1a · SARANG SYSTEMS · 2026 · <span class="os-muted">+ guide · scoped AI · personalized wallpaper</span>'),
+            reboot: () => { out('rebooting…'); setTimeout(() => osNav(true), 500); },
+            version: () => out('SARANG OS v2.9.5 · build 9c2e1a · SARANG SYSTEMS · 2026 · <span class="os-muted">+ guide · scoped AI · personalized wallpaper</span>'),
             konami: () => out('→ ↑↑↓↓←→←→BA → <span class="os-ok">ROOT ACCESS GRANTED.</span> you already owned this thought.'),
             sudo: () => out('<span class="os-muted">[sudo] password for sarang: ********</span><br><span class="os-ok">permission granted.</span>'),
             rm: () => out('rm: cannot remove / — the system says: your career is fine.'),
@@ -1396,7 +1402,7 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
                 const interns = (D.experience || []).length;
                 out(`   ____   ___  
   / __ \\ /   \\   <span class="os-ok">sarang@desktop</span>
- ( (_) \\/ /\\\\\\ |  <span class="os-muted">os: sarang.os v2.9.4</span>
+ ( (_) \\/ /\\\\\\ |  <span class="os-muted">os: sarang.os v2.9.5</span>
   \\___/ /_/\\_\\\\|  <span class="os-muted">host: hp-omen-15</span>
                 <span class="os-muted">cpu: overthinking @ 4.20 ghz</span>
                 <span class="os-muted">memory: rag + patterns · 32gb/24 usable</span>

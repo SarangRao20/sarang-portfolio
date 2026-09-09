@@ -988,7 +988,7 @@ function setupTerminal() {
         },
         history: () => { out(history.length ? history.map((h, i) => String(i).padStart(3, ' ') + '  ' + esc(h)).join('<br>') : 'history: empty'); },
         uptime: () => out('up 3 years-ish — 2 ideathons fought, 1 scholarship won, ∞ rewrites.'),
-        version: () => out('SARANG OS / CLASSIC v2.9.4 · SARANG SYSTEMS · 2026'),
+        version: () => out('SARANG OS / CLASSIC v2.9.5 · SARANG SYSTEMS · 2026'),
         banner: () => out(
             '<span class="term-hl">  ____  _   __ _   _                  <br>' +
             ' / ___|| | / /\_\_\ | __ _ _ __   __ _   <br>' +
