@@ -3,7 +3,7 @@
 //   Modern-desktop portfolio (Joey-de-Ruiter vibe)
 //   Chrome: wallpaper, desktop icons, draggable
 //   windows, taskbar+tray, start menu, live clock.
-//   Gate: min-width 1024px + fine pointer, or ?os=1
+//   Classic is the default on every device; the OS boots via the relaunch pill or ?os=1
 // ============================================
 
 (function () {
@@ -14,8 +14,9 @@
     const big = () => matchMedia('(min-width: 1024px)').matches;
     const rm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
     const forced = new URLSearchParams(location.search).get('os') === '1';
+    const armed = forced || new URLSearchParams(location.search).get('os') === '0' || (fine() && big() && !rm());
 
-    if (!((fine() && big() && !rm()) || forced)) return;
+    if (!armed) return;
 
     const $ = (s, r) => (r || document).querySelector(s);
     const $$ = (s, r) => Array.prototype.slice.call((r || document).querySelectorAll(s));
@@ -1004,18 +1005,20 @@
         function draw(t) {
             raf = requestAnimationFrame(draw);
             if (!on || !document.getElementById('sarangos') || document.getElementById('sarangos').hidden) return;
-            if (t - last < 50) return; last = t;
-            ctx.fillStyle = 'rgba(5, 6, 12, 0.10)';
+            if (t - last < 78) return; last = t;
+            ctx.fillStyle = 'rgba(5, 6, 12, 0.05)';
             ctx.fillRect(0, 0, cv.width, cv.height);
             ctx.font = FS + 'px monospace';
             const accent = getComputedStyle(document.documentElement).getPropertyValue('--blue').trim() || '#34D399';
-            ctx.fillStyle = 'rgba(255,255,255,.85)';
+            const parity = Math.floor(t / 78) % 2;
+            ctx.fillStyle = 'rgba(255,255,255,.8)';
             for (let i = 0; i < cols.length; i++) {
+                if (i % 2 !== parity) continue;
                 const ch = 'アイウエオカキクケコサシスセソタチツテト0123456789<>=+$'.split('')[Math.random() * 40 | 0];
                 const x = i * FS, y = cols[i] * FS;
                 ctx.fillText(ch, x, y);
-                ctx.fillStyle = accent; ctx.globalAlpha = .34; ctx.fillText(ch, x, y);
-                ctx.globalAlpha = 1; ctx.fillStyle = 'rgba(255,255,255,.85)';
+                ctx.fillStyle = accent; ctx.globalAlpha = .3; ctx.fillText(ch, x, y);
+                ctx.globalAlpha = 1; ctx.fillStyle = 'rgba(255,255,255,.8)';
                 if (y > cv.height + FS && Math.random() > .975) cols[i] = 0;
                 cols[i]++;
             }
@@ -1596,7 +1599,13 @@
     })();
 
     // ===== INIT (after script.js has rendered the page data) =====
+    // Classic is the default everywhere. The OS boots explicitly via the
+    // "SARANG OS ↵" pill, or instantly when the URL has ?os=1.
     document.addEventListener('DOMContentLoaded', () => {
+        if (new URLSearchParams(location.search).get('os') !== '1') {
+            pill.hidden = false;
+            return;
+        }
         enterOS();
         OSBoot.run(target => {
             WM.open(target);

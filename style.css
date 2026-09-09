@@ -2341,8 +2341,8 @@ html[data-theme="amoled"].os-mode .os-window {
     background: linear-gradient(180deg, #151722, #0D0E15);
     border-color: rgba(255,255,255,.10);
 }
-html.os-mode .os-window { transition: filter .22s ease, opacity .22s ease; }
-html.os-mode .os-window:not(.active) { filter: saturate(.72) brightness(.88); opacity: .97; }
+html.os-mode .os-window { transition: opacity .2s ease, box-shadow .2s ease, border-color .2s ease; }
+html.os-mode .os-window:not(.active) { opacity: .97; }
 html.os-mode .os-window.active {
     border-color: var(--blue-soft);
     box-shadow:
