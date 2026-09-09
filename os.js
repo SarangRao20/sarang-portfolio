@@ -158,15 +158,17 @@
                         <span class="os-photo-cap mono">FIG.1 — THE SYSTEM IN QUESTION</span>
                     </div>`;
                 wrap.innerHTML = `
-                    <p class="os-eyebrow mono">SARANG.RAO — TECHNICAL SPEC · HUMAN, GENERALLY CAPABLE</p>
-                    <h2 class="os-about-name">Sarang Rao</h2>
-                    <p class="os-about-role mono">AI / ML ENGINEER — PRODUCTION SYSTEMS, END TO END</p>
                     ${photoHTML}
-                    <div class="os-spec"></div>
-                    <div class="os-actions">
-                        <button class="btn btn-primary" data-open="projects" type="button">View projects</button>
-                        <a class="btn btn-ghost" href="assets/sarang-rao-resume.pdf" download="Sarang-Rao-Resume.pdf"><span class="mono btn-suffix">.PDF</span>&nbsp;Resume</a>
-                        <button class="btn btn-ghost" data-open="contact" type="button">Get in touch</button>
+                    <div class="os-about-main">
+                        <p class="os-eyebrow mono">SARANG.RAO — TECHNICAL SPEC · HUMAN, GENERALLY CAPABLE</p>
+                        <h2 class="os-about-name">Sarang Rao</h2>
+                        <p class="os-about-role mono">AI / ML ENGINEER — PRODUCTION SYSTEMS, END TO END</p>
+                        <div class="os-spec"></div>
+                        <div class="os-actions">
+                            <button class="btn btn-primary" data-open="projects" type="button">View projects</button>
+                            <a class="btn btn-ghost" href="assets/sarang-rao-resume.pdf" download="Sarang-Rao-Resume.pdf"><span class="mono btn-suffix">.PDF</span>&nbsp;Resume</a>
+                            <button class="btn btn-ghost" data-open="contact" type="button">Get in touch</button>
+                        </div>
                     </div>`;
                 wrap.querySelector('.os-spec').appendChild(cloneDoc('spec-card'));
                 return wrap;
@@ -980,6 +982,16 @@
             RAIN.start();
         }
     }
+    /* Live re-apply bridge for the CLASSIC terminal (theme/accent/wall/fx set outside the OS) */
+    window.OSFX = function OSEFX() {
+        if (!root.classList.contains('os-mode')) return;
+        applyTheme(root.getAttribute('data-theme'));
+        applyAccent(root.getAttribute('data-accent'));
+        applyWall(root.getAttribute('data-wall'));
+        applyFX();
+        const wc = document.getElementById('os-wclock');
+        if (wc) wc.hidden = SET.get('clock', '1') !== '1';
+    };
     const RAIN = (() => {
         const cv = document.getElementById('os-rain');
         const ctx = cv ? cv.getContext('2d') : null;
@@ -1156,12 +1168,78 @@
         const boot = () => {
             if (screen.dataset.b) return;
             screen.dataset.b = '1';
-            setTimeout(() => out('<span class="os-muted">sarang.rao v2.7 — booting... ok. <span class="os-term-hl">help</span> for commands.</span>'), 80);
+            setTimeout(() => out('<span class="os-muted">sarang.rao v2.9.2 — booting... ok. <span class="os-term-hl">help</span> for commands.</span>'), 80);
         };
         const gemKey = () => { try { return localStorage.getItem('sr-gemini-key') || ''; } catch (e) { return ''; } };
-        const GEM_MODEL = 'gemini-3.6-flash';
         const CMD = {
-            help: () => out('apps: <span class="os-term-hl">open</span> &lt;app&gt; · projects · experience · skills · achievements · contact · resume<br>shell: ls · cat resume.txt · whoami · date · uname · uptime · neofetch · sudo · open<br>AI: <span class="os-term-hl">ask</span> "…" · <span class="os-term-hl">gemini</span> "…" · <span class="os-term-hl">keys</span> · <span class="os-term-hl">key</span> &lt;API_KEY&gt;<br>system: reboot · clear · konami'),
+            help: (a) => {
+                const t = (a || '').trim().toLowerCase();
+                const DETAIL = {
+                    open: 'usage: <span class="os-term-hl">open</span> &lt;app&gt; — apps: ' + ALL_APPS.join(' · '),
+                    ask: 'usage: <span class="os-term-hl">ask</span> "your question" — answers via Gemini (server key first, browser key fallback).',
+                    echookey: 'usage: <span class="os-term-hl">echo</span> &lt;text…&gt; — prints what you type back at you.',
+                    key: 'usage: <span class="os-term-hl">key</span> &lt;GEMINI_API_KEY&gt; · key clear',
+                    accent: 'usage: <span class="os-term-hl">accent</span> [blue|green|coral|purple|lime|list]',
+                    wall: 'usage: <span class="os-term-hl">wall</span> [grid|pulse|code|next]',
+                    matrix: 'usage: <span class="os-term-hl">matrix</span> [on|off] — wallpaper rain',
+                    themes: 'usage: <span class="os-term-hl">themes</span> — cycles LIGHT → DARK → AMOLED',
+                    session: 'usage: <span class="os-term-hl">session</span> — prints saved OS settings',
+                    history: 'usage: <span class="os-term-hl">history</span> — prints this session’s commands'
+                };
+                if (t && DETAIL[t]) return out(DETAIL[t]);
+                out('apps: <span class="os-term-hl">open</span> &lt;app&gt; · <span class="os-term-hl">apps</span> — ' + ALL_APPS.slice(0, 4).join(', ') + ' +' + (ALL_APPS.length - 4) + '<br>shell: ls · cat resume.txt · echo · whoami · date · uname · uptime · neofetch · history<br>skills: about · projects · experience · achievements · contact · resume · cat resume.txt<br>AI: <span class="os-term-hl">ask</span> "…" · <span class="os-term-hl">gemini</span> · <span class="os-term-hl">ai</span> · <span class="os-term-hl">keys</span> · <span class="os-term-hl">key</span> &lt;API_KEY&gt;<br>system: themes · accent · wall · matrix · crt · dim · sound · clock · session · banner<br>sw: reboot · reload · clear · konami · <span class="os-term-hl">help &lt;cmd&gt;</span> for detail');
+            },
+            echo: (a) => out(esc(a || '')),
+            history: () => { out(his.length ? his.map((h, i) => String(i).padStart(3, ' ') + '  ' + esc(h)).join('<br>') : 'history: empty'); },
+            apps: () => out('<span class="os-term-hl">apps (' + ALL_APPS.length + ')</span><br>' + ALL_APPS.map(x => '<span class="os-muted">·</span> ' + esc(x)).join('<br>')),
+            themes: () => { cycleTheme(); out('theme → <span class="os-ok">' + root.getAttribute('data-theme').toUpperCase() + '</span>'); },
+            accent: (a) => {
+                const v = (a || '').trim().toLowerCase();
+                const names = { blue: '#1F31D6', green: '#0D9A58', coral: '#E05233', purple: '#7C3AED', lime: '#2F9E3F' };
+                if (v === 'list' || !v) return out('accents: ' + Object.keys(names).map(k => '<span class="os-term-hl">' + k + '</span>').join(' · ') + ' — <span class="os-term-hl">accent &lt;color&gt;</span>');
+                if (!names[v]) return out('<span class="os-term-err">accent: unknown</span> — try: ' + Object.keys(names).join(' · '));
+                applyAccent(v); SND.togg();
+                out('accent → <span class="os-ok">' + v.toUpperCase() + '</span> <span style="color:' + names[v] + '">■</span>');
+            },
+            wall: (a) => {
+                const v = (a || '').trim().toLowerCase();
+                const walls = WALLS;
+                let next;
+                if (v === 'next' || !v) next = walls[(walls.indexOf(root.getAttribute('data-wall')) + 1) % walls.length];
+                else if (walls.indexOf(v) > -1) next = v;
+                else return out('walls: <span class="os-term-hl">' + walls.join(' · ') + '</span> — <span class="os-term-hl">wall &lt;name&gt;</span> · wall next');
+                applyWall(next); SND.togg();
+                out('wallpaper → <span class="os-ok">' + next.toUpperCase() + '</span>');
+            },
+            matrix: (a) => {
+                const v = (a || '').trim().toLowerCase();
+                const next = v === 'on' || (v !== 'off' && SET.get('rain', '1') !== '1');
+                SET.set('rain', next ? '1' : '0'); applyFX();
+                out('matrix rain → <span class="os-ok">' + (next ? 'ON' : 'OFF') + '</span>');
+            },
+            crt: (a) => { const next = !(a === 'off') && (a === 'on' || SET.get('crt', '0') !== '1'); SET.set('crt', next ? '1' : '0'); applyFX(); out('CRT scanlines → <span class="os-ok">' + (next ? 'ON' : 'OFF') + '</span>'); },
+            dim: (a) => { const next = !(a === 'off') && (a === 'on' || SET.get('dim', '0') !== '1'); SET.set('dim', next ? '1' : '0'); applyFX(); out('DIM ROOM → <span class="os-ok">' + (next ? 'ON' : 'OFF') + '</span>'); },
+            sound: (a) => { const next = !(a === 'off') && (a === 'on' || !SND.isOn()); SND.setOn(next); out('STARTUP + UI SOUND → <span class="os-ok">' + (next ? 'ON' : 'OFF') + '</span>'); },
+            clock: (a) => { const next = !(a === 'off') && (a === 'on' || SET.get('clock', '1') !== '1'); SET.set('clock', next ? '1' : '0'); wclock.hidden = !next; out('CLOCK WIDGET → <span class="os-ok">' + (next ? 'ON' : 'OFF') + '</span>'); },
+            session: () => {
+                const g = k => SET.get(k, k === 'crt' || k === 'dim' ? '0' : '1') === '1' ? 'ON' : 'OFF';
+                out(
+                    'theme&nbsp; <span class="os-term-hl">' + root.getAttribute('data-theme').toUpperCase() + '</span><br>' +
+                    'accent&nbsp; <span class="os-term-hl">' + root.getAttribute('data-accent').toUpperCase() + '</span><br>' +
+                    'wall&nbsp;&nbsp; <span class="os-term-hl">' + root.getAttribute('data-wall').toUpperCase() + '</span><br>' +
+                    'crt ' + g('crt') + ' · dim ' + g('dim') + ' · sound ' + (SND.isOn() ? 'ON' : 'OFF') + ' · clock ' + g('clock') + '<br>' +
+                    'matrix rain ' + g('rain') + '<br>' +
+                    'gemini: ' + (gemKey() ? '<span class="os-ok">browser key set</span>' : 'server key / browser fallback') + '<br>' +
+                    '<span class="os-muted">session persists in localStorage (sr-*) — survives reboots.</span>');
+            },
+            banner: () => out(
+                '<span class="os-term-hl">   ____  _   __ _   _                  <br>' +
+                '  / ___|| | / /\_\_\ | __ _ _ __   __ _   <br>' +
+                '  \___ \| |/ / _ \| |/ _` | `_ \ / _` |  <br>' +
+                '   ___) |   <  (_) | | (_| | | | | (_| |  <br>' +
+                '  |____/|_|\_\\\\___/|_|\__,_|_| |_|\__,_|  <br>' +
+                '</span><span class="os-muted">sarang.rao — AI/ML engineer · the system betrays nothing.</span>'),
+            reload: () => { out('reloading…'); setTimeout(() => location.reload(), 450); },
             about: () => out('sarang.rao — AI/ML engineer building production systems.<br>multi-agent orchestration · RAG · voice AI · CV · full-stack backend.'),
             projects: () => {
                 const feats = (D.featuredProjects || []).map(p => `<span class="os-term-hl">${esc(p.title)}</span> <span class="os-muted">— ${esc(p.category)}</span>`).join('<br>');
@@ -1201,7 +1279,7 @@
             uname: () => out('Linux hp-arch 6.12-GNU x86_64 · Sarang Rao, AI Team Lead'),
             uptime: () => out('up 3 years-ish — but who\'s counting. 2 ideathons fought, 1 scholarship won, ∞ rewrites.'),cd: () => out('nice try. you can\'t leave /home/sarang — the desktop is your home.'),
             reboot: () => { out('rebooting…'); try { sessionStorage.removeItem('sr-osboot2'); } catch (e) {} setTimeout(() => location.reload(), 500); },
-            version: () => out('SARANG OS v2.7 · build 6b8a692 · SARANG SYSTEMS · 2026'),
+            version: () => out('SARANG OS v2.9.2 · build 9c2e1a · SARANG SYSTEMS · 2026 · <span class="os-muted">+ classic terminal parity, app redesign</span>'),
             konami: () => out('→ ↑↑↓↓←→←→BA → <span class="os-ok">ROOT ACCESS GRANTED.</span> you already owned this thought.'),
             sudo: () => out('<span class="os-muted">[sudo] password for sarang: ********</span><br><span class="os-ok">permission granted.</span>'),
             rm: () => out('rm: cannot remove / — the system says: your career is fine.'),
@@ -1210,7 +1288,7 @@
                 const interns = (D.experience || []).length;
                 out(`   ____   ___  
   / __ \\ /   \\   <span class="os-ok">sarang@desktop</span>
- ( (_) \\/ /\\\\\\ |  <span class="os-muted">os: sarang.os v2.7</span>
+ ( (_) \\/ /\\\\\\ |  <span class="os-muted">os: sarang.os v2.9.2</span>
   \\___/ /_/\\_\\\\|  <span class="os-muted">host: hp-omen-15</span>
                 <span class="os-muted">cpu: overthinking @ 4.20 ghz</span>
                 <span class="os-muted">memory: rag + patterns · 32gb/24 usable</span>
@@ -1237,51 +1315,13 @@
             ask: async (arg) => {
                 const q = (arg || '').replace(/^["“”']|["“”']$/g, '').trim();
                 if (!q) return out('usage: <span class="os-term-hl">ask</span> &lt;&quot;your question&quot;&gt;');
+                if (typeof SR_AI === 'undefined' || !SR_AI || typeof SR_AI.ask !== 'function') return out('<span class="os-term-err">✗ AI engine offline — classic layer failed to load.</span>');
                 out('<span class="os-ok">ask ›</span> ' + esc(q));
-                const sys = 'You are the SARANG OS terminal assistant. Answer like a sharp hacker engineer. Max 6 lines, plain text, no markdown, no emoji, be precise and concrete.';
-                const askGoogle = async (model, body) => {
-                    const ctl = new AbortController();
-                    const to = setTimeout(() => ctl.abort(), 30000);
-                    try {
-                        const r = await fetch(model, { method: 'POST', signal: ctl.signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-                        clearTimeout(to);
-                        return r;
-                    } catch (e) {
-                        clearTimeout(to);
-                        throw e;
-                    }
-                };
-                let usedProxy = false;
                 try {
-                    const r = await askGoogle('/api/gemini', { model: GEM_MODEL, system: sys, prompt: q });
-                    usedProxy = true;
-                    let j = null;
-                    try { j = await r.json(); } catch (e) { /* non-json (e.g. static 404) */ }
-                    if (j && j.ok) return out('<span class="os-ok">ai ›</span> ' + esc(String(j.text)).replace(/\n/g, '<br>'));
-                    if (r.status === 404) usedProxy = false;      // no function deployed (e.g. static hosting)
-                    else if (j && j.error === 'server-key-missing') usedProxy = false;
-                    else return out('<span class="os-term-err">✗ proxy: ' + esc((j && (j.detail || j.error)) || ('http ' + r.status)) + '</span>');
+                    const { text } = await SR_AI.ask(q);
+                    out('<span class="os-ok">ai ›</span> ' + esc(text).replace(/\n/g, '<br>'));
                 } catch (e) {
-                    if (e && e.name === 'AbortError') return out('<span class="os-term-err">✗ request timed out (30s)</span>');
-                    usedProxy = false;                              // network error / proxy absent → local fallback
-                }
-                const k = gemKey();
-                if (!k) return out(usedProxy
-                    ? '<span class="os-term-err">✗ AI offline — server key not set.</span> add <span class="os-term-hl">GEMINI_API_KEY</span> on Vercel, or set a browser key: <span class="os-term-hl">key</span> &lt;KEY&gt;'
-                    : 'NO API KEY — run: <span class="os-term-hl">key</span> &lt;your_GEMINI_API_KEY&gt;');
-                try {
-                    const r = await askGoogle('https://generativelanguage.googleapis.com/v1beta/models/' + GEM_MODEL + ':generateContent?key=' + encodeURIComponent(k), {
-                        system_instruction: { parts: [{ text: sys }] },
-                        contents: [{ role: 'user', parts: [{ text: q }] }]
-                    });
-                    const j = await r.json();
-                    if (!r.ok) throw new Error(j.error?.message || 'http ' + r.status);
-                    const txt = j.candidates && j.candidates[0] && j.candidates[0].content
-                        ? j.candidates[0].content.parts.map(p => p.text || '').join('')
-                        : '(no response)';
-                    out('<span class="os-ok">ai ›</span> ' + esc(txt).replace(/\n/g, '<br>'));
-                } catch (e) {
-                    out('<span class="os-term-err">✗ ' + esc(e.name === 'AbortError' ? 'request timed out (30s)' : (e.message || 'request failed')) + '</span>');
+                    out('<span class="os-term-err">✗ ' + esc((e && e.message) || 'request failed') + '</span>');
                 }
             },
             gemini: async (arg) => CMD.ask(arg),

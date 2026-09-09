@@ -701,6 +701,64 @@ function setupMaskReveal() {
     titles.forEach(h => obs.observe(h));
 }
 
+// Shared AI engine — used by BOTH the classic terminal and the OS terminal
+// (single source of truth; serverless proxy first, browser-key fallback).
+window.SR_AI = (function () {
+    const GEM_MODEL = 'gemini-3.6-flash';
+    const gemKey = () => { try { return localStorage.getItem('sr-gemini-key') || ''; } catch (e) { return ''; } };
+    const call = async (url, body, toMs) => {
+        const ctl = new AbortController();
+        const to = setTimeout(() => ctl.abort(), toMs || 30000);
+        try {
+            const r = await fetch(url, { method: 'POST', signal: ctl.signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+            clearTimeout(to);
+            return r;
+        } catch (e) {
+            clearTimeout(to);
+            throw e;
+        }
+    };
+    const ask = async (q, sys) => {
+        const prompt = String(q || '').slice(0, 800).trim();
+        if (!prompt) return { text: '' };
+        const s = String(sys || 'You are the SARANG OS terminal assistant. Answer like a sharp hacker engineer. Max 6 lines, plain text, no markdown, no emoji, be precise and concrete.');
+        let usedProxy = false;
+        try {
+            const r = await call('/api/gemini', { model: GEM_MODEL, system: s, prompt }, 25000);
+            let j = null;
+            try { j = await r.json(); } catch (e) { /* non-json */ }
+            if (j && j.ok) return { text: String(j.text) };
+            if (r.status === 404) { usedProxy = false; }
+            else if (j && j.error === 'server-key-missing') { usedProxy = false; }
+            else throw Object.assign(new Error((j && (j.detail || j.error)) || ('proxy http ' + r.status)), { proxy: true });
+        } catch (e) {
+            if (e && e.name === 'AbortError') throw Object.assign(new Error('request timed out (25s)'), { timeout: true });
+            if (e && e.message && !('proxy' in e)) usedProxy = false;
+            else if (e && 'proxy' in e) throw e;
+        }
+        const k = gemKey();
+        if (!k) throw (usedProxy
+            ? new Error('AI offline — server key not set. add GEMINI_API_KEY on Vercel, or run: key <KEY>')
+            : new Error('no API key — run: key <your_GEMINI_API_KEY>'));
+        try {
+            const r = await call('https://generativelanguage.googleapis.com/v1beta/models/' + GEM_MODEL + ':generateContent?key=' + encodeURIComponent(k), {
+                system_instruction: { parts: [{ text: s }] },
+                contents: [{ role: 'user', parts: [{ text: prompt }] }]
+            }, 25000);
+            const j = await r.json();
+            if (!r.ok) throw new Error((j && j.error && j.error.message) || ('http ' + r.status));
+            const txt = j && j.candidates && j.candidates[0] && j.candidates[0].content
+                ? j.candidates[0].content.parts.map(p => p.text || '').join('')
+                : '(no response from model)';
+            return { text: txt };
+        } catch (e) {
+            if (e && e.name === 'AbortError') throw Object.assign(new Error('request timed out (25s)'), { timeout: true });
+            throw e;
+        }
+    };
+    return { ask, gemKey, model: GEM_MODEL };
+})();
+
 // Interactive terminal — realistic shell behaviour, mobile-friendly
 function setupTerminal() {
     const bar = document.getElementById('term-toggle');
@@ -740,17 +798,35 @@ function setupTerminal() {
     };
 
     const CMD = {
-        help: () => out(
-            '<span class="term-hl">usage:</span> <span class="term-muted">&lt;command&gt;</span>&nbsp;&nbsp;<span class="term-dim">· try ↑ for history</span><br>' +
-            '&nbsp;&nbsp;projects ....... shipped systems + links<br>' +
-            '&nbsp;&nbsp;experience ..... current role &amp; work<br>' +
-            '&nbsp;&nbsp;skills ......... tech stack<br>' +
-            '&nbsp;&nbsp;achievements ... awards &amp; community<br>' +
-            '&nbsp;&nbsp;contact ......... reach me directly<br>' +
-            '&nbsp;&nbsp;resume .......... download the PDF<br>' +
-            '&nbsp;&nbsp;ls / pwd / whoami / date / uname / neofetch / ping / cat<br>' +
-            '&nbsp;&nbsp;sudo ........... proceed with caution<br>' +
-            '&nbsp;&nbsp;clear .......... wipe the screen'),
+        help: (a) => {
+            const t = (a || '').trim().toLowerCase();
+            const DETAIL = {
+                open: 'usage: <span class="term-hl">open</span> &lt;app&gt; — apps: about · projects · experience · cases · skills · resume · contact · settings · explorer · terminal',
+                ask: 'usage: <span class="term-hl">ask</span> "your question" — answers via Gemini (server key, or local key with <span class="term-hl">key &lt;API_KEY&gt;</span>)',
+                matrix: 'usage: <span class="term-hl">matrix</span> [on|off] — wallpaper rain (enter OS to see it live)',
+                accent: 'usage: <span class="term-hl">accent</span> [blue|green|coral|purple|lime|list]',
+                wall: 'usage: <span class="term-hl">wall</span> [grid|pulse|code|next]',
+                crt: 'usage: <span class="term-hl">crt</span> [on|off] — CRT scanlines',
+                dim: 'usage: <span class="term-hl">dim</span> [on|off] — dim the room',
+                sound: 'usage: <span class="term-hl">sound</span> [on|off] — UI sounds',
+                clock: 'usage: <span class="term-hl">clock</span> [on|off] — desktop clock widget',
+                themes: 'usage: <span class="term-hl">themes</span> — cycles LIGHT → DARK → AMOLED → LIGHT',
+                key: 'usage: <span class="term-hl">key</span> &lt;GEMINI_API_KEY&gt; · key clear',
+                echo: 'usage: <span class="term-hl">echo</span> &lt;text…&gt; — prints what you type',
+                cat: 'usage: <span class="term-hl">cat</span> resume.txt',
+                sudo: 'usage: <span class="term-hl">sudo</span> — proceed with caution',
+                reboot: 'reloads the page (classic ⇄ OS cycle)'
+            };
+            if (t && DETAIL[t]) return out(DETAIL[t]);
+            out(
+                '<span class="term-hl">usage:</span> <span class="term-muted">&lt;command&gt; [args]</span>&nbsp;&nbsp;<span class="term-dim">· try ↑ for history</span><br>' +
+                '&nbsp;&nbsp;about / projects / experience / skills / achievements / contact / resume<br>' +
+                '&nbsp;&nbsp;ls / pwd / whoami / date / uname / uptime / neofetch / ping / cat resume.txt / echo<br>' +
+                '&nbsp;&nbsp;open &lt;app&gt; · sudo · rm · coffee · konami · banner<br>' +
+                '&nbsp;&nbsp;AI: ask "…" · keys · key &lt;API_KEY&gt;<br>' +
+                '&nbsp;&nbsp;system: themes · accent · wall · matrix · crt · dim · sound · clock · session<br>' +
+                '&nbsp;&nbsp;history · help &lt;cmd&gt; · clear · reboot');
+        },
         about: () => out(
             'sarang.rao — AI/ML engineer building production systems.<br>' +
             'multi-agent orchestration · RAG · voice AI · computer vision · full-stack backend.<br>' +
@@ -805,6 +881,119 @@ function setupTerminal() {
             '&nbsp;&nbsp;· 5 interns led · repos consolidated · production CV + conversational AI'),
         sudo: () => out('<span class="term-muted">[sudo] password for sarang: ********</span><br><span class="term-ok">permission granted.</span> with great power comes great responsibility.'),
         coffee: () => out('<span class="term-ok">brewing</span> <span class="term-dim">[|||||||||-----]</span> almost there...'),
+        echo: (a) => out(esc(a || '')),
+        open: (a) => {
+            const t = (a || '').trim().toLowerCase();
+            if (!t) return out('usage: <span class="term-hl">open</span> &lt;app&gt; — try: about · projects · experience · cases · resume · contact · terminal · skills');
+            const map = { about: 'top', projects: 'projects', skills: 'projects', experience: 'experience', cases: 'projects', contact: 'contact', terminal: 'terminal', help: 'terminal' };
+            if (t === 'resume') {
+                const a2 = document.createElement('a');
+                a2.href = 'assets/sarang-rao-resume.pdf'; a2.download = 'Sarang-Rao-Resume.pdf';
+                document.body.appendChild(a2); a2.click(); a2.remove();
+                return out('→ downloading <span class="term-hl">sarang-rao-resume.pdf</span>');
+            }
+            if (map[t]) {
+                const el = document.getElementById(map[t]);
+                if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.focus && el.focus({ preventScroll: true }); return out('<span class="term-ok">✓</span> jumping to ' + esc(map[t])); }
+            }
+            out('<span class="term-err">open: no section</span> for <span class="term-hl">' + esc(t) + '</span> here — that app lives in the OS (bottom-right: LAUNCH OS). <span class="term-hl">help</span> for apps');
+        },
+        ask: async (a) => {
+            const q = (a || '').replace(/^["“”']|["“”']$/g, '').trim();
+            if (!q) return out('usage: <span class="term-hl">ask</span> &lt;"your question"&gt;');
+            out('<span class="term-ok">ask ›</span> ' + esc(q));
+            try {
+                const { text } = await SR_AI.ask(q);
+                out('<span class="term-ok">ai ›</span> ' + esc(text).replace(/\n/g, '<br>'));
+            } catch (e) {
+                out('<span class="term-err">✗ ' + esc(e.message || 'request failed') + '</span>');
+            }
+        },
+        gemini: (a) => CMD.ask(a),
+        ai: (a) => CMD.ask(a),
+        keys: () => {
+            const k = SR_AI.gemKey();
+            out(k
+                ? '✓ Gemini AI: <span class="term-ok">SET</span> (' + esc(k.slice(0, 4)) + '…' + esc(k.slice(-4)) + ') — browser-local fallback. Server uses GEMINI_API_KEY.'
+                : 'no browser key saved — <span class="term-hl">ask</span> works via the server key when deployed; optional: <span class="term-hl">key</span> &lt;GEMINI_API_KEY&gt;');
+        },
+        key: (a) => {
+            const v = (a || '').trim();
+            if (!v) return out('usage: <span class="term-hl">key</span> &lt;GEMINI_API_KEY&gt; &nbsp;|&nbsp; key clear');
+            if (v === 'clear') { try { localStorage.removeItem('sr-gemini-key'); } catch (e) { /* ignore */ } return out('✓ API key cleared.'); }
+            if (!/^(AIza|AQ\.)[0-9A-Za-z._-]{10,}$/.test(v)) return out('✗ that does not look like a Gemini API key (starts with AIza… or AQ.…).');
+            try { localStorage.setItem('sr-gemini-key', v); } catch (e) { return out('✗ could not save (private mode?) — run key again.'); }
+            out('✓ key saved — browser local only.<br><span class="term-muted">try: ask "why use multi-agent orchestration?"</span>');
+        },
+        themes: () => {
+            const order = ['light', 'dark', 'amoled'];
+            const cur = document.documentElement.getAttribute('data-theme') || 'light';
+            const next = order[(order.indexOf(cur) + 1) % order.length];
+            document.documentElement.setAttribute('data-theme', next);
+            try { localStorage.setItem('sr-theme', next); } catch (e) { /* ignore */ }
+            if (window.OSFX) window.OSFX();
+            const btn = document.getElementById('theme-btn');
+            if (btn) btn.textContent = next === 'dark' ? 'LIGHT' : 'DARK';
+            out('theme → <span class="term-ok">' + next.toUpperCase() + '</span>');
+        },
+        accent: (a) => {
+            const names = { blue: '#1F31D6', green: '#0D9A58', coral: '#E05233', purple: '#7C3AED', lime: '#2F9E3F' };
+            const v = (a || '').trim().toLowerCase();
+            if (v === 'list' || !v) return out('accents: ' + Object.keys(names).map(k => '<span class="term-hl">' + k + '</span>').join(' · ') + ' — <span class="term-hl">accent &lt;color&gt;</span>');
+            if (!names[v]) return out('<span class="term-err">accent: unknown</span> — try: ' + Object.keys(names).join(' · '));
+            document.documentElement.setAttribute('data-accent', v);
+            try { localStorage.setItem('sr-accent', v); } catch (e) { /* ignore */ }
+            if (window.OSFX) window.OSFX();
+            out('accent → <span class="term-ok">' + v.toUpperCase() + '</span> <span style="color:' + names[v] + '">■</span>');
+        },
+        wall: (a) => {
+            const walls = ['grid', 'pulse', 'code'];
+            const v = (a || '').trim().toLowerCase();
+            let next;
+            if (v === 'next') {
+                const cur = document.documentElement.getAttribute('data-wall') || 'grid';
+                next = walls[(walls.indexOf(cur) + 1) % walls.length];
+            } else if (walls.indexOf(v) > -1) next = v;
+            else return out('walls: <span class="term-hl">' + walls.join(' · ') + '</span> — <span class="term-hl">wall &lt;name&gt;</span> · wall next');
+            document.documentElement.setAttribute('data-wall', next);
+            try { localStorage.setItem('sr-wall', next); } catch (e) { /* ignore */ }
+            if (window.OSFX) window.OSFX();
+            out('wallpaper → <span class="term-ok">' + next.toUpperCase() + '</span> <span class="term-dim">(see it on the desktop)</span>');
+        },
+        matrix: (a) => {
+            const v = (a || '').trim().toLowerCase();
+            const cur = (() => { try { return localStorage.getItem('sr-rain') !== '0'; } catch (e) { return true; } })();
+            const next = v === 'on' || (v !== 'off' && !cur);
+            try { localStorage.setItem('sr-rain', next ? '1' : '0'); } catch (e) { /* ignore */ }
+            document.documentElement.setAttribute('data-rain', next ? 'on' : 'off');
+            if (window.OSFX) window.OSFX();
+            out('matrix rain → <span class="term-ok">' + (next ? 'ON' : 'OFF') + '</span> <span class="term-dim">(desktop — enter OS to see it)</span>');
+        },
+        crt: (a) => setPref('crt', a, 'CRT scanlines'),
+        dim: (a) => setPref('dim', a, 'DIM ROOM'),
+        sound: (a) => setPref('sound', a, 'STARTUP + UI SOUND'),
+        clock: (a) => setPref('clock', a, 'CLOCK WIDGET'),
+        session: () => {
+            const g = k => { try { return localStorage.getItem('sr-' + k); } catch (e) { return null; } };
+            out(
+                'theme&nbsp; <span class="term-hl">' + (document.documentElement.getAttribute('data-theme') || 'light').toUpperCase() + '</span><br>' +
+                'accent&nbsp; <span class="term-hl">' + (document.documentElement.getAttribute('data-accent') || 'blue').toUpperCase() + '</span><br>' +
+                'wall&nbsp;&nbsp; <span class="term-hl">' + (document.documentElement.getAttribute('data-wall') || 'grid').toUpperCase() + '</span><br>' +
+                'crt&nbsp;&nbsp;&nbsp; ' + (g('crt') === '1' ? 'ON' : 'OFF') + ' · dim ' + (g('dim') === '1' ? 'ON' : 'OFF') + ' · sound ' + ((g('sound') === '0' ? 'OFF' : 'ON')) + ' · clock ' + (g('clock') === '0' ? 'OFF' : 'ON') + ' · rain ' + (g('rain') === '0' ? 'OFF' : 'ON') + '<br>' +
+                'gemini: ' + (SR_AI.gemKey() ? '<span class="term-ok">browser key set</span>' : 'server key / browser fallback'));
+        },
+        history: () => { out(history.length ? history.map((h, i) => String(i).padStart(3, ' ') + '  ' + esc(h)).join('<br>') : 'history: empty'); },
+        uptime: () => out('up 3 years-ish — 2 ideathons fought, 1 scholarship won, ∞ rewrites.'),
+        version: () => out('SARANG OS / CLASSIC v2.9.2 · SARANG SYSTEMS · 2026'),
+        banner: () => out(
+            '<span class="term-hl">  ____  _   __ _   _                  <br>' +
+            ' / ___|| | / /\_\_\ | __ _ _ __   __ _   <br>' +
+            ' \___ \| |/ / _ \| |/ _` | `_ \ / _` |  <br>' +
+            '  ___) |   <  (_) | | (_| | | | | (_| |  <br>' +
+            ' |____/|_|\_\\\\___/|_|\__,_|_| |_|\__,_|  <br>' +
+            '</span><span class="term-dim">sarang.rao — AI/ML engineer · the system betrays nothing.</span>'),
+        reboot: () => { out('rebooting…'); setTimeout(() => location.reload(), 450); },
+        reload: () => CMD.reboot(),
         cls: () => { screen.innerHTML = ''; },
         clear: () => { screen.innerHTML = ''; },
         '?': () => CMD.help()
@@ -817,14 +1006,30 @@ function setupTerminal() {
         if (clean) { history.push(typed.trim()); hIdx = history.length; }
         if (!clean) return;
         const name = clean.split(/\s+/)[0];
+        const rest = clean.slice(name.length).trim();
         const handler = CMD[name];
         if (handler) {
             await wait(150);
-            handler();
+            handler(rest);
         } else {
-            out('<span class="term-err">bash: ' + esc(name) + ': command not found</span><span class="term-dim"><br>exit: 127</span>');
+            out('<span class="term-err">bash: ' + esc(name) + ': command not found</span><span class="term-dim"><br>exit: 127 · try <span class="term-hl">help</span></span>');
         }
     };
+
+    const setPref = (key, arg, label) => {
+        const v = (arg || '').trim().toLowerCase();
+        const cur = (() => { try { return localStorage.getItem('sr-' + key) !== '0'; } catch (e) { return true; } })();
+        const next = v === 'on' || (v !== 'off' && !cur);
+        try { localStorage.setItem('sr-' + key, next ? '1' : '0'); } catch (e) { /* ignore */ }
+        let visible = next;
+        if ((key === 'crt' || key === 'dim' || key === 'clock') && document.getElementById('os-crt')) {
+            const el = document.getElementById(key === 'crt' ? 'os-crt' : key === 'dim' ? 'os-dim' : 'os-wclock');
+            if (el) el.hidden = !next;
+        }
+        if (window.OSFX) window.OSFX();
+        out(label + ' → <span class="term-ok">' + (next ? 'ON' : 'OFF') + '</span>');
+        return visible;
+    };;
 
     bar.addEventListener('click', () => {
         const open = body.hidden;

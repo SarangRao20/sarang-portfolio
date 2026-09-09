@@ -2507,7 +2507,246 @@ html.os-mode .os-wallpaper.data-wall-grid::before {
 }
 html[data-theme="light"].os-mode .os-wallpaper::before { filter: none; }
 
-/* ---- About photo: framed, face-first, studio-ish ---- */
+/* =====================================================
+   OS APP CONTENT SYSTEM — coherent in-window layout
+   Normalizes cloned classic components inside windows,
+   fixes about (portrait grid), contact, settings, explorer.
+   ===================================================== */
+html.os-mode .os-win-body {
+    display: flex; flex-direction: column; gap: 1.1rem;
+    padding: 1.3rem 1.5rem 1.6rem;
+}
+html.os-mode .os-win-body > .os-app {
+    display: flex; flex-direction: column; gap: 1.1rem; min-height: 100%;
+}
+html.os-mode .os-app h1, html.os-mode .os-app h2, html.os-mode .os-app h3 {
+    letter-spacing: -.01em; line-height: 1.15;
+}
+
+/* ---- About: portrait left, data right ---- */
+html.os-mode .os-win-body > .os-app.os-about {
+    display: grid; grid-template-columns: minmax(232px, 302px) 1fr;
+    gap: 1.6rem; align-items: start;
+}
+html.os-mode .os-about-main { display: flex; flex-direction: column; gap: 1.05rem; min-width: 0; }
+html.os-mode .os-about .os-eyebrow { margin: 0; }
+html.os-mode .os-about .os-about-name { font-size: clamp(1.9rem, 3.4vw, 2.6rem); margin: 0; }
+html.os-mode .os-about .os-about-role { margin: 0; }
+@media (max-width: 620px) {
+    html.os-mode .os-about { grid-template-columns: 1fr; }
+}
+html.os-mode .os-actions { margin-top: .6rem; }
+html.os-mode .os-actions .btn { font-size: .7rem; }
+
+/* ---- Photo: proper portrait, no wash ---- */
+html.os-mode .os-photo {
+    position: relative; overflow: hidden;
+    border-radius: 16px;
+    border: 1px solid color-mix(in srgb, var(--blue) 34%, var(--line-strong));
+    box-shadow: 0 22px 50px -20px rgba(0,0,0,.65), inset 0 0 0 1px rgba(255,255,255,.05);
+    background: var(--paper);
+    aspect-ratio: 3 / 4;
+}
+html.os-mode .os-photo picture { display: block; height: 100%; line-height: 0; }
+html.os-mode .os-photo .os-photo-img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: 50% 15%;
+    display: block;
+    filter: saturate(1.03) contrast(1.01);
+}
+html.os-mode .os-photo::after {
+    content: "";
+    position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(180deg, transparent 55%, rgba(4, 5, 10, .28));
+}
+html.os-mode .os-photo::before {
+    content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+    background:
+        linear-gradient(90deg, color-mix(in srgb, var(--blue) 9%, transparent), transparent 30%),
+        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 4px;
+    mix-blend-mode: screen; opacity: .35;
+}
+html.os-mode .os-photo .os-photo-cap {
+    left: auto; right: 10px; top: 10px; bottom: auto;
+    font-size: .5rem; letter-spacing: .16em;
+    color: #fff;
+    background: color-mix(in srgb, var(--blue) 48%, rgba(5, 6, 11, .7));
+    border: 1px solid rgba(255,255,255,.2);
+    padding: 3px 8px; border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.4);
+    z-index: 3;
+}
+
+/* ---- Spec card (cloned, normalized) ---- */
+html.os-mode .os-app .spec-card {
+    border-top: 2px solid var(--blue);
+    border-top-width: 1px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: color-mix(in srgb, var(--surface) 72%, transparent);
+    padding: .2rem 1rem;
+}
+html.os-mode .os-app .spec-row {
+    grid-template-columns: 128px 1fr; gap: .9rem;
+    padding: .72rem 0;
+    opacity: 1; transform: none;
+    border-bottom: 1px dashed var(--line);
+}
+html.os-mode .os-app .spec-row:last-child { border-bottom: none; }
+html.os-mode .os-app .spec-key { font-size: .58rem; letter-spacing: .14em; padding-top: .18em; }
+html.os-mode .os-app .spec-val { font-size: .82rem; line-height: 1.55; }
+html.os-mode .os-app .spec-line { gap: .8rem; }
+html.os-mode .os-app .spec-line-meta { font-size: .58rem; }
+
+/* ---- Bench strip (cloned) ---- */
+html.os-mode .os-app .bench { background: transparent; border: none; }
+html.os-mode .os-app .bench-grid {
+    grid-template-columns: repeat(4, 1fr); gap: 8px;
+    border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+    background: color-mix(in srgb, var(--surface) 72%, transparent);
+}
+html.os-mode .os-app .bench-item { padding: .9rem .8rem; border-left: 1px solid var(--line); gap: .15rem; }
+html.os-mode .os-app .bench-item:first-child { border-left: none; }
+html.os-mode .os-app .bench-num { font-size: clamp(1.1rem, 3vw, 1.6rem); font-weight: 800; }
+html.os-mode .os-app .bench-label { font-size: .52rem; letter-spacing: .1em; }
+
+/* ---- Projects: feature cards (cloned, single col) ---- */
+html.os-mode .os-app .feat-grid { grid-template-columns: 1fr; gap: 12px; }
+html.os-mode .os-app .feat-card {
+    background: color-mix(in srgb, var(--surface) 78%, transparent);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.05rem 1.15rem;
+    opacity: 1; transform: none;
+}
+html.os-mode .os-app .feat-head { flex-direction: row; align-items: baseline; justify-content: space-between; gap: .8rem; }
+html.os-mode .os-app .feat-id { font-size: .56rem; letter-spacing: .14em; }
+html.os-mode .os-app .feat-title { font-size: .96rem; }
+html.os-mode .os-app .feat-sub { font-size: .6rem; }
+html.os-mode .os-app .feat-desc { font-size: .74rem; line-height: 1.6; }
+html.os-mode .os-app .feat-foot { gap: .5rem; }
+html.os-mode .os-app .os-link { font-size: .62rem; }
+html.os-mode .os-app .more-work {
+    border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+    background: color-mix(in srgb, var(--surface) 70%, transparent);
+}
+html.os-mode .os-app .more-summary { padding: .8rem 1.1rem; font-size: .64rem; letter-spacing: .12em; }
+html.os-mode .os-app .more-list { padding: 0 1.1rem 1rem; }
+
+/* ---- Cases ---- */
+html.os-mode .os-case {
+    background: color-mix(in srgb, var(--surface) 76%, transparent);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.05rem 1.15rem;
+}
+html.os-mode .os-case-type { font-size: .56rem; letter-spacing: .16em; }
+html.os-mode .os-case-title { font-size: 1.05rem; }
+html.os-mode .os-case-desc { font-size: .78rem; line-height: 1.6; }
+html.os-mode .os-case-tags .tag { font-size: .56rem; }
+
+/* ---- Settings rows: alignment ---- */
+html.os-mode .os-set-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; padding: .85rem 0;
+    border-bottom: 1px dashed var(--line);
+}
+html.os-mode .os-set-row:last-child { border-bottom: none; }
+html.os-mode .os-set-label { font-size: .62rem; letter-spacing: .18em; color: var(--ink-mute); flex-shrink: 0; }
+html.os-mode .os-set-seg { display: flex; gap: 3px; padding: 3px; border: 1px solid var(--line-strong); border-radius: 9px; background: var(--paper); }
+html.os-mode .os-set-seg button {
+    padding: .42rem .7rem; border: none; background: transparent; color: var(--ink-mute);
+    border-radius: 6px; font-family: var(--mono); font-size: .6rem; letter-spacing: .1em; cursor: pointer;
+}
+html.os-mode .os-set-seg button.is-on { background: var(--blue-soft); color: var(--blue); }
+html[data-theme="dark"] .os-set-seg { background: var(--surface); }
+
+/* ---- Contact: aligned meta + form ---- */
+html.os-mode .os-contact { gap: 1.2rem; }
+html.os-mode .os-contact-meta {
+    border: 1px solid var(--line);
+    border-radius: 12px; overflow: hidden;
+    background: color-mix(in srgb, var(--surface) 72%, transparent);
+}
+html.os-mode .os-contact .meta-row {
+    display: grid; grid-template-columns: 128px 1fr; gap: .9rem;
+    align-items: center; padding: .6rem 1rem;
+    border-bottom: 1px dashed var(--line);
+}
+html.os-mode .os-contact .meta-row:last-child { border-bottom: none; }
+html.os-mode .os-contact .meta-row .spec-key { font-size: .58rem; letter-spacing: .14em; }
+html.os-mode .os-contact .meta-row a { font-size: .74rem; color: var(--blue); text-decoration: none; }
+html.os-mode .os-contact .meta-row a:hover { text-decoration: underline; }
+html.os-mode .os-form {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--surface) 72%, transparent);
+    padding: 1.1rem 1.15rem;
+    display: grid; gap: .45rem;
+}
+html.os-mode .os-form-label { font-size: .6rem; letter-spacing: .16em; color: var(--ink-mute); margin-top: .3rem; }
+html.os-mode .os-form-label:first-child { margin-top: 0; }
+html.os-mode .os-field {
+    width: 100%;
+    padding: .62rem .8rem;
+    border-radius: 9px;
+    font-size: .78rem;
+}
+html.os-mode .os-send { justify-self: end; margin-top: .4rem; }
+html.os-mode .os-status { min-height: 1.1em; font-size: .6rem; margin: .2rem 0 0; }
+
+/* ---- Explorer: clean list ---- */
+html.os-mode .os-explorer { gap: .7rem; }
+html.os-mode .os-exp-path {
+    display: flex; gap: .5rem; align-items: center;
+    padding: .55rem .8rem;
+    border: 1px solid var(--line); border-radius: 9px;
+    background: var(--paper);
+    font-size: .64rem; letter-spacing: .08em; color: var(--ink-mute);
+    white-space: nowrap; overflow: auto;
+}
+html.os-mode .os-exp-path span { color: var(--ink-mute); }
+html.os-mode .os-exp-path span:first-child { color: var(--blue); }
+html.os-mode .os-exp-path span:not(:last-child)::after { content: " /"; opacity: .4; }
+html.os-mode .os-exp-item {
+    display: grid; grid-template-columns: 56px 1fr auto; gap: .8rem; align-items: center;
+    padding: .72rem .9rem;
+    border: 1px solid transparent; border-radius: 9px;
+    cursor: pointer; transition: background .12s ease, border-color .12s ease, transform .12s ease;
+}
+html.os-mode .os-exp-item:hover { background: var(--blue-soft); border-color: var(--line-strong); transform: translateX(2px); }
+html.os-mode .os-exp-glyph { color: var(--blue); font-size: .62rem; letter-spacing: .06em; }
+html.os-mode .os-exp-item b { font-weight: 500; font-size: .74rem; }
+html.os-mode .os-exp-meta { font-size: .6rem; color: var(--ink-mute); }
+
+/* ---- Notepad / terminal ---- */
+html.os-mode .os-note-area {
+    flex: 1;
+    resize: none; outline: none;
+    border: 1px solid var(--line-strong); border-radius: 10px;
+    background: var(--paper); color: var(--ink);
+    padding: .9rem 1rem; font-size: .8rem; line-height: 1.6;
+    min-height: 140px;
+}
+html[data-theme="dark"] .os-note-area { background: var(--surface); }
+html.os-mode .os-note-area:focus { border-color: var(--blue); box-shadow: 0 0 0 2px var(--blue-soft); }
+html.os-mode .os-note-foot {
+    display: flex; align-items: center; gap: .7rem;
+    font-size: .58rem; letter-spacing: .12em; color: var(--ink-mute);
+}
+html.os-mode .os-note-save { margin-right: auto; color: var(--green); }
+html.os-mode .os-term { gap: .6rem; }
+html.os-mode .os-term-screen { flex: 1; min-height: 0; }
+html.os-mode .os-term-screen:empty::after { content: "sarang@os:~$ help"; color: #4A5261; }
+
+/* ---- Calc / paint chrome uniform ---- */
+html.os-mode .os-paint-bar { padding: .4rem 0; }
+html.os-mode .os-calc-grid button, html.os-mode .os-paint-size {
+    border-radius: 10px; font-family: var(--mono);
+}
+
+/* ---- About photo: framed, face-first, studio-ish (portrait in the about grid) ---- */
 html.os-mode .os-photo {
     position: relative;
     border-radius: 14px;
@@ -2518,27 +2757,24 @@ html.os-mode .os-photo {
 }
 html.os-mode .os-photo picture { display: block; line-height: 0; }
 html.os-mode .os-photo .os-photo-img {
-    width: 100%;
-    height: 224px;
+    width: 100%; height: 100%;
     object-fit: cover;
-    object-position: center 20%;
+    object-position: center 18%;
     display: block;
     border: none;
-    filter: saturate(1.04) contrast(1.02);
+    filter: saturate(1.02) contrast(1.01);
 }
 html.os-mode .os-photo::after {
     content: "";
     position: absolute; inset: 0; pointer-events: none;
-    background:
-        linear-gradient(180deg, color-mix(in srgb, var(--blue) 12%, transparent), transparent 34%, rgba(4, 5, 10, .72)),
-        linear-gradient(90deg, rgba(4,5,10,.14), transparent 40%);
+    background: linear-gradient(180deg, transparent 58%, rgba(4, 5, 10, .24));
 }
 html.os-mode .os-photo::before {
     content: "";
     position: absolute; inset: 0; z-index: 2; pointer-events: none;
-    background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
+    background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px);
     background-size: 100% 3px;
-    mix-blend-mode: overlay; opacity: .5;
+    mix-blend-mode: screen; opacity: .3;
 }
 html.os-mode .os-photo .os-photo-cap {
     left: auto; right: 12px; top: 12px; bottom: auto;
