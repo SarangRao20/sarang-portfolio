@@ -1576,9 +1576,9 @@ html.os-mode #sarangos {
 /* ===== WWALLPAPER ===== */
 .os-wallpaper { position: absolute; inset: 0; z-index: 0; pointer-events: none;
     background:
-        radial-gradient(1100px 620px at 72% -12%, rgba(31, 49, 214, 0.22), transparent 60%),
+        radial-gradient(1100px 620px at 72% -12%, color-mix(in srgb, var(--blue) 26%, transparent), transparent 60%),
         radial-gradient(900px 600px at -10% 112%, rgba(224, 82, 51, 0.09), transparent 60%),
-        linear-gradient(160deg, #0B0C12 0%, #11131E 55%, #0B0C12 100%);
+        linear-gradient(160deg, #07080E 0%, #0D0F18 55%, #07080E 100%);
 }
 .os-wallpaper::after {
     content: ""; position: absolute; inset: 0;
@@ -2288,3 +2288,203 @@ html[data-theme="dark"] .os-calc-grid button { border-color: var(--line); }
 .os-resume-kv .kv b { font-weight: 500; }
 .os-resume-exports { margin-top: .8rem; }
 .os-resume-exports .os-muted { margin-top: .5rem; }
+
+/* =====================================================
+   NEO CHROME — OS v2.9 feel layer
+   Hacker-terminal aesthetic: mono type, neon-green/blue
+   glow, custom scroll, window depth, ambient wallpaper.
+   Fully accent-aware (var(--blue) = current accent).
+   ===================================================== */
+
+/* ---- OS base type + scrollbars (signature detail) ---- */
+html.os-mode #sarangos {
+    font-family: var(--font-mono);
+}
+html.os-mode #sarangos .os-about-name,
+html.os-mode #sarangos .os-case-title,
+html.os-mode #sarangos .os-app h1,
+html.os-mode #sarangos .os-app h2,
+html.os-mode #sarangos .os-app h3 { font-family: var(--font-display); letter-spacing: -.01em; }
+
+html.os-mode ::-webkit-scrollbar { width: 9px; height: 9px; }
+html.os-mode ::-webkit-scrollbar-track { background: #10121A; border-left: 1px solid rgba(255,255,255,.05); }
+html.os-mode ::-webkit-scrollbar-thumb {
+    background: var(--blue); border-radius: 6px;
+    border: 2px solid #10121A;
+    box-shadow: 0 0 8px var(--glow);
+}
+html.os-mode ::-webkit-scrollbar-thumb:hover { background: var(--coral); }
+html.os-mode ::-webkit-scrollbar-corner { background: transparent; }
+html.os-mode #sarangos ::selection { background: var(--blue); color: var(--paper); text-shadow: none; }
+
+/* ---- Window depth: active vs idle ---- */
+html[data-theme="dark"].os-mode .os-window,
+html[data-theme="amoled"].os-mode .os-window {
+    background: linear-gradient(180deg, #151722, #0D0E15);
+    border-color: rgba(255,255,255,.10);
+}
+html.os-mode .os-window { transition: filter .22s ease, opacity .22s ease; }
+html.os-mode .os-window:not(.active) { filter: saturate(.72) brightness(.88); opacity: .97; }
+html.os-mode .os-window.active {
+    border-color: var(--blue-soft);
+    box-shadow:
+        0 40px 90px -18px rgba(0, 0, 0, .72),
+        0 6px 22px rgba(0, 0, 0, .4),
+        0 0 0 1px var(--blue),
+        0 0 24px var(--glow),
+        inset 0 1px 0 rgba(255,255,255,.06);
+}
+html.os-mode .os-title {
+    background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.01));
+    border-bottom-color: rgba(255,255,255,.09);
+}
+html.os-mode .os-window.active .os-title {
+    background: linear-gradient(180deg, var(--blue-soft), rgba(255,255,255,.02));
+    border-bottom-color: var(--blue);
+}
+html.os-mode .os-window.active .os-title-txt {
+    color: #fff;
+    text-shadow: 0 0 10px var(--glow);
+}
+html.os-mode .os-title-txt::before {
+    content: "▮";
+    margin-right: .5rem; color: var(--blue);
+    text-shadow: 0 0 8px var(--glow);
+}
+html.os-mode .os-title .os-dots i:nth-child(2),
+html.os-mode .os-title .os-dots i:nth-child(3) { opacity: .55; }
+
+html[data-theme="light"] .os-window:not(.active) { box-shadow: 0 24px 60px -14px rgba(2,4,12,.35), 0 4px 14px rgba(2,4,12,.2); }
+html[data-theme="light"].os-mode .os-window.active .os-title { background: var(--blue-soft); }
+
+/* ---- Open/close: snappier, spring scale ---- */
+html.os-mode .os-window { animation: osWinIn .26s cubic-bezier(.18, .86, .24, 1.08); }
+@keyframes osWinIn2 { from { opacity: 0; transform: translateY(12px) scale(.94); } to { opacity: 1; transform: none; } }
+html.os-mode .os-window { animation-name: osWinIn2; }
+
+
+/* ---- Terminal: the poster child ---- */
+html.os-mode .os-term-screen,
+html.os-mode .os-term-prompt {
+    background: #090A10;
+    border-color: #20232F;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, .55);
+}
+html.os-mode .os-term-screen { font-size: .78rem; }
+html.os-mode .os-term-ps1,
+
+html.os-mode .os-ok { color: var(--blue); text-shadow: 0 0 8px var(--glow); }
+html.os-mode .os-term-hl { color: var(--blue); text-shadow: 0 0 8px var(--glow); }
+html.os-mode .os-term-err { color: #FF5C63; text-shadow: 0 0 8px rgba(255,92,99,.5); }
+html.os-mode .os-term-caret { background: var(--blue); box-shadow: 0 0 10px var(--glow); }
+html.os-mode .os-term-prompt { letter-spacing: .02em; }
+
+/* ---- Desktop icons: accent-tinted tiles, lift + glow ---- */
+html.os-mode .os-icon-glyph {
+    background: linear-gradient(160deg, color-mix(in srgb, var(--blue) 42%, transparent), var(--blue-soft));
+    border-color: color-mix(in srgb, var(--blue) 40%, rgba(255,255,255,.25));
+    box-shadow: 0 8px 20px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.14);
+}
+html.os-mode .os-icon:hover { transform: translateY(-3px); }
+html.os-mode .os-icon:hover .os-icon-glyph { box-shadow: 0 10px 26px rgba(0,0,0,.5), 0 0 18px var(--glow); }
+html.os-mode .os-icon:hover .os-icon-label { color: #fff; text-shadow: 0 0 8px var(--glow); }
+
+/* ---- Taskbar: neon seam, accent start button ---- */
+html.os-mode .os-taskbar {
+    background: rgba(8, 9, 15, .72);
+    border-top: 1px solid color-mix(in srgb, var(--blue) 28%, rgba(255,255,255,.06));
+    box-shadow: 0 -12px 40px rgba(0,0,0,.45);
+}
+html.os-mode .os-startbtn {
+    background: linear-gradient(160deg, color-mix(in srgb, var(--blue) 62%, #0B0C12), var(--blue) 70%);
+    border-color: color-mix(in srgb, var(--blue) 55%, rgba(255,255,255,.3));
+    box-shadow: 0 6px 18px rgba(0,0,0,.45), 0 0 0 1px var(--blue-soft), 0 0 16px var(--glow);
+}
+html.os-mode .os-startbtn:hover { filter: brightness(1.2) saturate(1.1); }
+html.os-mode .os-task.is-active {
+    background: var(--blue-soft);
+    border-color: color-mix(in srgb, var(--blue) 45%, transparent);
+    color: #fff;
+    box-shadow: inset 0 0 0 1px var(--blue-soft), 0 0 14px var(--glow);
+}
+html.os-mode .os-task.is-active::after {
+    content: ""; position: absolute; left: 12px; right: 12px; bottom: -3px; height: 2px;
+    background: var(--blue); border-radius: 2px;
+    box-shadow: 0 0 10px var(--glow);
+}
+html.os-mode .os-task { position: relative; }
+html.os-mode .os-task-glyph { color: var(--blue); text-shadow: 0 0 8px var(--glow); }
+html.os-mode .os-tray-key:hover { background: var(--blue-soft); color: #fff; }
+
+/* ---- Start menu: panel + hover fill = accent ---- */
+html.os-mode .os-start {
+    background: rgba(10, 11, 18, .92);
+    border: 1px solid color-mix(in srgb, var(--blue) 30%, rgba(255,255,255,.08));
+    box-shadow: 0 30px 70px -18px rgba(0,0,0,.7), 0 0 40px var(--glow);
+    backdrop-filter: blur(22px) saturate(1.25);
+}
+html.os-mode .os-start-logo { color: var(--blue); text-shadow: 0 0 12px var(--glow); }
+html.os-mode .os-start-sub { color: var(--blue); text-shadow: 0 0 8px var(--glow); }
+html.os-mode .os-start-app:hover {
+    background: linear-gradient(90deg, var(--blue-soft), transparent);
+    box-shadow: inset 2px 0 0 var(--blue);
+}
+html.os-mode .os-start-app:hover .os-start-app-n { color: #fff; text-shadow: 0 0 8px var(--glow); }
+html.os-mode .os-start-foot em { color: var(--blue); text-shadow: 0 0 8px var(--glow); }
+
+/* ---- Context menu / power menu ---- */
+html.os-mode .os-ctx {
+    background: rgba(10, 11, 18, .94);
+    border: 1px solid color-mix(in srgb, var(--blue) 28%, rgba(255,255,255,.08));
+    box-shadow: 0 24px 60px -14px rgba(0,0,0,.65), 0 0 26px var(--glow);
+}
+html.os-mode .os-ctx b:hover,
+html.os-mode .os-ctx .ctx-hover { background: var(--blue-soft); box-shadow: inset 2px 0 0 var(--blue); }
+
+/* ---- Buttons + segmented controls glow ---- */
+html.os-mode .os-win-body .btn-primary { box-shadow: 0 6px 18px var(--glow); }
+html.os-mode .os-win-body .os-seg .b.on {
+    box-shadow: inset 0 0 0 1px var(--blue-soft), 0 0 12px var(--glow);
+}
+html.os-mode .os-calc-grid .op { color: var(--blue); text-shadow: 0 0 8px var(--glow); }
+html.os-mode .os-calc-grid .eq {
+    background: var(--blue); border-color: var(--blue);
+    box-shadow: 0 0 16px var(--glow);
+}
+
+/* ---- Resume tabs: proper top-attached tab look ---- */
+html.os-mode .os-tabs { border-bottom-color: var(--line-strong); gap: 4px; }
+html.os-mode .os-tab {
+    color: var(--ink-mute);
+    border: 1px solid var(--line);
+    border-bottom-color: var(--line-strong);
+    background: color-mix(in srgb, var(--surface) 55%, transparent);
+    border-radius: 8px 8px 0 0;
+    transition: color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+html.os-mode .os-tab:hover { color: var(--ink); background: color-mix(in srgb, var(--blue-soft) 55%, var(--surface)); }
+html.os-mode .os-tab.is-on {
+    background: var(--surface);
+    color: var(--blue);
+    border-color: var(--line-strong);
+    border-bottom-color: var(--surface);
+    box-shadow: 0 -2px 12px var(--glow);
+}
+html[data-theme="dark"].os-mode .os-tab.is-on,
+html[data-theme="amoled"].os-mode .os-tab.is-on { background: #0D0E15; border-bottom-color: #0D0E15; }
+html.os-mode .os-resume-frame {
+    border-color: var(--line-strong);
+    box-shadow: inset 0 0 24px rgba(0,0,0,.28);
+}
+
+/* ---- Wallpaper: ambient life (default grid) ---- */
+html.os-mode .os-wallpaper.data-wall-grid::after { background-size: 44px 44px; }
+@keyframes osAmbient {
+    0%   { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(14deg); }
+}
+html.os-mode .os-wallpaper.data-wall-grid::before {
+    opacity: .85;
+    filter: drop-shadow(0 0 24px var(--glow));
+}
+html[data-theme="light"].os-mode .os-wallpaper::before { filter: none; }

@@ -143,7 +143,7 @@
     const APPS = {
         about: {
             title: 'ABOUT — THE SYSTEM',
-            width: 780, height: 640,
+            width: 860, height: 680,
             body() {
                 const wrap = document.createElement('div');
                 wrap.className = 'os-app os-about';
@@ -172,7 +172,7 @@
 
         projects: {
             title: 'PROJECTS — SELECTED SYSTEMS',
-            width: 800, height: 620,
+            width: 860, height: 660,
             body() {
                 const wrap = document.createElement('div');
                 wrap.className = 'os-app';
@@ -191,7 +191,7 @@
 
         experience: {
             title: 'EXPERIENCE — RUN LOG',
-            width: 660, height: 580,
+            width: 720, height: 620,
             body() {
                 const wrap = document.createElement('div');
                 wrap.className = 'os-app';
@@ -203,7 +203,7 @@
 
         cases: {
             title: 'CASE STUDIES — DEEP DIVES',
-            width: 640, height: 560,
+            width: 700, height: 600,
             body() {
                 const wrap = document.createElement('div');
                 wrap.className = 'os-app';
@@ -232,7 +232,7 @@
 
         notepad: {
             title: 'NOTEPAD — STICKY NOTES',
-            width: 560, height: 430,
+            width: 620, height: 470,
             body() {
                 const wrap = document.createElement('div');
                 wrap.className = 'os-app os-notepad';
@@ -267,7 +267,7 @@
 
         explorer: {
             title: 'FILE EXPLORER — DATA VAULT',
-            width: 640, height: 540,
+            width: 760, height: 580,
             body() {
                 const wrap = document.createElement('div');
                 wrap.className = 'os-app os-explorer';
@@ -301,7 +301,7 @@
 
         paint: {
             title: 'PAINT — PIXEL FORGE',
-            width: 660, height: 540,
+            width: 800, height: 580,
             body() {
                 const wrap = document.createElement('div');
                 wrap.className = 'os-app os-paint';
@@ -364,7 +364,7 @@
 
         calculator: {
             title: 'CALCULATOR — MATH UNIT',
-            width: 360, height: 500,
+            width: 420, height: 520,
             body() {
                 const wrap = document.createElement('div');
                 wrap.className = 'os-app os-calculator';
@@ -421,7 +421,7 @@
 
         settings: {
             title: 'SETTINGS — SYSTEM CONTROL',
-            width: 660, height: 620,
+            width: 780, height: 660,
             body() {
                 const wrap = document.createElement('div');
                 wrap.className = 'os-app os-settings';
@@ -474,7 +474,7 @@
 
         resume: {
             title: 'RESUME — CONTROL PANEL',
-            width: 880, height: 640,
+            width: 960, height: 680,
             body() {
                 const wrap = document.createElement('div');
                 wrap.className = 'os-app os-resume';
@@ -978,8 +978,8 @@
     themeBtn.addEventListener('click', cycleTheme);
 
     // init from persisted settings
-    applyTheme(SET.get('theme', root.getAttribute('data-theme') || 'light'));
-    applyAccent(SET.get('accent', 'blue'));
+    applyTheme(SET.get('theme', 'dark'));
+    applyAccent(SET.get('accent', 'green'));
     applyWall(SET.get('wall', 'grid'));
     applyFX();
 
