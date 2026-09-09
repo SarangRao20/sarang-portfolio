@@ -147,13 +147,16 @@
             body() {
                 const wrap = document.createElement('div');
                 wrap.className = 'os-app os-about';
-                const photo = document.querySelector('.hero-photo-wrap');
-                let photoHTML = '';
-                if (photo) {
-                    const pic = photo.querySelector('picture');
-                    photoHTML = `<div class="os-photo">${pic ? pic.outerHTML : '<img src="Images/sarang.jpg" alt="Sarang Rao">'}`
-                        + `<span class="os-photo-cap mono">FIG.1 — THE SYSTEM IN QUESTION</span></div>`;
-                }
+                const photoHTML = `
+                    <div class="os-photo">
+                        <picture>
+                            <source srcset="Images/sarang.avif" type="image/avif">
+                            <source srcset="Images/sarang.webp" type="image/webp">
+                            <img class="os-photo-img" src="Images/sarang.jpg" alt="Portrait of Sarang Rao, AI / ML Engineer"
+                                onerror="this.onerror=null;this.src='Images/sarang.jpg';this.removeAttribute('srcset');">
+                        </picture>
+                        <span class="os-photo-cap mono">FIG.1 — THE SYSTEM IN QUESTION</span>
+                    </div>`;
                 wrap.innerHTML = `
                     <p class="os-eyebrow mono">SARANG.RAO — TECHNICAL SPEC · HUMAN, GENERALLY CAPABLE</p>
                     <h2 class="os-about-name">Sarang Rao</h2>
@@ -438,6 +441,7 @@
                             `<button class="os-set-swatch is-${a}${a === accent ? ' is-on' : ''}" data-a="${a}" aria-label="accent ${a}"
                                 style="background:${({ blue: '#1F31D6', green: '#0D9A58', coral: '#E05233', purple: '#7C3AED', lime: '#2F9E3F' })[a]}"></button>`).join('')}</div></div>
                     <div class="os-set-row"><span class="os-set-label">WALLPAPER</span>${seg(['GRID', 'PULSE', 'CODE'], wall.toUpperCase(), 'wall')}</div>
+                    <div class="os-set-row"><span class="os-set-label">MATRIX RAIN</span>${seg(['ON', 'OFF'], SET.get('rain', '1') === '1' ? 'ON' : 'OFF', 'rain')}</div>
                     <div class="os-set-row"><span class="os-set-label">STARTUP SOUND</span>${seg(['ON', 'OFF'], SND.isOn() ? 'ON' : 'OFF', 'sound')}</div>
                     <div class="os-set-row"><span class="os-set-label">CRT SCANLINES</span>${seg(['ON', 'OFF'], SET.get('crt', '0') === '1' ? 'ON' : 'OFF', 'crt')}</div>
                     <div class="os-set-row"><span class="os-set-label">DIM ROOM</span>${seg(['ON', 'OFF'], SET.get('dim', '0') === '1' ? 'ON' : 'OFF', 'dim')}</div>
@@ -453,6 +457,7 @@
                             b.classList.add('is-on');
                             if (key === 'theme') applyTheme(v.toLowerCase());
                             else if (key === 'wallpaper') applyWall(v.toLowerCase());
+                            else if (key === 'matrixrain') { SET.set('rain', v === 'ON' ? '1' : '0'); applyFX(); }
                             else if (key === 'startupsound') SND.setOn(v === 'ON');
                             else if (key === 'crtscanlines') { SET.set('crt', v === 'ON' ? '1' : '0'); applyFX(); }
                             else if (key === 'dimroom') { SET.set('dim', v === 'ON' ? '1' : '0'); applyFX(); }
@@ -967,7 +972,53 @@
     function applyFX() { /* crt + dim toggles */
         document.getElementById('os-crt').hidden = SET.get('crt', '0') !== '1';
         document.getElementById('os-dim').hidden = SET.get('dim', '0') !== '1';
+        const rain = document.getElementById('os-rain');
+        if (!rain) return;
+        if (SET.get('rain', '1') !== '1' || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            if (RAIN.stop) RAIN.stop();
+        } else {
+            RAIN.start();
+        }
     }
+    const RAIN = (() => {
+        const cv = document.getElementById('os-rain');
+        const ctx = cv ? cv.getContext('2d') : null;
+        const FS = 14;
+        let cols = [], on = false, raf = 0, last = 0;
+        function size() {
+            cv.width = innerWidth; cv.height = innerHeight;
+            cols = Array.from({ length: Math.ceil(innerWidth / FS) }, () => (Math.random() * innerHeight / FS) | 0);
+        }
+        function draw(t) {
+            raf = requestAnimationFrame(draw);
+            if (!on || !document.getElementById('sarangos') || document.getElementById('sarangos').hidden) return;
+            if (t - last < 50) return; last = t;
+            ctx.fillStyle = 'rgba(5, 6, 12, 0.10)';
+            ctx.fillRect(0, 0, cv.width, cv.height);
+            ctx.font = FS + 'px monospace';
+            const accent = getComputedStyle(document.documentElement).getPropertyValue('--blue').trim() || '#34D399';
+            ctx.fillStyle = 'rgba(255,255,255,.85)';
+            for (let i = 0; i < cols.length; i++) {
+                const ch = 'アイウエオカキクケコサシスセソタチツテト0123456789<>=+$'.split('')[Math.random() * 40 | 0];
+                const x = i * FS, y = cols[i] * FS;
+                ctx.fillText(ch, x, y);
+                ctx.fillStyle = accent; ctx.globalAlpha = .34; ctx.fillText(ch, x, y);
+                ctx.globalAlpha = 1; ctx.fillStyle = 'rgba(255,255,255,.85)';
+                if (y > cv.height + FS && Math.random() > .975) cols[i] = 0;
+                cols[i]++;
+            }
+        }
+        return {
+            start() {
+                if (on || !cv || !ctx) return;
+                on = true; size(); raf = requestAnimationFrame(draw);
+            },
+            stop() {
+                on = false; cancelAnimationFrame(raf);
+                if (ctx) { ctx.globalAlpha = 1; ctx.clearRect(0, 0, cv.width, cv.height); }
+            }
+        };
+    })();
     function cycleTheme() {
         const cur = root.getAttribute('data-theme');
         applyTheme(cur === 'light' ? 'dark' : cur === 'dark' ? 'amoled' : 'light');
