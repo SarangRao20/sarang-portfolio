@@ -94,7 +94,8 @@
     const GLYPH = {
         about: '◉', projects: '▦', experience: '⌂', cases: '▤',
         terminal: '>_', resume: '⤓', contact: '@', settings: '⚙',
-        explorer: '⧉', notepad: '✎', paint: '◐', calculator: '∑'
+        explorer: '⧉', notepad: '✎', paint: '◐', calculator: '∑',
+        guide: '?'
     };
 
     // ===== TXT RESUME (for export / cat resume) =====
@@ -590,11 +591,63 @@
                 initContact(wrap.querySelector('.os-form'), wrap.querySelector('.os-status'), wrap.querySelector('.os-copy'));
                 return wrap;
             }
+        },
+
+        guide: {
+            title: 'GUIDE — SYSTEM MANUAL',
+            width: 780, height: 640,
+            body() { return buildGuideBody(); }
         }
     };
 
-    const DESKTOP = ['about', 'projects', 'experience', 'cases', 'terminal', 'explorer', 'notepad', 'settings', 'resume', 'contact'];
-    const ALL_APPS = DESKTOP.concat(['paint', 'calculator']);
+const DESKTOP = ['about', 'projects', 'experience', 'cases', 'terminal', 'explorer', 'notepad', 'settings', 'resume', 'contact'];
+
+// ===== GUIDE — SYSTEM MANUAL (what / how / why) =====
+function buildGuideBody() {
+    const wrap = document.createElement('div');
+    wrap.className = 'os-app os-guide';
+    const KBD = [
+        ['F1', 'open this manual, anywhere'],
+        ['ESC', 'close the active window'],
+        ['SR ↖ start', 'switch apps like a launcher'],
+        ['drag title bar', 'move a window'],
+        ['double-click title', 'maximize / restore'],
+        ['↑ · ↓', 'walk terminal history'],
+        ['right-click desktop', 'wallpaper · theme · settings'],
+        ['settings → FX', 'matrix rain, CRT, dim, sound']
+    ];
+    wrap.innerHTML = `
+        <section class="os-guide-sec">
+            <p class="os-guide-k mono">WHAT IS THIS?</p>
+            <p class="os-guide-body">Not a product — a <b>living CV</b>. A portfolio that wears an operating system: every window, shell, canvas and pixel is hand-written HTML/CSS/JS — no frameworks, no templates. It exists as proof of what one person can design and ship.</p>
+        </section>
+        <section class="os-guide-sec">
+            <p class="os-guide-k mono">HOW TO MOVE</p>
+            <div class="os-guide-keys">${KBD.map(k => `<div class="os-guide-kbd"><kbd>${k[0]}</kbd><span>${k[1]}</span></div>`).join('')}</div>
+        </section>
+        <section class="os-guide-sec">
+            <p class="os-guide-k mono">THINGS TO TRY</p>
+            <ol class="os-guide-try">
+                <li>Open <b>Terminal</b> and type <b>help</b> — every command, on tap.</li>
+                <li>Type <b>ask "what have you built?"</b> — Gemini answers about Sarang only.</li>
+                <li><b>cat resume.txt</b> · <b>neofetch</b> · <b>banner</b> · <b>whoami</b></li>
+                <li>Right-click the desktop → <b>WALLPAPER →</b> to re-skin the OS.</li>
+                <li>Open <b>Settings</b> → FX: matrix rain, CRT flicker, dim, sound.</li>
+            </ol>
+        </section>
+        <section class="os-guide-sec">
+            <p class="os-guide-k mono">FRONT DOOR</p>
+            <p class="os-guide-body"><b>About</b> = who · <b>Projects</b> = what shipped · <b>Experience</b> = where worked · <b>Cases</b> = how it failed &amp; got fixed · <b>Resume</b> = take it with you · <b>Contact</b> = reach me. Start with <b>About</b>.</p>
+        </section>
+        <div class="os-guide-actions">
+            <button class="btn btn-primary" data-open="about" type="button">About</button>
+            <button class="btn btn-ghost" data-open="projects" type="button">Projects</button>
+            <button class="btn btn-ghost" data-open="terminal" type="button">Terminal</button>
+            <button class="btn btn-ghost" data-open="contact" type="button">Contact</button>
+        </div>`;
+    return wrap;
+}
+const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
 
     // ===== WINDOW MANAGER =====
     const layer = $('#os-layer');
@@ -898,6 +951,12 @@
         START.innerHTML = `
             <div class="os-start-head mono"><span class="os-start-logo">SR</span>
                 <span>Sarang Rao <i class="os-start-sub">— AI/ML engineer</i></span></div>
+            <div class="os-start-quick mono">
+                <button class="btn btn-ghost" data-open="about" type="button">ABOUT</button>
+                <button class="btn btn-ghost" data-open="projects" type="button">PROJECTS</button>
+                <button class="btn btn-ghost" data-open="terminal" type="button">TERMINAL</button>
+                <button class="btn btn-ghost" data-open="guide" type="button">GUIDE · F1</button>
+            </div>
             <div class="os-start-apps">
                 ${ALL_APPS.map(id => `
                     <button class="os-start-app mono" data-app="${id}" type="button">
@@ -907,8 +966,9 @@
                     </button>`).join('')}
             </div>
             <div class="os-start-foot mono">
-                <span>SARANG OS v2.7</span><i></i><span>PUNE · INDIA</span><i></i><span>IST <em id="os-start-clock">--:--:--</em></span>
-            </div>`;
+                <span>SARANG OS v2.9.4</span><i></i><span>PUNE · INDIA</span><i></i><span>IST <em id="os-start-clock">--:--:--</em></span>
+            </div>
+            <p class="os-start-tip mono">F1 = guide · ESC = close window · right-click desktop = wallpaper</p>`;
         START.querySelectorAll('.os-start-app').forEach(b =>
             b.addEventListener('click', () => { WM.open(b.dataset.app); closeStart(); }));
     }
@@ -1125,7 +1185,7 @@
         splash.innerHTML = `
             <h3>SYS-OP · ONLINE</h3>
             ${SPLASH_STATS.map(s => `<div class="os-splash-stat"><span>${s[0]}</span><b>${s[1]}</b></div>`).join('')}
-            <div class="os-splash-hint">right-click the desktop · type <b>help</b> in the terminal · try dragging a window to the top edge</div>
+            <div class="os-splash-hint">press <b>F1</b> for the guide · start menu = SR (bottom-left) · <b>ESC</b> closes a window · type <b>help</b> in the terminal</div>
             <button class="os-splash-close" type="button">DISMISS</button>`;
         splash.hidden = false;
         requestAnimationFrame(() => splash.classList.add('os-on'));
@@ -1144,7 +1204,48 @@
         SARANGOS.hidden = false;
         window.scrollTo(0, 0);
         pill.hidden = true;
+        maybeStarter();
     }
+    function maybeStarter() {
+        try { if (localStorage.getItem('sr-seen-starter')) return; } catch (e) { return; }
+        if ($('#os-starter')) return;
+        const spl = $('#os-splash');
+        if (spl && !spl.hidden) { setTimeout(maybeStarter, 800); return; }
+        const st = document.createElement('div');
+        st.id = 'os-starter';
+        st.className = 'os-starter mono';
+        st.innerHTML = `
+            <p class="os-starter-title">NEW HERE? START HERE</p>
+            <p class="os-starter-sub">This OS is a living CV. Windows open from the icons — or jump straight in:</p>
+            <div class="os-starter-actions">
+                <button class="btn btn-primary" data-open="about" data-done type="button">ABOUT — who I am</button>
+                <button class="btn btn-ghost" data-open="projects" data-done type="button">PROJECTS — what shipped</button>
+                <button class="btn btn-ghost" data-open="terminal" data-done type="button">OPEN TERMINAL</button>
+                <button class="btn btn-ghost" data-open="guide" data-done type="button">FULL GUIDE (F1)</button>
+            </div>
+            <p class="os-starter-hint">tip: right-click any blank desktop space for wallpaper &amp; theme · <kbd>ESC</kbd> closes a window</p>`;
+        st.hidden = false;
+        SARANGOS.insertBefore(st, SARANGOS.firstChild);
+        const done = () => { try { localStorage.setItem('sr-seen-starter', '1'); } catch (e) {} st.remove(); };
+        st.querySelectorAll('[data-done]').forEach(b => b.addEventListener('click', done));
+        const close = document.createElement('button');
+        close.type = 'button';
+        close.className = 'os-starter-x mono';
+        close.setAttribute('aria-label', 'Dismiss');
+        close.textContent = '×';
+        close.addEventListener('click', done);
+        st.appendChild(close);
+        setTimeout(() => st.classList.add('os-starter-on'), 20);
+    }
+    window.addEventListener('keydown', e => {
+        if (!root.classList.contains('os-mode')) return;
+        if (e.key === 'F1') {
+            e.preventDefault();
+            WM.open('guide');
+        } else if (e.key === 'Escape' && !e.repeat) {
+            if (WM.active) WM.close(WM.active.dataset.app);
+        }
+    });
     $('#os-classic').addEventListener('click', () => {
         root.classList.remove('os-mode');
         SARANGOS.hidden = true;
@@ -1171,7 +1272,7 @@
         const boot = () => {
             if (screen.dataset.b) return;
             screen.dataset.b = '1';
-            setTimeout(() => out('<span class="os-muted">sarang.rao v2.9.2 — booting... ok. <span class="os-term-hl">help</span> for commands.</span>'), 80);
+            setTimeout(() => out('<span class="os-muted">sarang.rao v2.9.4 — booting... ok. <span class="os-term-hl">help</span> for commands.</span>'), 80);
         };
         const gemKey = () => { try { return localStorage.getItem('sr-gemini-key') || ''; } catch (e) { return ''; } };
         const CMD = {
@@ -1187,14 +1288,18 @@
                     matrix: 'usage: <span class="os-term-hl">matrix</span> [on|off] — wallpaper rain',
                     themes: 'usage: <span class="os-term-hl">themes</span> — cycles LIGHT → DARK → AMOLED',
                     session: 'usage: <span class="os-term-hl">session</span> — prints saved OS settings',
-                    history: 'usage: <span class="os-term-hl">history</span> — prints this session’s commands'
+                    history: 'usage: <span class="os-term-hl">history</span> — prints this session’s commands',
+                    guide: 'usage: <span class="os-term-hl">open guide</span> or press <span class="os-term-hl">F1</span> — the system manual (what / how / why).',
+                    motive: 'why an OS? this portfolio became a desktop so the CV is operated, not just read; raw HTML/CSS/JS, no frameworks.'
                 };
                 if (t && DETAIL[t]) return out(DETAIL[t]);
-                out('apps: <span class="os-term-hl">open</span> &lt;app&gt; · <span class="os-term-hl">apps</span> — ' + ALL_APPS.slice(0, 4).join(', ') + ' +' + (ALL_APPS.length - 4) + '<br>shell: ls · cat resume.txt · echo · whoami · date · uname · uptime · neofetch · history<br>skills: about · projects · experience · achievements · contact · resume · cat resume.txt<br>AI: <span class="os-term-hl">ask</span> "…" · <span class="os-term-hl">gemini</span> · <span class="os-term-hl">ai</span> · <span class="os-term-hl">keys</span> · <span class="os-term-hl">key</span> &lt;API_KEY&gt;<br>system: themes · accent · wall · matrix · crt · dim · sound · clock · session · banner<br>sw: reboot · reload · clear · konami · <span class="os-term-hl">help &lt;cmd&gt;</span> for detail');
+                out('apps: <span class="os-term-hl">open</span> &lt;app&gt; · <span class="os-term-hl">apps</span> — ' + ALL_APPS.slice(0, 4).join(', ') + ' +' + (ALL_APPS.length - 4) + '<br>shell: ls · cat resume.txt · echo · whoami · date · uname · uptime · neofetch · history<br>skills: about · projects · experience · achievements · contact · resume · cat resume.txt<br>AI: <span class="os-term-hl">ask</span> "…" · <span class="os-term-hl">gemini</span> · <span class="os-term-hl">ai</span> · <span class="os-term-hl">keys</span> · <span class="os-term-hl">key</span> &lt;API_KEY&gt;<br>system: themes · accent · wall · matrix · crt · dim · sound · clock · session · banner<br>guide: <span class="os-term-hl">open guide</span> (or <span class="os-term-hl">F1</span>) · <span class="os-term-hl">motive</span><br>sw: reboot · reload · clear · konami · <span class="os-term-hl">help &lt;cmd&gt;</span> for detail');
             },
             echo: (a) => out(esc(a || '')),
             history: () => { out(his.length ? his.map((h, i) => String(i).padStart(3, ' ') + '  ' + esc(h)).join('<br>') : 'history: empty'); },
             apps: () => out('<span class="os-term-hl">apps (' + ALL_APPS.length + ')</span><br>' + ALL_APPS.map(x => '<span class="os-muted">·</span> ' + esc(x)).join('<br>')),
+            guide: () => WM.open('guide'),
+            motive: () => out('<span class="os-term-hl">MOTIVE</span> — why is this a desktop?<br>So the CV is operated, not just read: a real window manager, a live shell, persistence via localStorage — all raw HTML/CSS/JS, no frameworks. It doubles as the product: this OS <i>is</i> the demo. <span class="os-muted">open guide</span> (or F1) for the manual.'),
             themes: () => { cycleTheme(); out('theme → <span class="os-ok">' + root.getAttribute('data-theme').toUpperCase() + '</span>'); },
             accent: (a) => {
                 const v = (a || '').trim().toLowerCase();
@@ -1282,7 +1387,7 @@
             uname: () => out('Linux hp-arch 6.12-GNU x86_64 · Sarang Rao, AI Team Lead'),
             uptime: () => out('up 3 years-ish — but who\'s counting. 2 ideathons fought, 1 scholarship won, ∞ rewrites.'),cd: () => out('nice try. you can\'t leave /home/sarang — the desktop is your home.'),
             reboot: () => { out('rebooting…'); try { sessionStorage.removeItem('sr-osboot2'); } catch (e) {} setTimeout(() => location.reload(), 500); },
-            version: () => out('SARANG OS v2.9.2 · build 9c2e1a · SARANG SYSTEMS · 2026 · <span class="os-muted">+ classic terminal parity, app redesign</span>'),
+            version: () => out('SARANG OS v2.9.4 · build 9c2e1a · SARANG SYSTEMS · 2026 · <span class="os-muted">+ guide · scoped AI · personalized wallpaper</span>'),
             konami: () => out('→ ↑↑↓↓←→←→BA → <span class="os-ok">ROOT ACCESS GRANTED.</span> you already owned this thought.'),
             sudo: () => out('<span class="os-muted">[sudo] password for sarang: ********</span><br><span class="os-ok">permission granted.</span>'),
             rm: () => out('rm: cannot remove / — the system says: your career is fine.'),
@@ -1291,7 +1396,7 @@
                 const interns = (D.experience || []).length;
                 out(`   ____   ___  
   / __ \\ /   \\   <span class="os-ok">sarang@desktop</span>
- ( (_) \\/ /\\\\\\ |  <span class="os-muted">os: sarang.os v2.9.2</span>
+ ( (_) \\/ /\\\\\\ |  <span class="os-muted">os: sarang.os v2.9.4</span>
   \\___/ /_/\\_\\\\|  <span class="os-muted">host: hp-omen-15</span>
                 <span class="os-muted">cpu: overthinking @ 4.20 ghz</span>
                 <span class="os-muted">memory: rag + patterns · 32gb/24 usable</span>

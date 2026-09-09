@@ -721,7 +721,7 @@ window.SR_AI = (function () {
     const ask = async (q, sys) => {
         const prompt = String(q || '').slice(0, 800).trim();
         if (!prompt) return { text: '' };
-        const s = String(sys || 'You are the SARANG OS terminal assistant. Answer like a sharp hacker engineer. Max 6 lines, plain text, no markdown, no emoji, be precise and concrete.');
+        const s = String(sys || 'You are the SARANG-OS concierge, built into Sarang Rao\'s portfolio desktop (sarangrao.vercel.app). You ONLY talk about Sarang Rao — his career, projects, skills, experience, education, awards, contact, or this site/OS itself — using only facts you were given; never invent. If the question is about ANYTHING else (general knowledge, news, coding help, maths, trivia, opinions, creative writing, etc.) reply in ONE short line: "Out of scope — I only know Sarang\'s work. Try: ask "what have you built"". Never answer the general question. Max 5 concise lines. Plain text only: no markdown symbols, no emoji.');
         let usedProxy = false;
         try {
             const r = await call('/api/gemini', { model: GEM_MODEL, system: s, prompt }, 25000);
@@ -825,8 +825,11 @@ function setupTerminal() {
                 '&nbsp;&nbsp;open &lt;app&gt; · sudo · rm · coffee · konami · banner<br>' +
                 '&nbsp;&nbsp;AI: ask "…" · keys · key &lt;API_KEY&gt;<br>' +
                 '&nbsp;&nbsp;system: themes · accent · wall · matrix · crt · dim · sound · clock · session<br>' +
-                '&nbsp;&nbsp;history · help &lt;cmd&gt; · clear · reboot');
+                '&nbsp;&nbsp;history · help &lt;cmd&gt; · clear · reboot<br>' +
+                '&nbsp;&nbsp;guide: <span class="term-hl">guide</span> (manual) · <span class="term-hl">motive</span> (why an OS)');
         },
+        guide: () => out('SARANG OS — QUICK MANUAL<br>Open the full guide inside the OS: pill (bottom-right) → start → GUIDE, or press F1 there.<br>Short door: About=who · Projects=what shipped · Experience=where worked · Cases=fixes · Resume=take · Contact=reach.<br>Try <span class="term-hl">ask "what have you built?"</span> — Gemini answers about Sarang only.'),
+        motive: () => out('<span class="term-hl">MOTIVE</span> — a portfolio that wears an OS<br>So the CV is operated, not just read: real window manager, live shell, localStorage persistence, raw HTML/CSS/JS. No frameworks — this OS is the proof AND the demo.'),
         about: () => out(
             'sarang.rao — AI/ML engineer building production systems.<br>' +
             'multi-agent orchestration · RAG · voice AI · computer vision · full-stack backend.<br>' +
@@ -886,6 +889,7 @@ function setupTerminal() {
             const t = (a || '').trim().toLowerCase();
             if (!t) return out('usage: <span class="term-hl">open</span> &lt;app&gt; — try: about · projects · experience · cases · resume · contact · terminal · skills');
             const map = { about: 'top', projects: 'projects', skills: 'projects', experience: 'experience', cases: 'projects', contact: 'contact', terminal: 'terminal', help: 'terminal' };
+            if (t === 'guide') { CMD.guide(); return; }
             if (t === 'resume') {
                 const a2 = document.createElement('a');
                 a2.href = 'assets/sarang-rao-resume.pdf'; a2.download = 'Sarang-Rao-Resume.pdf';
@@ -984,7 +988,7 @@ function setupTerminal() {
         },
         history: () => { out(history.length ? history.map((h, i) => String(i).padStart(3, ' ') + '  ' + esc(h)).join('<br>') : 'history: empty'); },
         uptime: () => out('up 3 years-ish — 2 ideathons fought, 1 scholarship won, ∞ rewrites.'),
-        version: () => out('SARANG OS / CLASSIC v2.9.2 · SARANG SYSTEMS · 2026'),
+        version: () => out('SARANG OS / CLASSIC v2.9.4 · SARANG SYSTEMS · 2026'),
         banner: () => out(
             '<span class="term-hl">  ____  _   __ _   _                  <br>' +
             ' / ___|| | / /\_\_\ | __ _ _ __   __ _   <br>' +

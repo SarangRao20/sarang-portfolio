@@ -1609,6 +1609,55 @@ html[data-theme="dark"] #os-rain, html[data-theme="amoled"] #os-rain { opacity: 
 html[data-theme="light"] .os-wall-tags { color: rgba(10, 11, 18, .4); }
 .os-wall-tags span { display: block; }
 
+/* ---- Wallpaper brand mark: personal (Sarang's desktop, not a template) ---- */
+.os-wall-mark {
+    position: absolute; right: 44px; top: 44%; transform: translateY(-54%);
+    text-align: right; z-index: 1; pointer-events: none; user-select: none;
+    display: flex; flex-direction: column; align-items: flex-end; gap: 0;
+}
+.os-wall-mark-tag {
+    display: inline-block;
+    font-size: .5rem; letter-spacing: .34em;
+    color: var(--ink-mute);
+    border: 1px solid var(--line-strong);
+    border-radius: 999px; padding: 5px 13px; margin-bottom: 12px;
+    background: color-mix(in srgb, var(--surface) 60%, transparent);
+}
+html[data-theme="dark"].os-mode .os-wall-mark-tag,
+html[data-theme="amoled"].os-mode .os-wall-mark-tag { background: rgba(10, 11, 18, .42); }
+.os-wall-mark-name {
+    font-size: clamp(2.7rem, 6vw, 4.7rem);
+    font-weight: 800; line-height: .92; letter-spacing: -.025em;
+    color: #fff;
+    text-shadow:
+        0 0 34px color-mix(in srgb, var(--blue) 55%, transparent),
+        0 0 120px color-mix(in srgb, var(--blue) 35%, transparent),
+        0 0 2px #fff;
+}
+.os-wall-mark-name .accent { color: var(--blue); }
+html[data-theme="light"].os-mode .os-wall-mark-name {
+    color: var(--ink);
+    text-shadow: 0 0 26px color-mix(in srgb, var(--blue) 45%, transparent), 0 0 1px var(--ink);
+}
+.os-wall-mark-role {
+    margin-top: 10px;
+    font-size: .62rem; letter-spacing: .3em;
+    color: var(--ink-soft); text-transform: uppercase;
+}
+.os-wall-mark-meta {
+    margin-top: 7px;
+    font-size: .5rem; letter-spacing: .18em;
+    color: var(--ink-mute); opacity: .75;
+}
+html[data-wall="code"] .os-wall-mark-name { color: #f2fff8; text-shadow: 0 0 34px rgba(74, 222, 128, .5), 0 0 2px #fff; }
+html[data-wall="code"] .os-wall-mark-name .accent { color: #4ADE80; }
+html[data-wall="code"] .os-wall-mark-role { color: rgba(74, 222, 128, .8); }
+html[data-wall="pulse"] .os-wall-mark-name .accent { color: var(--coral); }
+@media (max-width: 1100px) {
+    .os-wall-mark { right: 34px; }
+    .os-wall-mark-name { font-size: clamp(2.2rem, 5vw, 3.4rem); }
+}
+
 /* ===== DESKTOP ICONS ===== */
 .os-icons {
     position: absolute; left: 26px; top: 76px; z-index: 30;
@@ -1884,6 +1933,19 @@ textarea.os-field { resize: vertical; }
 }
 .os-start-foot i { flex: 1; height: 1px; background: rgba(255,255,255,.08); }
 .os-start-foot em { font-style: normal; color: #9AA6FF; }
+.os-start-quick {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
+    padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.os-start-quick .btn { padding: 8px 6px; font-size: .66rem; letter-spacing: .06em; }
+.os-start-tip {
+    margin: 0; padding: 7px 16px 10px; text-align: center;
+    color: rgba(255,255,255,.35); font-size: .55rem; letter-spacing: .08em;
+}
+.os-start-tip kbd {
+    font: inherit; color: rgba(255,255,255,.7);
+    border: 1px solid rgba(255,255,255,.15); border-radius: 4px; padding: 0 4px;
+}
 
 /* ===== OS BOOT SEQUENCE (BIOS → GRUB-style menu → loading) ===== */
 .os-boot {
@@ -2178,6 +2240,36 @@ html.os-mode.os-zone-top .os-layer::after {
     color: #fff; font-family: var(--mono); font-size: .62rem; letter-spacing: .16em; cursor: pointer;
 }
 .os-splash-close:hover { background: rgba(31,49,214,.4); }
+
+/* ---- ONE-TIME STARTER (first-run onboarding) ---- */
+.os-starter {
+    position: absolute; right: 20px; bottom: 72px; z-index: 1050;
+    width: 380px; max-width: calc(100vw - 40px);
+    padding: 18px 20px; border-radius: 16px;
+    background: rgba(13, 14, 22, .96);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid color-mix(in srgb, #8E99FF 45%, rgba(255,255,255,.1));
+    color: #fff;
+    box-shadow: 0 34px 80px -20px rgba(0, 0, 0, .8), 0 0 0 1px rgba(255,255,255,.04) inset;
+    opacity: 0; transform: translateY(12px);
+    transition: opacity .32s ease, transform .32s cubic-bezier(.2,.8,.25,1);
+}
+.os-starter.os-starter-on { opacity: 1; transform: none; }
+.os-starter-title { font-size: .68rem; letter-spacing: .24em; color: #9AA6FF; margin: 0 0 .5rem; }
+.os-starter-sub { font-size: .66rem; line-height: 1.6; color: rgba(255,255,255,.62); margin: 0 0 .8rem; }
+.os-starter-actions { display: grid; gap: 6px; }
+.os-starter-actions .btn { justify-content: flex-start; text-align: left; font-size: .7rem; padding: 9px 12px; }
+.os-starter-hint { font-size: .58rem; line-height: 1.6; color: rgba(255,255,255,.42); margin: .8rem 0 0; }
+.os-starter-hint kbd {
+    font: inherit; color: rgba(255,255,255,.75);
+    border: 1px solid rgba(255,255,255,.18); border-radius: 4px; padding: 0 4px;
+}
+.os-starter-x {
+    position: absolute; top: 10px; right: 12px;
+    background: transparent; border: none; color: rgba(255,255,255,.4);
+    font-size: .9rem; cursor: pointer; line-height: 1;
+}
+.os-starter-x:hover { color: #fff; }
 
 /* ---- SETTINGS APP ---- */
 .os-settings { display: grid; gap: 0; }
@@ -2537,6 +2629,38 @@ html.os-mode .os-about .os-about-role { margin: 0; }
 }
 html.os-mode .os-actions { margin-top: .6rem; }
 html.os-mode .os-actions .btn { font-size: .7rem; }
+
+/* ---- Guide: system manual ---- */
+html.os-mode .os-guide {
+    gap: 1.35rem; overflow: auto; max-height: 100%; flex: 1 1 auto; min-height: 0;
+}
+html.os-mode .os-guide-sec {
+    border-top: 1px solid var(--line); padding-top: 1.1rem;
+}
+html.os-mode .os-guide-k {
+    margin: 0 0 .55rem; font-size: .68rem; letter-spacing: .22em;
+    color: var(--blue);
+}
+html.os-mode .os-guide-body { margin: 0; max-width: 58ch; line-height: 1.65; }
+html.os-mode .os-guide-keys {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: .5rem .9rem;
+}
+html.os-mode .os-guide-kbd {
+    display: flex; align-items: center; gap: .6rem;
+    font-size: .7rem; color: var(--ink-soft); min-width: 0;
+}
+html.os-mode .os-guide-kbd kbd {
+    flex: 0 0 auto; font: inherit; font-weight: 700;
+    color: var(--ink); background: var(--surface);
+    border: 1px solid var(--line-strong); border-radius: 6px; padding: 3px 7px;
+    box-shadow: 0 1px 0 var(--line-strong);
+}
+html.os-mode .os-guide-try { margin: 0; padding-left: 1.1rem; display: grid; gap: .45rem; line-height: 1.55; }
+html.os-mode .os-guide-try b, html.os-mode .os-guide-body b { color: var(--ink); font-weight: 700; }
+html.os-mode .os-guide-actions {
+    display: flex; flex-wrap: wrap; gap: .6rem; padding-top: .3rem;
+}
+html.os-mode .os-guide-actions .btn { font-size: .7rem; padding: 8px 14px; }
 
 /* ---- Photo: proper portrait, no wash ---- */
 html.os-mode .os-photo {
