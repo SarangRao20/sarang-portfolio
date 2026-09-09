@@ -966,7 +966,7 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
                     </button>`).join('')}
             </div>
             <div class="os-start-foot mono">
-                <span>SARANG OS v2.9.5</span><i></i><span>PUNE · INDIA</span><i></i><span>IST <em id="os-start-clock">--:--:--</em></span>
+                <span>SARANG OS v2.9.6</span><i></i><span>PUNE · INDIA</span><i></i><span>IST <em id="os-start-clock">--:--:--</em></span>
             </div>
             <p class="os-start-tip mono">F1 = guide · ESC = close window · right-click desktop = wallpaper</p>`;
         START.querySelectorAll('.os-start-app').forEach(b =>
@@ -1243,8 +1243,10 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
         st.appendChild(close);
         setTimeout(() => st.classList.add('os-starter-on'), 20);
     }
+    let termEdit = false;
     window.addEventListener('keydown', e => {
         if (!root.classList.contains('os-mode')) return;
+        if (termEdit) return;
         if (e.key === 'F1') {
             e.preventDefault();
             WM.open('guide');
@@ -1278,9 +1280,33 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
         const boot = () => {
             if (screen.dataset.b) return;
             screen.dataset.b = '1';
-            setTimeout(() => out('<span class="os-muted">sarang.rao v2.9.5 — booting... ok. <span class="os-term-hl">help</span> for commands.</span>'), 80);
+            setTimeout(() => out('<span class="os-muted">sarang.rao v2.9.6 — booting... ok. <span class="os-term-hl">help</span> for commands.</span>'), 80);
         };
         const gemKey = () => { try { return localStorage.getItem('sr-gemini-key') || ''; } catch (e) { return ''; } };
+        const ved = initEditor(screen, input, out);
+        const HTOP_ROWS = (k) => {
+            const base = [
+                ['rag-indexer', 'R'], ['multi-agent-lead', 'S'], ['voice-ai-pipe', 'S'], ['cv-inventory', 'R'],
+                ['elysia-bun', 'S'], ['nbfc-fan', 'Z'], ['battery-kalman', 'S'], ['overthinking', 'R']
+            ];
+            return base.map((r, i) => {
+                const cpu = (k + i * 7) % 45 + (i % 3 === 0 ? 2 : 0);
+                const mem = (i * 13) % 38 + 4;
+                return `2560${i}<span>sarang</span><span>${cpu}.${(i * 3) % 9}</span><span>${mem}.${(i * 5) % 9}</span><span class="os-htop-s${i % 4}">${r[1]}</span><span>${r[0]}</span>`;
+            }).join('<span class="os-htop-row">') + '';
+        };
+        const fetchBlock = () => {
+            const feats = (D.featuredProjects || []).length;
+            const interns = (D.experience || []).length;
+            return `   ____   ___  
+  / __ \\ /   \\   <span class="os-ok">sarang@desktop</span>
+ ( (_) \\/ /\\\\\\ |  <span class="os-muted">os: sarang.os v2.9.6</span>
+  \\___/ /_/\\_\\\\|  <span class="os-muted">host: hp-omen-15</span>
+                <span class="os-muted">cpu: overthinking @ 4.20 ghz</span>
+                <span class="os-muted">memory: rag + patterns · 32gb/24 usable</span>
+                <span class="os-ok">shipped: ${feats} systems</span>
+                <span class="os-ok">interns: ${interns} reporting</span>`;
+        };
         const CMD = {
             help: (a) => {
                 const t = (a || '').trim().toLowerCase();
@@ -1296,12 +1322,19 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
                     session: 'usage: <span class="os-term-hl">session</span> — prints saved OS settings',
                     history: 'usage: <span class="os-term-hl">history</span> — prints this session’s commands',
                     guide: 'usage: <span class="os-term-hl">open guide</span> or press <span class="os-term-hl">F1</span> — the system manual (what / how / why).',
-                    motive: 'why an OS? this portfolio became a desktop so the CV is operated, not just read; raw HTML/CSS/JS, no frameworks.'
+                    motive: 'why an OS? this portfolio became a desktop so the CV is operated, not just read; raw HTML/CSS/JS, no frameworks.',
+                    cd: 'usage: <span class="os-term-hl">cd</span> &lt;dir&gt; — agents: agentic-doc · cv-inventory · elysia · nbfc · nivana · battery · .. ',
+                    ls: 'usage: <span class="os-term-hl">ls</span> [dir] — list the current (or given) folder.',
+                    cat: 'usage: <span class="os-term-hl">cat</span> &lt;file&gt; — README.md · bat-config.toml · server.ts · soc-kalman.py …',
+                    tree: 'usage: <span class="os-term-hl">tree</span> — the whole /home/sarang/systems at a glance.',
+                    vim: 'usage: <span class="os-term-hl">vim</span> [file] — mini-editor. <span class="os-term-hl">i</span>=insert · <span class="os-term-hl">Esc</span>=normal · <span class="os-term-hl">:w</span> <span class="os-term-hl">:q</span> <span class="os-term-hl">:wq</span>.',
+                    htop: 'usage: <span class="os-term-hl">htop</span> — six ticks of live-ish feel, then it files a report.',
+                    ping: 'usage: <span class="os-term-hl">ping</span> &lt;host&gt; — polite ICMP to anyone, even figments.'
                 };
                 if (t && DETAIL[t]) return out(DETAIL[t]);
-                out('apps: <span class="os-term-hl">open</span> &lt;app&gt; · <span class="os-term-hl">apps</span> — ' + ALL_APPS.slice(0, 4).join(', ') + ' +' + (ALL_APPS.length - 4) + '<br>shell: ls · cat resume.txt · echo · whoami · date · uname · uptime · neofetch · history<br>skills: about · projects · experience · achievements · contact · resume · cat resume.txt<br>AI: <span class="os-term-hl">ask</span> "…" · <span class="os-term-hl">gemini</span> · <span class="os-term-hl">ai</span> · <span class="os-term-hl">keys</span> · <span class="os-term-hl">key</span> &lt;API_KEY&gt;<br>system: themes · accent · wall · matrix · crt · dim · sound · clock · session · banner<br>guide: <span class="os-term-hl">open guide</span> (or <span class="os-term-hl">F1</span>) · <span class="os-term-hl">motive</span><br>sw: reboot · reload · clear · konami · <span class="os-term-hl">help &lt;cmd&gt;</span> for detail');
+                out('apps: <span class="os-term-hl">open</span> &lt;app&gt; · <span class="os-term-hl">apps</span> — ' + ALL_APPS.slice(0, 4).join(', ') + ' +' + (ALL_APPS.length - 4) + '<br>shell: ls · cd &lt;dir&gt; · cat &lt;file&gt; · tree · echo · whoami · date · uname · uptime · neofetch · history<br>skills: about · projects · experience · achievements · contact · resume · cat resume.txt<br>AI: <span class="os-term-hl">ask</span> "…" · <span class="os-term-hl">gemini</span> · <span class="os-term-hl">ai</span> · <span class="os-term-hl">keys</span> · <span class="os-term-hl">key</span> &lt;API_KEY&gt;<br>toys: <span class="os-term-hl">vim</span> · htop · ping · fastfetch · screenfetch<br>system: themes · accent · wall · matrix · crt · dim · sound · clock · session · banner<br>guide: <span class="os-term-hl">open guide</span> (or <span class="os-term-hl">F1</span>) · <span class="os-term-hl">motive</span><br>sw: reboot · reload · clear · konami · <span class="os-term-hl">help &lt;cmd&gt;</span> for detail');
             },
-            echo: (a) => out(esc(a || '')),
+            echo: (a) => out(esc((a || '').replace(/^["']|["']$/g, ''))),
             history: () => { out(his.length ? his.map((h, i) => String(i).padStart(3, ' ') + '  ' + esc(h)).join('<br>') : 'history: empty'); },
             apps: () => out('<span class="os-term-hl">apps (' + ALL_APPS.length + ')</span><br>' + ALL_APPS.map(x => '<span class="os-muted">·</span> ' + esc(x)).join('<br>')),
             guide: () => WM.open('guide'),
@@ -1371,44 +1404,112 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
             contact: () => out(`email ${link('raosarang2006@gmail.com', 'mailto:raosarang2006@gmail.com')} · github ${link('@SarangRao20', 'https://github.com/SarangRao20', true)}`),
             resume: () => out(`→ ${link('sarang-rao-resume-os.pdf', 'assets/sarang-rao-resume-os.pdf')} · <span class="os-term-hl">cat resume.txt</span> for plain text`),
             open: (a) => {
-                const t = (a || '').trim().toLowerCase();
-                if (!t) return out('usage: <span class="os-term-hl">open</span> &lt;app&gt; — try: ' + ALL_APPS.join(' · '));
-                if (!APPS[t]) return out(`✗ no such app: <span class="os-term-hl">${esc(t)}</span> (see help)`);
-                WM.open(t);
-                out(`<span class="os-ok">✓</span> opening ${esc(t)} …`);
+                const t = (a || '').trim().replace(/\/+$/, '');
+                const low = t.toLowerCase();
+                if (!t) return out('usage: <span class="os-term-hl">open</span> &lt;app | folder&gt; — apps: ' + ALL_APPS.join(' · '));
+                if (APPS[low]) { WM.open(low); out(`<span class="os-ok">✓</span> opening ${esc(low)} …`); return; }
+                if (HFS.dirs[HFS.cwd + '/' + t]) { HFS.cwd = HFS.cwd + '/' + t; out(`<span class="os-ok">✓</span> opening folder <span class="os-term-hl">${esc(t)}/</span> — ls to browse`); return; }
+                const rp = hfs_resolve(t);
+                if (rp && HFS.dirs[rp]) { HFS.cwd = rp; out(`<span class="os-ok">✓</span> opening folder <span class="os-term-hl">${esc(rp)}</span> — ls to browse`); return; }
+                out(`✗ no such app or folder: <span class="os-term-hl">${esc(t)}</span> (see help)`);
             },
             cat: (a) => {
-                const f = (a || '').trim().toLowerCase().replace(/\.txt$/, '');
-                if (f === 'resume') {
+                const f = (a || '').trim();
+                if (!f) return out('usage: <span class="os-term-hl">cat</span> &lt;file&gt; — README.md · bat-config.toml · server.ts · soc-kalman.py …');
+                if (/resume/i.test(f)) {
                     out(buildTextResume().replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])).replace(/\n/g, '<br>'));
                     return;
                 }
-                out(`<span class="os-term-err">cat: ${esc(a || '')}: no such file</span> — try "cat resume.txt"`);
+                const cands = [HFS.cwd + '/' + f, '~/' + f, '~/' + f.replace(/^.*\//, '')];
+                for (const c of cands) {
+                    if (c !== '~' && HFS.files[c]) {
+                        out(esc(HFS.files[c]).replace(/\n/g, '<br>') + '<br><span class="os-muted">→ ' + esc(c) + '</span>');
+                        return;
+                    }
+                }
+                out(`<span class="os-term-err">cat: ${esc(f)}: no such file</span> — try "cat README.md" inside a repo`);
             },
-            ls: () => out(`drwxr-xr-x  sarang  sarang  4.0K  <span class="os-ok">agentic-doc/</span>\ndrwxr-xr-x  sarang  sarang  4.0K  <span class="os-ok">cv-inventory/</span>\ndrwxr-xr-x  sarang  sarang  4.0K  <span class="os-ok">elysia/</span>\ndrwxr-xr-x  sarang  sarang  4.0K  <span class="os-ok">nbfc/</span>\ndrwxr-xr-x  sarang  sarang  4.0K  <span class="os-ok">nivana/</span>\ndrwxr-xr-x  sarang  sarang  4.0K  <span class="os-ok">battery/</span>
--rw-r--r--  sarang  sarang  16K   sarang-resume.txt`),
-            pwd: () => out('/home/sarang/systems/production'),
+            ls: (a) => {
+                const t = (a || '').trim();
+                let p = HFS.cwd;
+                if (t) {
+                    const r = hfs_resolve(t);
+                    if (r && HFS.dirs[r]) p = r;
+                    else if (HFS.dirs[HFS.cwd + '/' + t.replace(/\/$/, '')]) p = HFS.cwd + '/' + t.replace(/\/$/, '');
+                    else return out(`<span class="os-term-err">ls: cannot access '${esc(t)}'</span>`);
+                }
+                const list = HFS.dirs[p] || [];
+                const L = list.map(n => n.endsWith('/')
+                    ? 'drwxr-xr-x  sarang  sarang  4.0K  <span class="os-ok">' + esc(n) + '</span>'
+                    : n === 'sarang-resume.txt'
+                        ? '-rw-r--r--  sarang  sarang   16K   <span class="os-ok">' + esc(n) + '</span>'
+                        : '-rw-r--r--  sarang  sarang  4.0K   ' + esc(n));
+                out('<span class="os-muted">' + esc(p) + ' — ' + list.length + ' entries</span><br>' + L.join('<br>'));
+            },
+            cd: (a) => {
+                const t = (a || '').trim();
+                if (!t || t === '~' || t === '.' || t === '/home/sarang' || t === '/') { HFS.cwd = '~'; out('→ ~ — the desktop is your home.'); return; }
+                if (t === '..') { const p = hfs_parent(HFS.cwd); HFS.cwd = p; out('→ ' + esc(p)); return; }
+                let p = hfs_resolve(t);
+                if (p && HFS.dirs[p]) { HFS.cwd = p; out('→ ' + esc(p) + ' · ' + HFS.dirs[p].length + ' entries · <span class="os-muted">ls</span> to look around'); return; }
+                if (HFS.dirs[HFS.cwd + '/' + t.replace(/\/$/, '')]) { HFS.cwd = HFS.cwd + '/' + t.replace(/\/$/, ''); out('→ ' + esc(HFS.cwd)); return; }
+                out(`<span class="os-term-err">cd: ${esc(t)}: no such directory</span> — agents: agentic-doc · cv-inventory · elysia · nbfc · nivana · battery`);
+            },
+            tree: () => {
+                let t = '~<br>│';
+                const walk = (p, depth) => {
+                    const ind = '│' + '   '.repeat(depth);
+                    (HFS.dirs[p] || []).forEach(n => {
+                        if (n.endsWith('/')) { t += `<br>${ind}├─ <span class="os-ok">${esc(n)}</span>`; walk(p + '/' + n.replace(/\/$/, ''), depth + 1); }
+                        else t += `<br>${ind}├─ ${esc(n)}`;
+                    });
+                };
+                HFS.dirs['~'].filter(n => !n.endsWith('/')).forEach(n => { t += `<br>│   ├─ ${esc(n)}`; });
+                walk('~', 1);
+                t += '<br>│<br>└─ (6 agents · all humming along)';
+                out(t);
+            },
+            pwd: () => out(HFS.cwd === '~' ? '/home/sarang/systems/production' : '/home/sarang/systems/production/' + HFS.cwd.slice(2)),
             whoami: () => out('sarang.rao — AI/ML engineer, AI Team Lead'),
             date: () => out(new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false }) + ' IST'),
             uname: () => out('Linux hp-arch 6.12-GNU x86_64 · Sarang Rao, AI Team Lead'),
-            uptime: () => out('up 3 years-ish — but who\'s counting. 2 ideathons fought, 1 scholarship won, ∞ rewrites.'),cd: () => out('nice try. you can\'t leave /home/sarang — the desktop is your home.'),
+            uptime: () => out('up 3 years-ish — but who\'s counting. 2 ideathons fought, 1 scholarship won, ∞ rewrites.'),
             reboot: () => { out('rebooting…'); setTimeout(() => osNav(true), 500); },
-            version: () => out('SARANG OS v2.9.5 · build 9c2e1a · SARANG SYSTEMS · 2026 · <span class="os-muted">+ guide · scoped AI · personalized wallpaper</span>'),
+            version: () => out('SARANG OS v2.9.6 · build 9c2e1a · SARANG SYSTEMS · 2026 · <span class="os-muted">+ mini vim · holo-fs · toys</span>'),
             konami: () => out('→ ↑↑↓↓←→←→BA → <span class="os-ok">ROOT ACCESS GRANTED.</span> you already owned this thought.'),
             sudo: () => out('<span class="os-muted">[sudo] password for sarang: ********</span><br><span class="os-ok">permission granted.</span>'),
             rm: () => out('rm: cannot remove / — the system says: your career is fine.'),
-            neofetch: () => {
-                const feats = (D.featuredProjects || []).length;
-                const interns = (D.experience || []).length;
-                out(`   ____   ___  
-  / __ \\ /   \\   <span class="os-ok">sarang@desktop</span>
- ( (_) \\/ /\\\\\\ |  <span class="os-muted">os: sarang.os v2.9.5</span>
-  \\___/ /_/\\_\\\\|  <span class="os-muted">host: hp-omen-15</span>
-                <span class="os-muted">cpu: overthinking @ 4.20 ghz</span>
-                <span class="os-muted">memory: rag + patterns · 32gb/24 usable</span>
-                <span class="os-ok">shipped: ${feats} systems</span>
-                <span class="os-ok">interns: ${interns} reporting</span>`);
+            neofetch: () => out(fetchBlock()),
+            fastfetch: () => out('<span class="os-muted">fastfetch 2.87 (fake ascii, real vibes)</span><br>' + fetchBlock()),
+            screenfetch: () => out('<span class="os-muted">screenfetch 3.9.9 — "don\'t worry, it works."</span><br>' + fetchBlock()),
+            htop: () => {
+                const el = document.createElement('div');
+                el.className = 'os-htop mono';
+                screen.appendChild(el);
+                let n = 0;
+                const paint = () => {
+                    el.innerHTML = `<div class="os-htop-head"><span>PID</span><span>USER</span><span>CPU%</span><span>MEM%</span><span>S</span><span>COMMAND</span></div>` +
+                        (() => { let r = ''; for (let i = 0; i < 8; i++) { const cpu = (n * 13 + i * 7) % 45 + (i % 3 === 0 ? 2 : 0); const mem = (i * 13) % 38 + 4; r += `<div class="os-htop-row${i === n % 8 ? ' is-sel' : ''}"><span>2560${i}</span><span>sarang</span><span>${cpu}.${(i * 3) % 9}</span><span>${mem}.${(i * 5) % 9}</span><span class="os-htop-s${i % 4}">${['R', 'S', 'S', 'R'][i % 4]}</span><span>${['rag-indexer', 'multi-agent-lead', 'voice-ai-pipe', 'cv-inventory', 'elysia-bun', 'nbfc-fan', 'battery-kalman', 'overthinking'][i]}</span></div>`; } return r; })();
+                    n++;
+                    if (n >= 6) { clearInterval(t); out('<span class="os-muted">htop: six ticks captured. processes continue bravely without us.</span>'); }
+                };
+                const t = setInterval(paint, 480);
+                paint();
             },
+            ping: (a) => {
+                const host = (a || '').trim() || 'vercel-edge';
+                const base = 16 + (host.length * 7) % 34;
+                let seq = 1;
+                out('PING ' + esc(host) + ' (146.75.112.' + (10 + (host.length % 240)) + ') 56(84) bytes of data.');
+                const t = setInterval(() => {
+                    if (seq > 4) { clearInterval(t); out('--- ' + esc(host) + ' ping statistics ---<br>4 packets transmitted, 4 received, 0% packet loss, time 3004ms<br><span class="os-ok">rtt min/avg/max/mdev = ' + base + '.' + seq + '/' + (base + 2) + '.' + seq + '/' + (base + 5) + '.' + seq + ' ms</span>'); return; }
+                    out('64 bytes from ' + esc(host) + ': icmp_seq=' + seq + ' ttl=52 time=' + (base + (seq * 17) % 22) + '.' + seq + ' ms');
+                    seq++;
+                }, 350);
+            },
+            vim: (a) => ved.open(a || 'index.md'),
+            nvim: (a) => ved.open(a || 'index.md'),
+            vi: (a) => ved.open(a || 'index.md'),
             keys: () => {
                 const k = gemKey();
                 out(k
@@ -1468,6 +1569,137 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
         prompt.addEventListener('click', () => input.focus());
         setTimeout(() => input.focus(), 150);
         boot();
+    }
+
+    // ===== HOLO-FS — pretend filing cabinet over real repos =====
+    const FILES = {
+        '~/agentic-doc/ARCHITECTURE.md': '# memosys · agentic doc\n\nmeta-agent walks the repo, flags stale docs, drafts diffs.\nPRs get an architecture layer, humans approve.\n\n## pipeline\nparse → graph → route → draft → review → merge',
+        '~/agentic-doc/README.md': 'a doc-agent that keeps specs honest.\nstack: graphrag + code-parse + pr-review',
+        '~/cv-inventory/README.md': 'inventory a CV like a warehouse.\nsku = skill · batch = project · replenish = new systems',
+        '~/cv-inventory/expanded-offer.md': '# expansion — terms for the next role\n\n## what i bring\nproduction rag · multi-agent flow · voice-ai pipelines\nmentoring → 5 interns, shipped\n\n## the ask\nlead the ai build, own it end to end',
+        '~/cv-inventory/ats-export.csv': 'skill,level,years\npython,expert,4\nlangchain/graphrag,expert,2\nvoice-ai,strong,1\ncv,strong,2\nmentoring,captain,2',
+        '~/elysia/README.md': 'elysia + bun experiment — type-safe api at lightspeed.\nhealthy side-hustle, zero regrets.',
+        '~/elysia/server.ts': "import { Elysia } from 'elysia'\n\nnew Elysia()\n  .get('/', () => 'sarang.rao')\n  .get('/stack', () => ['rag','multi-agent','voice'])\n  .listen(3000)\n\nconsole.log('swiftly, in types')",
+        '~/elysia/package.json': '{ "name": "elysia-lab", "type": "module", "scripts": { "dev": "bun run server.ts" } }',
+        '~/nbfc/README.md': 'nbfc reimagined — fan curves that respect the metal.\nnoctua-grade politeness for an hp-omen.',
+        '~/nbfc/bat-config.toml': '[general]\nflavor = "crispy"\n\n[fan]\ncurve = [ [0, 0], [50, 40], [70, 70], [84, 100] ]\nsilence = true\n\n# re-flash with every reboot, legally-ish',
+        '~/nbfc/ec-probe.log': 'chip: EC-0 · fans: 2 · tach locked in @ 4200rpm\neverything quiet, boss.',
+        '~/nivana/README.md': 'nivana — lighter-than-air navigation model.\nclaims optimizer rides along.',
+        '~/nivana/train-config.yaml': 'model: nav_transformer_s\nepochs: 120\nlr: 3e-4  # tuned, don\'t touch (you WILL touch)\nbatch: 64',
+        '~/nivana/nav-model.onnx': '\u0000\u0000\u0000\u0000 opset 17 · 12.4MB tensor soup\n(eat the bytes, taste the gradient)',
+        '~/battery/README.md': 'battery care for a laptop that runs on rage + ac power.',
+        '~/battery/soc-kalman.py': 'import numpy as np\n\n# state: [soc, drifting_voltage]\n# obs:  pack terminal voltage + a wild guess\nsoc_hat = 0.82\nfor v in voltage_stream:\n    soc_hat += kalman_gain * (estimate(v) - soc_hat)\n\nprint("soc stays honest:", round(soc_hat, 3))',
+        '~/battery/thermal-limit.py': 'def charge_like_a_pro(t_cell):\n    if t_cell > 41: return "chill"\n    return "full send"'
+    };
+    const DIRS = {
+        '~': ['agentic-doc/', 'cv-inventory/', 'elysia/', 'nbfc/', 'nivana/', 'battery/', 'sarang-resume.txt', 'README.md'],
+        '~/agentic-doc': ['ARCHITECTURE.md', 'README.md'],
+        '~/cv-inventory': ['cv-db.sqlite', 'expanded-offer.md', 'ats-export.csv', 'README.md'],
+        '~/elysia': ['server.ts', 'package.json', 'README.md'],
+        '~/nbfc': ['bat-config.toml', 'ec-probe.log', 'README.md'],
+        '~/nivana': ['nav-model.onnx', 'train-config.yaml', 'README.md'],
+        '~/battery': ['soc-kalman.py', 'thermal-limit.py', 'README.md']
+    };
+    const HFS = { cwd: '~', dirs: DIRS, files: FILES };
+    function hfs_resolve(dir) {
+        const seg = dir.trim().replace(/\/$/g, '').split('/').filter(Boolean).map(s => s.replace(/\.\./g, ''));
+        let path = '~';
+        if (dir.startsWith('/')) path = '/home/sarang/systems/' + seg.join('/');
+        else for (const s of seg) { path = s === '~' ? '~' : path.replace(/\/$/, '') + '/' + s; }
+        if (path in HFS.dirs) return path.replace(/\/$/g, '');
+        return dir.trim() in HFS.dirs ? dir.trim().replace(/\/$/g, '') : null;
+    }
+    function hfs_parent(p) {
+        const m = p.split('/');
+        m.pop();
+        let q = m.length > 1 ? m.join('/') : '~';
+        return q === '~/.' ? '~' : q;
+    }
+
+    // ===== MINI VIM + HTOP (the show) =====
+    function initEditor(screen, input, out) {
+        const ed = { on: false, file: '', x: 0, y: 0, mode: 'N', cmd: '', keys: '', lines: [], root: null, buf: null, status: null, dead: false };
+        const render = () => {
+            if (!ed.root || ed.dead) return;
+            let html = '';
+            for (let i = 0; i < ed.lines.length; i++) {
+                html += `<div class="os-ved-l"><span class="os-ved-n">${String(i + 1).padStart(3)}</span><span>${i === ed.y ? '<span class="os-ved-cur"></span>' : ''}${esc(ed.lines[i])}</span></div>`;
+            }
+            ed.buf.innerHTML = html;
+            const cx = ed.file + ' · ' + (ed.y + 1) + ',' + (ed.x + 1);
+            const modeTxt = ed.mode === 'I' ? 'INSERT' : ed.mode === 'C' ? ':' + ed.cmd : 'NORMAL';
+            ed.status.innerHTML = `<span>${esc(cx)}</span><span class="os-ved-mode">${modeTxt}</span>`;
+            const cur = ed.root.querySelector('.os-ved-cur');
+            if (cur) { cur.scrollIntoView({ block: 'nearest' }); }
+        };
+        const open = (file) => {
+            const f = String(file || 'README.md');
+            ed.dead = false; ed.file = f; ed.mode = 'N'; ed.cmd = ''; ed.keys = '';
+            const src = HFS.files['~/' + f] || HFS.files[HFS.cwd + '/' + f] || HFS.files[HFS.cwd + '/' + f.split('/').pop()] || `# ${f}\n\n—— new scratch ——\n\n(insert what must be written)\n`;
+            ed.lines = src.split('\n').map(l => l.slice(0, 120));
+            ed.y = 0; ed.x = 0;
+            const root = document.createElement('div');
+            root.className = 'os-ved mono';
+            root.innerHTML = `<div class="os-ved-title">VIM ← ${esc(f)}</div><div class="os-ved-buf"></div><div class="os-ved-status"></div>`;
+            ed.root = root; ed.buf = root.querySelector('.os-ved-buf'); ed.status = root.querySelector('.os-ved-status');
+            out('<span class="os-muted">vim: now editing — <span class="os-term-hl">i</span>=insert · <span class="os-term-hl">Esc</span>=normal · <span class="os-term-hl">:w / :q / :wq</span></span>');
+            screen.appendChild(root);
+            render();
+            ed.on = true; termEdit = true;
+            input.blur();
+            input.placeholder = '…inside vim · Esc → :q to leave';
+        };
+        const quit = (msg) => {
+            ed.on = false; termEdit = false; ed.dead = true;
+            if (ed.root) ed.root.classList.add('os-ved-exit');
+            out(`<span class="os-muted">${msg || 'vim: abandoned.'}</span>`);
+            input.placeholder = 'type a command…';
+            setTimeout(() => input.focus(), 60);
+        };
+        document.addEventListener('keydown', e => {
+            if (!ed.on) return;
+            e.preventDefault(); e.stopPropagation();
+            if (e.repeat && ed.mode !== 'I' && e.key !== 'Backspace') return;
+            if (ed.mode === 'I') {
+                if (e.key === 'Escape') { ed.mode = 'N'; ed.keys = ''; }
+                else if (e.key === 'Enter') { ed.lines.splice(ed.y + 1, 0, ''); ed.y++; ed.x = 0; }
+                else if (e.key === 'Backspace') {
+                    if (ed.x > 0) { ed.lines[ed.y] = ed.lines[ed.y].slice(0, ed.x - 1) + ed.lines[ed.y].slice(ed.x); ed.x--; }
+                    else if (ed.y > 0) { ed.x = ed.lines[ed.y - 1].length; ed.lines.splice(ed.y, 1); ed.y--; }
+                }
+                else if (e.key === 'ArrowLeft') { if (ed.x > 0) ed.x--; }
+                else if (e.key === 'ArrowRight') { if (ed.x < ed.lines[ed.y].length) ed.x++; }
+                else if (e.key === 'ArrowUp') { if (ed.y > 0) { ed.y--; ed.x = Math.min(ed.x, ed.lines[ed.y].length); } }
+                else if (e.key === 'ArrowDown') { if (ed.y < ed.lines.length - 1) { ed.y++; ed.x = Math.min(ed.x, ed.lines[ed.y].length); } }
+                else if (e.key.length === 1) { const l = ed.lines[ed.y]; ed.lines[ed.y] = l.slice(0, ed.x) + e.key + l.slice(ed.x); ed.x++; }
+            } else if (ed.mode === 'C') {
+                if (e.key === 'Enter') {
+                    const argv = ed.cmd.trim().split(/\s+/);
+                    if (argv[0] === 'q') return quit('vim: abandon. unchanged feelings, unchanged file.');
+                    if (argv[0] === 'w') { out('vim: "<span class="os-term-hl">' + esc(ed.file) + '</span>" ' + ed.lines.length + 'L, written — to a parallel universe. (state lives in RAM not disk, obviously)'); ed.mode = 'N'; ed.cmd = ''; render(); return; }
+                    if (argv[0] === 'wq') { out('vim: wrote ' + ed.lines.length + 'L · bye.'); return quit(''); }
+                    ed.cmd = ''; ed.mode = 'N'; ed.status.innerHTML = '<span>E492: not a command</span><span></span>';
+                } else if (e.key === 'Escape') { ed.mode = 'N'; ed.cmd = ''; }
+                else if (e.key.length === 1 && /[\w :/?*]/.test(e.key)) { ed.cmd += e.key; }
+            } else {
+                if (e.key === 'i' || e.key === 'a') { ed.mode = 'I'; ed.keys = ''; if (e.key === 'a' && ed.x < ed.lines[ed.y].length) ed.x++; }
+                else if (e.key === ':') { ed.mode = 'C'; ed.cmd = ''; }
+                else if (e.key === 'Escape') { ed.keys = ''; }
+                else if (e.key === 'G') { ed.y = ed.lines.length - 1; ed.x = ed.lines[ed.y].length; ed.keys = ''; }
+                else if (e.key === 'u') { ed.keys = ''; out('vim: an undo that this mini-vim does not own. pray, or craft again.'); }
+                else if (e.key.length === 1 && /[A-Za-z0-9]/.test(e.key)) {
+                    ed.keys += e.key;
+                    if (ed.keys === 'dd' || ed.keys === 'DD') {
+                        ed.keys = '';
+                        if (ed.lines.length > 1) { ed.lines.splice(ed.y, 1); ed.y = Math.min(ed.y, ed.lines.length - 1); ed.x = 0; out('vim: "dd" — line ' + (ed.y + 1) + ' deleted. <span class="os-term-hl">u</span> if you meant that.'); }
+                    }
+                    else if (ed.keys.slice(-2) === 'gg') { ed.y = 0; ed.x = 0; ed.keys = ''; }
+                    else if (ed.keys.length > 2) ed.keys = ed.keys.slice(-1);
+                }
+            }
+            render();
+        });
+        return { open, quit };
     }
 
     // ===== CONTACT (mini form + copy) =====

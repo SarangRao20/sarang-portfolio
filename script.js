@@ -815,6 +815,8 @@ function setupTerminal() {
                 echo: 'usage: <span class="term-hl">echo</span> &lt;text…&gt; — prints what you type',
                 cat: 'usage: <span class="term-hl">cat</span> resume.txt',
                 sudo: 'usage: <span class="term-hl">sudo</span> — proceed with caution',
+                vim: 'inside the OS terminal: <span class="term-hl">vim</span> [file] · i = insert · Esc = normal · :w / :q / :wq',
+                htop: 'open the OS terminal → <span class="term-hl">htop</span>',
                 reboot: 'reloads the page (classic ⇄ OS cycle)'
             };
             if (t && DETAIL[t]) return out(DETAIL[t]);
@@ -826,7 +828,8 @@ function setupTerminal() {
                 '&nbsp;&nbsp;AI: ask "…" · keys · key &lt;API_KEY&gt;<br>' +
                 '&nbsp;&nbsp;system: themes · accent · wall · matrix · crt · dim · sound · clock · session<br>' +
                 '&nbsp;&nbsp;history · help &lt;cmd&gt; · clear · reboot<br>' +
-                '&nbsp;&nbsp;guide: <span class="term-hl">guide</span> (manual) · <span class="term-hl">motive</span> (why an OS)');
+                '&nbsp;&nbsp;guide: <span class="term-hl">guide</span> (manual) · <span class="term-hl">motive</span> (why an OS)<br>' +
+                '&nbsp;&nbsp;toys: vim · htop · ping · fastfetch · screenfetch · tree');
         },
         guide: () => out('SARANG OS — QUICK MANUAL<br>Open the full guide inside the OS: pill (bottom-right) → start → GUIDE, or press F1 there.<br>Short door: About=who · Projects=what shipped · Experience=where worked · Cases=fixes · Resume=take · Contact=reach.<br>Try <span class="term-hl">ask "what have you built?"</span> — Gemini answers about Sarang only.'),
         motive: () => out('<span class="term-hl">MOTIVE</span> — a portfolio that wears an OS<br>So the CV is operated, not just read: real window manager, live shell, localStorage persistence, raw HTML/CSS/JS. No frameworks — this OS is the proof AND the demo.'),
@@ -882,6 +885,23 @@ function setupTerminal() {
             'experience.txt<br>' +
             '<span class="term-ok">AI Team Lead @ TenancyPassport — 2026</span><br>' +
             '&nbsp;&nbsp;· 5 interns led · repos consolidated · production CV + conversational AI'),
+        fastfetch: () => out(
+            '<span class="term-dim">fastfetch · classic flavor</span><br>' +
+            '<span class="term-ok">oop25@portfolio</span><br>' +
+            '&nbsp;&nbsp;OS: SARANG.OS v2.9.6 · raw HTML/CSS/JS<br>' +
+            '&nbsp;&nbsp;Kernel: overthinking @ 4.2 GHz · Memory: RAG + patterns<br>' +
+            '&nbsp;&nbsp;GPU: resolve | Display: 2560×1440 · uptime: 9 colleges'),
+        screenfetch: () => out(
+            '<span class="term-dim">screenfetch · believable ascii</span><br>' +
+            '<span class="term-ok">ascii:  ____  ___  </span><br>' +
+            '<span class="term-ok">      ( (_) \/ \ \\ | sarang@desktop</span><br>' +
+            '&nbsp;&nbsp;&nbsp;OS: sarang.os · the OS is the portfolio'),
+        cd: () => out('cd: wander the filesystem inside the OS — pill (bottom-right) → terminal → <span class="term-hl">cd nbfc</span> · <span class="term-hl">ls</span> · <span class="term-hl">cat README.md</span>'),
+        tree: () => out('tree: <span class="term-ok">~/systems</span><br>&nbsp;&nbsp;│<br>&nbsp;&nbsp;├─ agentic-doc/ · cv-inventory/ · elysia/ · nbfc/ · nivana/ · battery/<br>&nbsp;&nbsp;└─ six agents, all humming (full tree in the OS terminal: <span class="term-hl">tree</span>)'),
+        vim: () => out('vim: the real mini-editor lives inside the OS — pill → TERMINAL → <span class="term-hl">vim</span> (i = insert · Esc · :wq).'),
+        nvim: () => out('nvim: same soul, cleaner teeth — fire it inside the OS terminal: <span class="term-hl">vim</span>.'),
+        vi: () => out('vi: the OG. inside the OS: <span class="term-hl">vi README.md</span> — it really edits.'),
+        htop: () => out('htop: open the OS terminal and type <span class="term-hl">htop</span> — six ticks of live-ish feel, then a report.'),
         sudo: () => out('<span class="term-muted">[sudo] password for sarang: ********</span><br><span class="term-ok">permission granted.</span> with great power comes great responsibility.'),
         coffee: () => out('<span class="term-ok">brewing</span> <span class="term-dim">[|||||||||-----]</span> almost there...'),
         echo: (a) => out(esc(a || '')),
@@ -988,7 +1008,7 @@ function setupTerminal() {
         },
         history: () => { out(history.length ? history.map((h, i) => String(i).padStart(3, ' ') + '  ' + esc(h)).join('<br>') : 'history: empty'); },
         uptime: () => out('up 3 years-ish — 2 ideathons fought, 1 scholarship won, ∞ rewrites.'),
-        version: () => out('SARANG OS / CLASSIC v2.9.5 · SARANG SYSTEMS · 2026'),
+        version: () => out('SARANG OS / CLASSIC v2.9.6 · SARANG SYSTEMS · 2026'),
         banner: () => out(
             '<span class="term-hl">  ____  _   __ _   _                  <br>' +
             ' / ___|| | / /\_\_\ | __ _ _ __   __ _   <br>' +
