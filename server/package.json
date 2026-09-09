@@ -1,0 +1,14 @@
+{
+  "name": "sarang-os-terminal-backend",
+  "version": "1.0.0",
+  "description": "Zero-dependency backend for the SARANG.OS virtual terminal — real bash over a PTY, streamed to the browser over WebSocket.",
+  "type": "module",
+  "main": "server.mjs",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "ISC"
+}

@@ -631,6 +631,7 @@ function buildGuideBody() {
                 <li>Open <b>Terminal</b> and type <b>help</b> — every command, on tap.</li>
                 <li>Type <b>ask "what have you built?"</b> — Gemini answers about Sarang only.</li>
                 <li><b>cat resume.txt</b> · <b>neofetch</b> · <b>banner</b> · <b>whoami</b></li>
+                <li>Dial the <b>remote</b> backend: type <b>remote ws://127.0.0.1:3001/term</b> with <b>server/server.mjs</b> running — real bash, for real.</li>
                 <li>Right-click the desktop → <b>WALLPAPER →</b> to re-skin the OS.</li>
                 <li>Open <b>Settings</b> → FX: matrix rain, CRT flicker, dim, sound.</li>
             </ol>
@@ -966,7 +967,7 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
                     </button>`).join('')}
             </div>
             <div class="os-start-foot mono">
-                <span>SARANG OS v2.9.6</span><i></i><span>PUNE · INDIA</span><i></i><span>IST <em id="os-start-clock">--:--:--</em></span>
+                <span>SARANG OS v2.9.7</span><i></i><span>PUNE · INDIA</span><i></i><span>IST <em id="os-start-clock">--:--:--</em></span>
             </div>
             <p class="os-start-tip mono">F1 = guide · ESC = close window · right-click desktop = wallpaper</p>`;
         START.querySelectorAll('.os-start-app').forEach(b =>
@@ -1280,7 +1281,49 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
         const boot = () => {
             if (screen.dataset.b) return;
             screen.dataset.b = '1';
-            setTimeout(() => out('<span class="os-muted">sarang.rao v2.9.6 — booting... ok. <span class="os-term-hl">help</span> for commands.</span>'), 80);
+            setTimeout(() => out('<span class="os-muted">sarang.rao v2.9.7 — booting... ok. <span class="os-term-hl">help</span> for commands.</span>'), 80);
+        };
+        const ps1El = win.querySelector('.os-term-ps1');
+        const stripAnsi = s => s.replace(/\x1b\[[0-9;?]*[A-Za-z]/g, '').replace(/\x1b\][^\x07]*(\x07|\x1b\\)/g, '').replace(/\r/g, '');
+        const remoteln = text => {
+            const clean = stripAnsi(text);
+            if (!clean) return;
+            const d = document.createElement('div');
+            d.className = 'os-term-out os-term-remote-out';
+            d.textContent = clean;
+            screen.appendChild(d);
+            while (screen.children.length > 600) screen.firstChild.remove();
+            screen.scrollTop = screen.scrollHeight;
+        };
+        const remote = { on: false, sock: null, url: '' };
+        const remoteUrl = () => { try { return localStorage.getItem('sr-term-url') || 'ws://127.0.0.1:3001/term'; } catch (e) { return 'ws://127.0.0.1:3001/term'; } };
+        const setPs1 = txt => { if (ps1El) ps1El.textContent = txt; };
+        const connectRemote = (arg) => {
+            const url = arg || remoteUrl();
+            if (remote.sock) { try { remote.sock.close(); } catch (e) { /* ignore */ } }
+            let ws;
+            try { ws = new WebSocket(url); } catch (e) { out('<span class="os-term-err">remote: bad address — ' + esc(url) + '</span>'); return; }
+            remote.sock = ws; remote.on = true;
+            out('remote: <span class="os-muted">dialing</span> ' + esc(url));
+            ws.onopen = () => {
+                remote.on = true;
+                out('<span class="os-ok">● REMOTE BASH ONLINE</span> — a real shell lives here now. type <span class="os-term-hl">exit</span> to return. <span class="os-muted">(' + esc(url) + ')</span>');
+                setPs1('sarang@remote> ');
+                input.placeholder = 'real bash · exit to return…';
+                setTimeout(() => input.focus(), 60);
+            };
+            ws.onmessage = ev => { try { remoteln(typeof ev.data === 'string' ? ev.data : ''); } catch (e) { /* ignore */ } };
+            ws.onclose = () => {
+                remote.on = false; remote.sock = null;
+                setPs1('sarang@os:~$');
+                input.placeholder = 'type a command…';
+                out('<span class="os-muted">remote: session closed — back in the local shell.</span>');
+                setTimeout(() => input.focus(), 60);
+            };
+            ws.onerror = () => {
+                try { ws.close(); } catch (e) { /* ignore */ }
+                out('<span class="os-term-err">remote: connection error</span> — backend down? run <span class="os-term-hl">node server/server.mjs</span>');
+            };
         };
         const gemKey = () => { try { return localStorage.getItem('sr-gemini-key') || ''; } catch (e) { return ''; } };
         const ved = initEditor(screen, input, out);
@@ -1300,7 +1343,7 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
             const interns = (D.experience || []).length;
             return `   ____   ___  
   / __ \\ /   \\   <span class="os-ok">sarang@desktop</span>
- ( (_) \\/ /\\\\\\ |  <span class="os-muted">os: sarang.os v2.9.6</span>
+ ( (_) \\/ /\\\\\\ |  <span class="os-muted">os: sarang.os v2.9.7</span>
   \\___/ /_/\\_\\\\|  <span class="os-muted">host: hp-omen-15</span>
                 <span class="os-muted">cpu: overthinking @ 4.20 ghz</span>
                 <span class="os-muted">memory: rag + patterns · 32gb/24 usable</span>
@@ -1329,10 +1372,11 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
                     tree: 'usage: <span class="os-term-hl">tree</span> — the whole /home/sarang/systems at a glance.',
                     vim: 'usage: <span class="os-term-hl">vim</span> [file] — mini-editor. <span class="os-term-hl">i</span>=insert · <span class="os-term-hl">Esc</span>=normal · <span class="os-term-hl">:w</span> <span class="os-term-hl">:q</span> <span class="os-term-hl">:wq</span>.',
                     htop: 'usage: <span class="os-term-hl">htop</span> — six ticks of live-ish feel, then it files a report.',
-                    ping: 'usage: <span class="os-term-hl">ping</span> &lt;host&gt; — polite ICMP to anyone, even figments.'
+                    ping: 'usage: <span class="os-term-hl">ping</span> &lt;host&gt; — polite ICMP to anyone, even figments.',
+                    remote: 'usage: <span class="os-term-hl">remote</span> [ws://host:port/term] — dials a <span class="os-ok">real bash</span> backend (server/server.mjs). <span class="os-term-hl">remote off</span> closes; <span class="os-term-hl">exit</span> returns you home. Know that typos are now real bash mistakes.'
                 };
                 if (t && DETAIL[t]) return out(DETAIL[t]);
-                out('apps: <span class="os-term-hl">open</span> &lt;app&gt; · <span class="os-term-hl">apps</span> — ' + ALL_APPS.slice(0, 4).join(', ') + ' +' + (ALL_APPS.length - 4) + '<br>shell: ls · cd &lt;dir&gt; · cat &lt;file&gt; · tree · echo · whoami · date · uname · uptime · neofetch · history<br>skills: about · projects · experience · achievements · contact · resume · cat resume.txt<br>AI: <span class="os-term-hl">ask</span> "…" · <span class="os-term-hl">gemini</span> · <span class="os-term-hl">ai</span> · <span class="os-term-hl">keys</span> · <span class="os-term-hl">key</span> &lt;API_KEY&gt;<br>toys: <span class="os-term-hl">vim</span> · htop · ping · fastfetch · screenfetch<br>system: themes · accent · wall · matrix · crt · dim · sound · clock · session · banner<br>guide: <span class="os-term-hl">open guide</span> (or <span class="os-term-hl">F1</span>) · <span class="os-term-hl">motive</span><br>sw: reboot · reload · clear · konami · <span class="os-term-hl">help &lt;cmd&gt;</span> for detail');
+                out('apps: <span class="os-term-hl">open</span> &lt;app&gt; · <span class="os-term-hl">apps</span> — ' + ALL_APPS.slice(0, 4).join(', ') + ' +' + (ALL_APPS.length - 4) + '<br>shell: ls · cd &lt;dir&gt; · cat &lt;file&gt; · tree · echo · whoami · date · uname · uptime · neofetch · history<br>skills: about · projects · experience · achievements · contact · resume · cat resume.txt<br>AI: <span class="os-term-hl">ask</span> "…" · <span class="os-term-hl">gemini</span> · <span class="os-term-hl">ai</span> · <span class="os-term-hl">keys</span> · <span class="os-term-hl">key</span> &lt;API_KEY&gt;<br>toys: <span class="os-term-hl">vim</span> · htop · ping · fastfetch · screenfetch<br>backend: <span class="os-term-hl">remote</span> [ws://…] — <span class="os-ok">real bash</span> over websocket · <span class="os-term-hl">remote off</span> · <span class="os-term-hl">ssh</span> alias<br>system: themes · accent · wall · matrix · crt · dim · sound · clock · session · banner<br>guide: <span class="os-term-hl">open guide</span> (or <span class="os-term-hl">F1</span>) · <span class="os-term-hl">motive</span><br>sw: reboot · reload · clear · konami · <span class="os-term-hl">help &lt;cmd&gt;</span> for detail');
             },
             echo: (a) => out(esc((a || '').replace(/^["']|["']$/g, ''))),
             history: () => { out(his.length ? his.map((h, i) => String(i).padStart(3, ' ') + '  ' + esc(h)).join('<br>') : 'history: empty'); },
@@ -1475,7 +1519,7 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
             uname: () => out('Linux hp-arch 6.12-GNU x86_64 · Sarang Rao, AI Team Lead'),
             uptime: () => out('up 3 years-ish — but who\'s counting. 2 ideathons fought, 1 scholarship won, ∞ rewrites.'),
             reboot: () => { out('rebooting…'); setTimeout(() => osNav(true), 500); },
-            version: () => out('SARANG OS v2.9.6 · build 9c2e1a · SARANG SYSTEMS · 2026 · <span class="os-muted">+ mini vim · holo-fs · toys</span>'),
+            version: () => out('SARANG OS v2.9.7 · build 9c2e1a · SARANG SYSTEMS · 2026 · <span class="os-muted">+ mini vim · holo-fs · toys · remote</span>'),
             konami: () => out('→ ↑↑↓↓←→←→BA → <span class="os-ok">ROOT ACCESS GRANTED.</span> you already owned this thought.'),
             sudo: () => out('<span class="os-muted">[sudo] password for sarang: ********</span><br><span class="os-ok">permission granted.</span>'),
             rm: () => out('rm: cannot remove / — the system says: your career is fine.'),
@@ -1510,6 +1554,18 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
             vim: (a) => ved.open(a || 'index.md'),
             nvim: (a) => ved.open(a || 'index.md'),
             vi: (a) => ved.open(a || 'index.md'),
+            remote: (a) => {
+                const t = (a || '').trim();
+                if (!t) {
+                    if (remote.on) return out('remote: <span class="os-ok">● LIVE</span> — <span class="os-term-hl">exit</span> to leave, <span class="os-term-hl">remote off</span> to force-close.');
+                    return out('usage: <span class="os-term-hl">remote &lt;ws://host:port/term&gt;</span> — saved: <span class="os-term-hl">' + esc(remoteUrl()) + '</span><br><span class="os-muted">backend: node server/server.mjs · try: remote ws://127.0.0.1:3001/term · exit to return</span>');
+                }
+                if (t === 'off' || t === 'disconnect') { if (remote.sock) { try { remote.sock.close(); } catch (e) { /* ignore */ } } else out('remote: not connected.'); return; }
+                if (!/^wss?:\/\/\S+/.test(t)) return out('remote: give a <span class="os-term-hl">ws://</span> or <span class="os-term-hl">wss://</span> address');
+                try { localStorage.setItem('sr-term-url', t); } catch (e) { /* ignore */ }
+                connectRemote(t);
+            },
+            ssh: (a) => CMD.remote(a),
             keys: () => {
                 const k = gemKey();
                 out(k
@@ -1551,6 +1607,11 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
                 const v = input.value.trim();
                 input.value = ''; cmdEl.textContent = '';
                 if (!v) return;
+                if (remote.on && remote.sock && remote.sock.readyState === 1) {
+                    his.push(v); hi = his.length;
+                    try { remote.sock.send(v + '\n'); } catch (err) { /* ignore */ }
+                    return;
+                }
                 hline(esc(v));
                 his.push(v); hi = his.length;
                 const parts = v.split(/\s+/);
@@ -1558,6 +1619,9 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
                 const rest = parts.slice(1).join(' ');
                 const f = CMD[n];
                 if (f) f(rest); else out(`<span class="os-term-err">bash: ${esc(n)}: command not found</span>`);
+            } else if (remote.on && remote.sock && remote.sock.readyState === 1 && e.ctrlKey && (e.key === 'c' || e.key === 'C')) {
+                e.preventDefault();
+                try { remote.sock.send('\x03'); } catch (err) { /* ignore */ }
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
                 if (his.length && hi > 0) { hi--; input.value = his[hi] || ''; cmdEl.textContent = input.value; }
