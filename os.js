@@ -274,7 +274,7 @@
 
         explorer: {
             title: 'FILE EXPLORER — DATA VAULT',
-            width: 760, height: 580,
+            width: 820, height: 620,
             body() {
                 const wrap = document.createElement('div');
                 wrap.className = 'os-app os-explorer';
@@ -291,17 +291,26 @@
                     ['[CALC]', 'compute.calc', 'CALCULATOR — MATH UNIT', '0.9 KB', 'calculator']
                 ];
                 wrap.innerHTML = `
-                    <div class="os-exp-path mono"><span>→ C:\</span><span>SYS</span><span>SARANGOS</span><span>v2.7</span></div>
-                    <div class="os-exp-list">
-                        ${files.map(f => `
-                            <div class="os-exp-item mono" data-open="${f[4]}" tabindex="0" role="button">
-                                <span class="os-exp-glyph">${f[0]}</span>
-                                <span><b>${f[1]}</b><i class="os-muted"> — ${f[2]}</i></span>
-                                <span class="os-exp-meta">${f[3]}</span>
-                            </div>`).join('')}
+                    <div class="os-exp-hud mono">
+                        <div class="os-exp-bar">
+                            <span class="os-exp-path"><span>→ C:\</span><span>SYS</span><span>SARANGOS</span><span>v2.7</span></span>
+                            <span class="os-exp-stat">VAULT // ${files.length} OBJECTS // ENCRYPTED ●</span>
+                        </div>
+                        <div class="os-exp-grid">
+                            ${files.map(f => `
+                                <div class="os-exp-card mono" data-open="${f[4]}" tabindex="0" role="button">
+                                    <span class="os-exp-icon">${f[0]}</span>
+                                    <span class="os-exp-name">${f[1]}</span>
+                                    <span class="os-exp-desc">${f[2]}</span>
+                                    <span class="os-exp-size">${f[3]}</span>
+                                </div>`).join('')}
+                        </div>
+                        <div class="os-exp-foot mono">SELECT FILE TO MOUNT → SYSTEM BUS READY ● &nbsp;|&nbsp; DOUBLE-CLICK TO EXECUTE</div>
                     </div>`;
-                $$('.os-exp-item', wrap).forEach(it =>
-                    it.addEventListener('click', () => WM.open(it.dataset.open)));
+                $$('.os-exp-card', wrap).forEach(it => {
+                    it.addEventListener('click', () => WM.open(it.dataset.open));
+                    it.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); WM.open(it.dataset.open); }});
+                });
                 return wrap;
             }
         },
@@ -563,31 +572,40 @@
         },
 
         contact: {
-            title: 'CONTACT — INFERENCE',
-            width: 640, height: 600,
+            title: 'CONTACT — SECURE COMMS',
+            width: 780, height: 620,
             body() {
                 const wrap = document.createElement('div');
                 wrap.className = 'os-app os-contact';
                 wrap.innerHTML = `
-                    <div class="os-contact-meta mono">
-                        <div class="meta-row"><span class="spec-key mono">EMAIL</span>
-                            <span class="meta-email">raosarang2006@gmail.com
-                                <button type="button" class="copy-btn mono os-copy" data-email="raosarang2006@gmail.com">COPY</button></span></div>
-                        <div class="meta-row"><span class="spec-key mono">PHONE</span><a href="tel:+919421140800">+91 94211 40800</a></div>
-                        <div class="meta-row"><span class="spec-key mono">LINKEDIN</span><a href="https://linkedin.com/in/sarang-rao-262bbb324" target="_blank" rel="noopener noreferrer">in/sarang-rao-262bbb324 ↗</a></div>
-                        <div class="meta-row"><span class="spec-key mono">GITHUB</span><a href="https://github.com/SarangRao20" target="_blank" rel="noopener noreferrer">@SarangRao20 ↗</a></div>
-                        <div class="meta-row"><span class="spec-key mono">LEETCODE</span><a href="https://leetcode.com/u/SarangRao" target="_blank" rel="noopener noreferrer">u/SarangRao ↗</a></div>
-                    </div>
-                    <form class="os-form" novalidate>
-                        <label class="mono os-form-label" for="osf-name">Your Name</label>
-                        <input class="mono os-field" id="osf-name" name="name" required maxlength="100" placeholder="Your name" autocomplete="name">
-                        <label class="mono os-form-label" for="osf-email">Your Email</label>
-                        <input class="mono os-field" id="osf-email" name="email" type="email" required maxlength="150" placeholder="you@company.com" autocomplete="email">
-                        <label class="mono os-form-label" for="osf-msg">Message</label>
-                        <textarea class="mono os-field" id="osf-msg" name="message" required maxlength="2000" rows="4" placeholder="Role, problem, idea…"></textarea>
-                        <button class="btn btn-primary os-send" type="submit">Send message →</button>
-                        <p class="form-status mono os-status" role="status" aria-live="polite"></p>
-                    </form>`;
+                    <div class="os-contact-head mono"><span>COMMS // ESTABLISH LINK</span><span class="os-contact-signal"><i class="on"></i><i class="on"></i><i class="on"></i><i></i> SECURE CHANNEL ●</span></div>
+                    <div class="os-contact-grid">
+                        <div class="os-contact-left mono">
+                            <div class="os-contact-identity">
+                                <span class="os-contact-mark">SR</span>
+                                <span class="os-contact-who"><b>SARANG RAO</b><i>AI / ML ENGINEER — PUNE · IST</i><em>SYSTEMS NOMINAL ●</em></span>
+                            </div>
+                            <div class="os-contact-links">
+                                <div class="os-contact-row"><span class="spec-key">EMAIL</span><span class="os-contact-val">raosarang2006@gmail.com <button type="button" class="copy-btn mono os-copy" data-email="raosarang2006@gmail.com">COPY</button></span></div>
+                                <div class="os-contact-row"><span class="spec-key">PHONE</span><a href="tel:+919421140800">+91 94211 40800</a></div>
+                                <div class="os-contact-row"><span class="spec-key">LINKEDIN</span><a href="https://linkedin.com/in/sarang-rao-262bbb324" target="_blank" rel="noopener noreferrer">in/sarang-rao ↗</a></div>
+                                <div class="os-contact-row"><span class="spec-key">GITHUB</span><a href="https://github.com/SarangRao20" target="_blank" rel="noopener noreferrer">@SarangRao20 ↗</a></div>
+                                <div class="os-contact-row"><span class="spec-key">LEETCODE</span><a href="https://leetcode.com/u/SarangRao" target="_blank" rel="noopener noreferrer">u/SarangRao ↗</a></div>
+                            </div>
+                            <div class="os-contact-hint mono">PREFERRED: EMAIL FOR COLLAB · LINKEDIN FOR INTROS · GITHUB FOR CODE</div>
+                        </div>
+                        <form class="os-form" novalidate>
+                            <div class="os-form-head mono">TRANSMIT PACKET → SARANG.RAO@INBOX</div>
+                            <label class="mono os-form-label" for="osf-name">Your Name</label>
+                            <input class="mono os-field" id="osf-name" name="name" required maxlength="100" placeholder="Ada Lovelace" autocomplete="name">
+                            <label class="mono os-form-label" for="osf-email">Your Email</label>
+                            <input class="mono os-field" id="osf-email" name="email" type="email" required maxlength="150" placeholder="ada@analytical.engine" autocomplete="email">
+                            <label class="mono os-form-label" for="osf-msg">Message</label>
+                            <textarea class="mono os-field" id="osf-msg" name="message" required maxlength="2000" rows="4" placeholder="Role, problem, idea — be specific, I reply fast."></textarea>
+                            <button class="btn btn-primary os-send" type="submit">TRANSMIT →</button>
+                            <p class="form-status mono os-status" role="status" aria-live="polite"></p>
+                        </form>
+                    </div>`;
                 initContact(wrap.querySelector('.os-form'), wrap.querySelector('.os-status'), wrap.querySelector('.os-copy'));
                 return wrap;
             }
@@ -1631,6 +1649,13 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
             }
         });
         prompt.addEventListener('click', () => input.focus());
+        screen.addEventListener('click', () => { if (!termEdit) input.focus(); });
+        win.addEventListener('mouseenter', () => { if (!termEdit && document.activeElement !== input) input.focus(); });
+        screen.addEventListener('mouseenter', () => { if (!termEdit && document.activeElement !== input) input.focus(); });
+        setTimeout(() => {
+            const outer = win.closest('.os-window');
+            if (outer) outer.addEventListener('mouseenter', () => { if (!termEdit && document.activeElement !== input) input.focus(); });
+        }, 120);
         setTimeout(() => input.focus(), 150);
         boot();
     }
