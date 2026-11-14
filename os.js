@@ -701,6 +701,7 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
                     <span class="os-title-txt">${esc(app.title)}</span>
                     <span class="os-title-tools">
                         <button class="os-min mono" type="button" aria-label="Minimize">–</button>
+                        <button class="os-max mono" type="button" aria-label="Maximize">□</button>
                         <button class="os-close mono" type="button" aria-label="Close">×</button>
                     </span>
                 </header>
@@ -891,6 +892,9 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
         } else if (e.target.closest('.os-min')) {
             const w = e.target.closest('.os-window');
             WM.minimize(w.dataset.app);
+        } else if (e.target.closest('.os-max')) {
+            const w = e.target.closest('.os-window');
+            WM.maximize(w.dataset.app);
         } else if (e.target.closest('.os-window')) {
             WM.focus(e.target.closest('.os-window').dataset.app);
         } else if (e.target.closest('[data-open]')) {

@@ -739,8 +739,12 @@ a { color: inherit; }
 }
 .feat-card:hover {
     border-color: var(--blue);
-    transform: translateY(-3px);
-    box-shadow: 0 12px 32px -16px rgba(27, 46, 230, 0.25);
+    transform: translateY(-5px);
+    box-shadow: 0 20px 50px -18px rgba(27, 46, 230, 0.4), 0 0 0 1px rgba(27, 46, 230, .15);
+}
+html[data-theme="dark"] .feat-card:hover,
+html[data-theme="amoled"] .feat-card:hover {
+    box-shadow: 0 22px 55px -16px rgba(100, 120, 255, 0.35), 0 0 0 1px rgba(100, 120, 255, .2);
 }
 
 /* Flagship card — first featured project, full-width */
@@ -1903,15 +1907,21 @@ html.custom-cursor body:hover #cur-dot, html.custom-cursor body:hover #cur-ring 
     left: 0;
     top: 0;
     z-index: 1;
-    width: 560px;
-    height: 560px;
-    margin: -280px 0 0 -280px;
+    width: 700px;
+    height: 700px;
+    margin: -350px 0 0 -350px;
     border-radius: 50%;
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.6s ease;
     background: radial-gradient(closest-side, var(--spot), transparent 72%);
     will-change: transform, opacity;
+}
+html[data-theme="dark"] .spotlight,
+html[data-theme="amoled"] .spotlight {
+    width: 800px; height: 800px;
+    margin: -400px 0 0 -400px;
+    background: radial-gradient(closest-side, rgba(120, 140, 255, 0.14), transparent 70%);
 }
 html.no-pointer .spotlight { display: none; }
 
@@ -1981,10 +1991,14 @@ html.no-pointer .spotlight { display: none; }
     z-index: 0;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 0.25s ease;
-    background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%), var(--glow), transparent 70%);
+    transition: opacity 0.3s ease;
+    background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 50%), var(--glow), transparent 70%);
 }
 .feat-card:hover::after { opacity: 1; }
+html[data-theme="dark"] .feat-card::after,
+html[data-theme="amoled"] .feat-card::after {
+    background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 50%), rgba(120, 140, 255, 0.28), transparent 70%);
+}
 .feat-card > * { position: relative; z-index: 1; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2440,8 +2454,8 @@ html[data-wall="pulse"] .os-wall-mark-name .accent { color: var(--coral); }
     animation: osWinIn .24s cubic-bezier(.2, .78, .24, 1);
 }
 @keyframes osWinIn {
-    from { opacity: 0; transform: translateY(10px) scale(.965); }
-    to   { opacity: 1; transform: none; }
+    from { opacity: 0; transform: translateY(16px) scale(.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 .os-window.os-closing {
     animation: osWinOut .15s ease forwards;
@@ -2462,6 +2476,24 @@ html[data-wall="pulse"] .os-wall-mark-name .accent { color: var(--coral); }
 }
 .os-window.no-anim { animation: none; }
 
+/* Frosted glass in dark / AMOLED mode */
+html.os-mode[data-theme="dark"] .os-window,
+html.os-mode[data-theme="amoled"] .os-window {
+    background: rgba(13, 14, 22, 0.78);
+    backdrop-filter: blur(28px) saturate(1.6);
+    -webkit-backdrop-filter: blur(28px) saturate(1.6);
+    border-color: rgba(255,255,255,.1);
+}
+html.os-mode[data-theme="dark"] .os-window.active,
+html.os-mode[data-theme="amoled"] .os-window.active {
+    background: rgba(13, 14, 22, 0.88);
+    border-color: rgba(255,255,255,.18);
+    box-shadow: 0 42px 100px -20px rgba(0,0,0,.85),
+                0 4px 18px rgba(0,0,0,.45),
+                0 0 0 1px var(--blue),
+                0 0 55px rgba(100, 120, 255, .22);
+}
+
 .os-title {
     display: flex; align-items: center; gap: .7rem;
     height: 40px; padding: 0 8px 0 14px;
@@ -2470,6 +2502,13 @@ html[data-wall="pulse"] .os-wall-mark-name .accent { color: var(--coral); }
     user-select: none; cursor: grab; flex-shrink: 0;
 }
 html[data-theme="dark"] .os-title { background: var(--surface); }
+html.os-mode[data-theme="dark"] .os-title,
+html.os-mode[data-theme="amoled"] .os-title {
+    background: rgba(8, 10, 18, 0.65);
+    border-bottom-color: rgba(255,255,255,.07);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
 .os-title .os-dots { display: flex; gap: 5px; }
 .os-title .os-dots i { width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--line-strong); }
 .os-title .os-dots i:nth-child(1) { background: var(--blue); border-color: var(--blue); }
@@ -2480,13 +2519,28 @@ html[data-theme="dark"] .os-title { background: var(--surface); }
     font-size: .66rem; letter-spacing: .16em; color: var(--ink-soft);
 }
 .os-title-tools { display: flex; gap: 2px; }
-.os-min, .os-close {
+.os-min, .os-close, .os-max {
     width: 28px; height: 24px; border-radius: 6px;
     background: transparent; border: 1px solid transparent;
     color: var(--ink-soft); font-size: .9rem; line-height: 1; cursor: pointer;
 }
 .os-min:hover { background: var(--blue-soft); color: var(--blue); }
 .os-close:hover { background: rgba(224, 82, 51, .12); color: var(--coral); }
+.os-max { font-size: .7rem; }
+.os-max:hover { background: rgba(74, 222, 128, .12); color: var(--green); }
+.os-window.os-maxed .os-max { color: var(--green); opacity: .7; }
+
+/* Per-app icon colors */
+.os-icon[data-open="about"] .os-icon-glyph    { background: linear-gradient(145deg, #2449F6 0%, #1428B4 100%); }
+.os-icon[data-open="projects"] .os-icon-glyph { background: linear-gradient(145deg, #0D9A58 0%, #047A45 100%); }
+.os-icon[data-open="experience"] .os-icon-glyph { background: linear-gradient(145deg, #E05233 0%, #9A2210 100%); }
+.os-icon[data-open="cases"] .os-icon-glyph    { background: linear-gradient(145deg, #8B5CF6 0%, #5B21B6 100%); }
+.os-icon[data-open="terminal"] .os-icon-glyph { background: #0A0B12; border-color: rgba(0,245,212,.45); box-shadow: 0 6px 16px rgba(0,0,0,.5), 0 0 14px rgba(0,245,212,.18); color: #00F5D4; }
+.os-icon[data-open="explorer"] .os-icon-glyph { background: linear-gradient(145deg, #D97706 0%, #92400E 100%); }
+.os-icon[data-open="notepad"] .os-icon-glyph  { background: linear-gradient(145deg, #374151 0%, #111827 100%); }
+.os-icon[data-open="resume"] .os-icon-glyph   { background: linear-gradient(145deg, #1D4ED8 0%, #0A1E6E 100%); }
+.os-icon[data-open="contact"] .os-icon-glyph  { background: linear-gradient(145deg, #DC2626 0%, #7F1D1D 100%); }
+.os-icon[data-open="settings"] .os-icon-glyph { background: linear-gradient(145deg, #4B5563 0%, #1F2937 100%); }
 
 .os-win-body { flex: 1; overflow: auto; padding: 1.35rem 1.5rem 1.6rem; }
 

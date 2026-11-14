@@ -84,7 +84,6 @@ const data = {
             ],
             tags: ['Python', 'PowerShell', 'C# WinForms', 'DSDT / ACPI', 'systemd', 'AUR'],
             links: [
-                { name: 'CASE STUDY ↗', url: 'case.html?p=battery' },
                 { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20/battery-charge-limiter' }
             ]
         }
