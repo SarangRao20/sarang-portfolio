@@ -84,9 +84,9 @@
 
     // ===== ONE-TIME WELCOME SPLASH STATS (marketing on mount) =====
     const SPLASH_STATS = [
-        ['ROLE', 'AI TEAM LEAD — TENANCYPASS'],
-        ['SHIPPED', (((typeof data !== 'undefined' && data.featuredProjects) || []).length || 0) + ' SYSTEMS ROI-READY'],
-        ['GROWS', '5 AI INTERNS IN PRODUCTION'],
+        ['ROLE', 'AI TEAM LEAD — TENANCYPASSPORT'],
+        ['SHIPPED', (((typeof data !== 'undefined' && data.featuredProjects) || []).length || 0) + ' FEATURED SYSTEMS'],
+        ['COMPETED', '6+ HACKATHONS · TOP 1K AMAZON ML'],
         ['STACK', 'RAG · MULTI-AGENT · VOICE AI · CV']
     ];
 
@@ -126,7 +126,9 @@
         ((typeof data !== 'undefined' && data.skills) || []).forEach(s => L.push('· ' + s.group + ': ' + s.items.join(', ')));
         L.push('');
         L.push('ACHIEVEMENTS');
-        L.push('· 2 ideathons won · Reliance Foundation Scholar — top 1%');
+        L.push('· 2 ideathons won (Innowave 2025, FY Healthcare) · Reliance Foundation Scholar — top 1%');
+        L.push('· Amazon ML Challenge 2026 — rank 1,275 / 6,868 teams (score 0.972865)');
+        L.push('· 6+ hackathons competed and shipped');
         L.push('');
         L.push('— generated from the SARANG OS resume panel —');
         return L.join('\n');
@@ -215,7 +217,7 @@
                 const wrap = document.createElement('div');
                 wrap.className = 'os-app';
                 const list = (D.featuredProjects || []).filter(p => p.caseStudy);
-                list.push(D.additionalProjects ? (D.additionalProjects.find(p => p.caseStudy === 'battery') || {}) : {});
+                (D.additionalProjects || []).filter(p => p.caseStudy).forEach(p => list.push(p));
                 const items = list.filter(p => p && p.title).map(p => {
                     const links = p.caseStudy
                         ? `<a class="text-link mono os-link" href="case.html?p=${p.caseStudy}">CASE STUDY ↗</a>`
@@ -281,7 +283,7 @@
                 const files = [
                     ['[DOC]', 'about.sys', 'SYSTEM PROFILE', '4.2 KB', 'about'],
                     ['[DOC]', 'featured-systems.doc', 'PROJECTS — SELECTED SYSTEMS', '12.6 KB', 'projects'],
-                    ['[LOG]', 'run-log-2025.lst', 'EXPERIENCE — RUN LOG', '8.9 KB', 'experience'],
+                    ['[LOG]', 'run-log-2026.lst', 'EXPERIENCE — RUN LOG', '8.9 KB', 'experience'],
                     ['[CASE]', 'case-studies.db', 'DEEP DIVES', '6.4 KB', 'cases'],
                     ['[BIN]', 'sticky-notes.bin', 'NOTEPAD DATA', '0.2 KB', 'notepad'],
                     ['[TXT]', 'sarang-resume.txt', 'RESUME — CONTROL PANEL', '16.0 KB', 'resume'],
@@ -492,25 +494,32 @@
 
         resume: {
             title: 'RESUME — CONTROL PANEL',
-            width: 960, height: 680,
+            width: 980, height: 700,
             body() {
                 const wrap = document.createElement('div');
                 wrap.className = 'os-app os-resume';
+                const VARIANTS = [
+                    { id: 'pdf',     label: 'AI / ML',       file: 'assets/sarang-rao-resume-os.pdf',      dl: 'Sarang-Rao-Resume.pdf',     title: 'SARANG_RAO_RESUME.PDF' },
+                    { id: 'sde',     label: 'SDE',            file: 'assets/sarang-rao-resume-sde.pdf',     dl: 'Sarang-Rao-SDE.pdf',        title: 'SARANG_RAO_SDE.PDF' },
+                    { id: 'backend', label: 'BACKEND',        file: 'assets/sarang-rao-resume-backend.pdf', dl: 'Sarang-Rao-Backend.pdf',    title: 'SARANG_RAO_BACKEND.PDF' },
+                    { id: 'da',      label: 'DATA ANALYTICS', file: 'assets/sarang-rao-resume-da.pdf',      dl: 'Sarang-Rao-DA.pdf',         title: 'SARANG_RAO_DA.PDF' }
+                ];
                 wrap.innerHTML = `
                     <div class="os-tabs mono">
-                        <button type="button" class="os-tab is-on" data-p="pdf">VIEW PDF</button>
+                        ${VARIANTS.map((v, i) => `<button type="button" class="os-tab${i === 0 ? ' is-on' : ''}" data-p="${v.id}">${v.label}</button>`).join('')}
                         <button type="button" class="os-tab" data-p="sum">QUICK SUMMARY</button>
                     </div>
                     <div class="os-resume-panels">
-                        <div class="os-panel os-resume-pdf" data-p="pdf">
+                        ${VARIANTS.map((v, i) => `
+                        <div class="os-panel os-resume-pdf" data-p="${v.id}"${i > 0 ? ' hidden' : ''}>
                             <div class="os-resume-toolbar mono">
-                                <span class="os-resume-file">SARANG_RAO_RESUME_OS.PDF</span>
-                                <a class="btn btn-ghost os-resume-dl" href="assets/sarang-rao-resume-os.pdf" download="Sarang-Rao-Resume-OS.pdf">DOWNLOAD<span class="mono btn-suffix">.PDF</span></a>
-                                <a class="btn btn-ghost os-resume-mail" href="mailto:raosarang2006@gmail.com?subject=Role%20for%20you%20—%20Sarang%20Rao">EMAIL A ROLE</a>
+                                <span class="os-resume-file">${v.title}</span>
+                                <a class="btn btn-ghost os-resume-dl" href="${v.file}" download="${v.dl}">DOWNLOAD<span class="mono btn-suffix">.PDF</span></a>
+                                <a class="btn btn-ghost os-resume-mail" href="mailto:raosarang2006@gmail.com?subject=Role%20for%20you%20%E2%80%94%20Sarang%20Rao">EMAIL A ROLE</a>
                             </div>
-                            <iframe class="os-resume-frame" src="assets/sarang-rao-resume-os.pdf" title="Sarang Rao — OS-styled resume"></iframe>
-                            <div class="os-resume-fallback mono">no pdf viewer? <a href="assets/sarang-rao-resume-os.pdf" download="Sarang-Rao-Resume-OS.pdf">download instead</a></div>
-                        </div>
+                            <iframe class="os-resume-frame" src="${v.file}" title="Sarang Rao — ${v.label} resume"></iframe>
+                            <div class="os-resume-fallback mono">no pdf viewer? <a href="${v.file}" download="${v.dl}">download instead</a></div>
+                        </div>`).join('')}
                         <div class="os-panel" data-p="sum" hidden>
                             <div class="os-resume-kv mono">
                                 <div class="kv"><span>NAME</span><b>Sarang Rao</b></div>
@@ -545,7 +554,7 @@
                     setTimeout(() => URL.revokeObjectURL(a.href), 3000);
                     const b = wrap.querySelector('.os-export-txt');
                     b.textContent = 'EXPORTED ✓';
-                    setTimeout(() => { b.textContent = 'Export as .TXT.TXT'; }, 1800);
+                    setTimeout(() => { b.innerHTML = 'Export as .TXT<span class="mono btn-suffix">.TXT</span>'; }, 1800);
                 });
                 buildTextResume.wrapRef = wrap;
                 return wrap;
@@ -1462,7 +1471,7 @@ const ALL_APPS = DESKTOP.concat(['guide', 'paint', 'calculator']);
             skills: () => {
                 (D.skills || []).forEach(s => out(`<span class="os-term-hl">${esc(s.group)}</span> ${esc(s.items.slice(0, 4).join(' · '))}`));
             },
-            achievements: () => out('2 ideathons won (Innowave 2025 — PICT ACM, FY Healthcare) · Reliance Foundation Scholar — top 1%'),
+            achievements: () => out('2 ideathons won (Innowave 2025 — PICT ACM, FY Healthcare) · Reliance Foundation Scholar — top 1%<br><span class="os-muted">Amazon ML Challenge 2026 — rank 1,275 / 6,868 teams (0.972865) · 6+ hackathons shipped</span>'),
             contact: () => out(`email ${link('raosarang2006@gmail.com', 'mailto:raosarang2006@gmail.com')} · github ${link('@SarangRao20', 'https://github.com/SarangRao20', true)}`),
             resume: () => out(`→ ${link('sarang-rao-resume-os.pdf', 'assets/sarang-rao-resume-os.pdf')} · <span class="os-term-hl">cat resume.txt</span> for plain text`),
             open: (a) => {

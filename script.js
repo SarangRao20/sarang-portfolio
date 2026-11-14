@@ -67,21 +67,54 @@ const data = {
             ]
         },
         {
-            title: 'Nivana',
-            category: 'AI AGENTS',
-            subtitle: 'Mental health conversational AI · Team',
-            description: 'Built a mental health platform with an emotional vector engine tracking mood across sessions and triggering interventions on deterioration. Multi-layered AI pipeline: Ollama for local intent classification, Gemini for conversational responses, crisis detection with automatic escalation. Full stack: Flask, PostgreSQL, Redis, Celery, React.',
+            title: 'Aapda Awaaz',
+            category: 'VOICE AI',
+            subtitle: 'Multilingual disaster response assistant · Hackathon (Gnani AI + Sarvam)',
+            description: 'When phone lines are full, a voice still answers. A disaster response platform that takes emergency calls in 10+ Indian languages, triages them conversationally, resolves vague locations to map coordinates, deduplicates reports across channels, and ranks incidents by severity — live site, Telegram bot, and Android app release.',
             metrics: [
-                { v: 'PHQ-9', k: 'DEPRESSION' },
-                { v: 'GAD-7', k: 'ANXIETY' },
-                { v: 'ASYNC', k: 'CELERY WORKERS' }
+                { v: '10+', k: 'LANGUAGES' },
+                { v: 'LIVE', k: 'SITE + TELEGRAM + ANDROID' },
+                { v: 'CI/CD', k: 'DEPLOYED' }
             ],
             shipLog: [
-                'Emotional vector engine tracks mood across sessions; triggers interventions when signals deteriorate.',
-                'Three-layer AI pipeline: local intent (Ollama) → conversational (Gemini) → crisis detection with automatic escalation.',
-                'Shipped full stack: Flask, PostgreSQL, Redis, Celery async alerts and reports.'
+                'Sarvam Saaras v3 STT + Bulbul v3 TTS for real-time multilingual voice triage; Awaaz Live WebSocket assistant for conversational follow-up.',
+                'Location resolver turns vague village names into exact map coordinates via local gazetteer — grounded vs. unverified flags on every incident.',
+                'Deduplication across call channels + deterministic severity scoring (Critical/High/Medium/Low) for dispatcher dashboard.'
             ],
-            tags: ['Flask', 'PostgreSQL', 'Redis', 'Celery', 'Gemini API'],
+            tags: ['Gnani AI', 'Sarvam AI', 'FastAPI', 'React', 'WebSocket', 'Leaflet'],
+            links: [
+                { name: 'LIVE SITE ↗', url: 'https://aapdaawaaz.duckdns.org' },
+                { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20/AapdaAawaz' }
+            ]
+        },
+        {
+            title: 'Veritas-Clin',
+            category: 'CLINICAL AI',
+            subtitle: 'Evidence-grounded clinical decision support · Solo project',
+            description: 'A clinical CDS platform that extracts patient information from multi-encounter histories and answers physician queries with strict citations and zero-hallucination abstention. NLI verification validates every claim; a proactive safety watchdog flags dangerous drug-condition interactions in real time. JWT + RBAC + HIPAA Safe Harbor PHI de-identification before any prompt transmission.',
+            metrics: [
+                { v: 'ZERO', k: 'HALLUCINATION GUARANTEE' },
+                { v: 'HIPAA', k: 'SAFE HARBOR' },
+                { v: '3', k: 'LLM BACKENDS' }
+            ],
+            shipLog: [
+                'NLI verification + calibrated abstention: every extracted claim is grounded to a source passage — no citation, no claim.',
+                'Proactive CDSS Safety Watchdog cross-checks active medications against real-time clinical state (e.g. ACE inhibitors during AKI).',
+                'Three swappable LLM backends (Groq, Claude 3.5, Ollama) + permanent SQLite embedding cache for sub-second startup.'
+            ],
+            tags: ['FastAPI', 'React', 'Groq', 'Claude API', 'Ollama', 'NLI', 'JWT'],
+            links: [
+                { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20/veritas-clin' }
+            ]
+        }
+    ],
+
+    additionalProjects: [
+        {
+            title: 'Nivana',
+            category: 'AI AGENTS',
+            description: 'Mental health platform with an emotional vector engine tracking mood across sessions, PHQ-9/GAD-7 assessments, crisis detection with automatic escalation. Flask + PostgreSQL + Redis + Celery backend.',
+            metric: 'IDEATHON WIN',
             links: [
                 { name: 'LIVE DEMO ↗', url: 'https://nivana-azure.vercel.app' },
                 { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20/Nivana' }
@@ -90,27 +123,22 @@ const data = {
         {
             title: 'LeetCode Wrapped',
             category: 'DATA VIZ',
-            subtitle: 'Spotify Wrapped for LeetCode · Solo project',
-            description: 'Full-stack data visualization platform with FastAPI querying the LeetCode GraphQL API to aggregate yearly submission statistics: difficulty breakdowns, active days, and acceptance trends. Redis caching for rate limits, Recharts interactive charts for streak tracking and yearly retrospectives. Deployed on Vercel.',
-            metrics: [
-                { v: 'GRAPHQL', k: 'API' },
-                { v: 'REDIS', k: 'CACHED' },
-                { v: 'RECHARTS', k: 'VIZ' }
-            ],
-            shipLog: [
-                'FastAPI queries LeetCode\u2019s GraphQL API to aggregate yearly submission statistics.',
-                'Redis caching to respect API rate limits; Recharts for streak tracking and yearly retrospectives.',
-                'CI/CD on Vercel \u2014 live deploy with cached analytics pipeline.'
-            ],
-            tags: ['FastAPI', 'React', 'GraphQL', 'Redis', 'Recharts'],
+            description: 'Spotify Wrapped for LeetCode — FastAPI queries the GraphQL API for yearly submission stats, Redis caching for rate limits, Recharts for streak tracking and yearly retrospectives.',
+            metric: 'LIVE · VERCEL',
             links: [
                 { name: 'LIVE DEMO ↗', url: 'https://leetcode-wrapped-two.vercel.app' },
                 { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20/LeetCodeWrapped' }
             ]
-        }
-    ],
-
-    additionalProjects: [
+        },
+        {
+            title: 'Amazon ML Challenge 2026',
+            category: 'ML COMPETITION',
+            description: 'Business Entity Resolution — ranked 1,275 / 6,868 teams with score 0.972865. Iterative pipeline: direct-evidence LightGBM (89 features), country-level bisection calibration, 1-to-1 strict deduplication, synthetic distractor pruning.',
+            metric: 'RANK 1,275 / 6,868 · 0.972 F1',
+            links: [
+                { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20/AmazonML' }
+            ]
+        },
         {
             title: 'OLA BDM Analytics',
             category: 'DATA VIZ',
@@ -128,6 +156,26 @@ const data = {
             metric: 'IITM MAD2 — GRADED A',
             links: [
                 { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20/Hospital-Management-System---V2' }
+            ]
+        },
+        {
+            title: 'HP Battery Charge Limiter',
+            category: 'TOOLS & SYSTEMS',
+            caseStudy: 'battery',
+            description: 'HP omits the charge-limit feature on many Pavilion models. Manually reverse-engineered EC register 0x76 via DSDT analysis — firmware resets it in <3s, so the daemon fights back every 3s. Shipped as a Windows GUI installer (.exe) and an Arch Linux AUR package, with a community register database for other models.',
+            metric: 'AUR · WINDOWS EXE · 15 STARS',
+            links: [
+                { name: 'CASE STUDY ↗', url: 'case.html?p=battery' },
+                { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20/battery-charge-limiter' }
+            ]
+        },
+        {
+            title: 'EY — Loan Negotiation AI',
+            category: 'AI AGENTS',
+            description: 'Conversational loan negotiation with a 5-step compliance ladder and 3-tier decisioning (auto-approve, manual review, reject). spaCy NER + Gemini for document entity extraction and verification.',
+            metric: 'HACKATHON · FINTECH',
+            links: [
+                { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20/EY_proto' }
             ]
         },
         {
@@ -149,13 +197,12 @@ const data = {
             ]
         },
         {
-            title: 'HP Battery Charge Limiter',
-            category: 'TOOLS & SYSTEMS',
-            caseStudy: 'battery',
-            description: 'Reverse-engineered HP EC firmware to control battery charge limits — a safety fix shared openly for the community.',
-            metric: 'EC FIRMWARE · 2023',
+            title: 'CTC / SaharaAI',
+            category: 'FULL STACK',
+            description: 'Multi-role assistive platform for PWID users — task engine, reminder manager, caregiver dashboard, voice-based interaction with speech recognition and text-to-speech for accessibility.',
+            metric: 'SOCIAL IMPACT',
             links: [
-                { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20/battery-charge-limiter' }
+                { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20/CTC' }
             ]
         }
     ],
@@ -169,8 +216,8 @@ const data = {
     ],
     benchmarks: [
         { value: 2, suffix: '', label: 'IDEATHON WINS' },
-        { value: 1, suffix: '%', label: 'TOP NATIONAL · RELIANCE SCHOLAR' },
-        { value: 4, suffix: '+', label: 'PROD SYSTEMS · LIVE' },
+        { value: 1275, suffix: '', label: 'AMAZON ML RANK / 6,868 TEAMS' },
+        { value: 6, suffix: '+', label: 'HACKATHONS SHIPPED' },
         { value: 5, suffix: '', label: 'INTERNS LED' }
     ]
 };
@@ -206,12 +253,18 @@ function renderFeatured() {
     const el = document.getElementById('featured-grid');
     if (!el) return;
     el.innerHTML = data.featuredProjects.map((p, i) => `
-        <article class="feat-card reveal">
+        <article class="feat-card reveal${i === 0 ? ' is-flagship' : ''}">
             <header class="feat-head">
-                <span class="feat-id mono">P-${String(i + 1).padStart(2, '0')}</span>
+                <div class="feat-head-top">
+                    <span class="feat-id mono">P-${String(i + 1).padStart(2, '0')}</span>
+                    <span class="more-cat mono">${p.category}</span>
+                </div>
                 <h3 class="feat-title">${p.title}</h3>
                 ${p.subtitle ? `<p class="feat-sub mono">${p.subtitle}</p>` : ''}
             </header>
+            ${p.metrics ? `<div class="metric-row">${p.metrics.map(m =>
+                `<div class="metric"><span class="metric-v mono">${m.v}</span><span class="metric-k mono">${m.k}</span></div>`
+            ).join('')}</div>` : ''}
             <p class="feat-desc">${p.description}</p>
             <footer class="feat-foot">
                 <div class="tag-row">${p.tags.map(t => `<span class="tag mono">${t}</span>`).join('')}</div>
@@ -1110,13 +1163,15 @@ function setupTheme() {
             setTimeout(() => root.classList.remove('theme-anim'), 400);
         }
         root.setAttribute('data-theme', mode);
-        btn.textContent = mode === 'dark' ? 'LIGHT' : 'DARK';
-        btn.setAttribute('aria-pressed', String(mode === 'dark'));
-        if (meta) meta.setAttribute('content', mode === 'dark' ? '#101116' : '#F2F1EB');
+        const isDark = mode === 'dark' || mode === 'amoled';
+        btn.textContent = isDark ? 'LIGHT' : 'DARK';
+        btn.setAttribute('aria-pressed', String(isDark));
+        if (meta) meta.setAttribute('content', isDark ? '#101116' : '#F2F1EB');
     };
     apply(root.getAttribute('data-theme') || 'light', false);
     btn.addEventListener('click', () => {
-        const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        const cur = root.getAttribute('data-theme');
+        const next = (cur === 'dark' || cur === 'amoled') ? 'light' : 'dark';
         try { localStorage.setItem('sr-theme', next); } catch (e) { /* private mode */ }
         apply(next, true);
     });
