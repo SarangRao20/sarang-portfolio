@@ -86,10 +86,7 @@
 
     <script>
         (function () {
-            const STYLES = {
-                light: { paper: '#F2F1EB', ink: '#101116', blue: '#1828CE' },
-                dark: { paper: '#101116', ink: '#F2F1EB', blue: '#A0A9FF' }
-            };
+            /* Theme */
             const btn = document.getElementById('theme-btn');
             const root = document.documentElement;
             const apply = (mode, animate) => {
@@ -98,40 +95,83 @@
                     setTimeout(() => root.classList.remove('theme-anim'), 400);
                 }
                 root.setAttribute('data-theme', mode);
-                btn.textContent = mode === 'dark' ? 'LIGHT' : 'DARK';
-                btn.setAttribute('aria-pressed', String(mode === 'dark'));
+                const isDark = mode === 'dark' || mode === 'amoled';
+                btn.textContent = isDark ? 'LIGHT' : 'DARK';
+                btn.setAttribute('aria-pressed', String(isDark));
                 const meta = document.querySelector('meta[name="theme-color"]');
-                if (meta) meta.setAttribute('content', STYLES[mode].paper);
+                if (meta) meta.setAttribute('content', isDark ? '#101116' : '#F2F1EB');
             };
             apply(root.getAttribute('data-theme') || 'light', false);
             btn.addEventListener('click', () => {
-                const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-                try { localStorage.setItem('sr-theme', next); } catch (e) { /* private mode */ }
+                const cur = root.getAttribute('data-theme');
+                const next = (cur === 'dark' || cur === 'amoled') ? 'light' : 'dark';
+                try { localStorage.setItem('sr-theme', next); } catch (e) {}
                 apply(next, true);
             });
 
+            /* Render case study */
             const p = new URLSearchParams(location.search).get('p') || 'elysia';
             renderCaseStudy(p);
 
-            const title = document.querySelector('#case-root .case-title');
+            /* Animate hero title */
+            const title = document.querySelector('#case-root .cs-title');
             if (title) {
-                title.classList.add('mask');
-                title.innerHTML = '<span>' + title.innerHTML + '</span>';
-                setTimeout(() => title.classList.add('is-in'), 60);
+                title.style.opacity = '0';
+                title.style.transform = 'translateY(32px)';
+                requestAnimationFrame(() => {
+                    title.style.transition = 'opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1)';
+                    setTimeout(() => { title.style.opacity = ''; title.style.transform = ''; }, 60);
+                });
             }
 
-            let io;
-            if ('IntersectionObserver' in window) {
-                io = new IntersectionObserver(entries => {
-                    entries.forEach(e => {
+            /* Scroll reveals */
+            const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (!reduced && 'IntersectionObserver' in window) {
+                const io = new IntersectionObserver(entries => {
+                    entries.forEach((e, idx) => {
                         if (e.isIntersecting) {
-                            e.target.classList.add('in');
-                            io.unobserve(e.target);
+                            const el = e.target;
+                            const delay = el.dataset.revealDelay || 0;
+                            setTimeout(() => el.classList.add('in'), Number(delay));
+                            io.unobserve(el);
                         }
                     });
-                }, { threshold: 0.15 });
+                }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+                document.querySelectorAll('.reveal').forEach((el, i) => {
+                    if (!el.dataset.revealDelay) el.dataset.revealDelay = Math.min(i % 4, 2) * 60;
+                    io.observe(el);
+                });
+            } else {
+                document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
             }
-            document.querySelectorAll('.reveal').forEach(el => { if (io) io.observe(el); });
+
+            /* Stats counter animation */
+            if (!reduced && 'IntersectionObserver' in window) {
+                const statEls = document.querySelectorAll('[data-cs-val]');
+                const animateCounter = el => {
+                    const raw = el.dataset.csVal;
+                    const match = raw.match(/^([\d,]+)(.*)$/);
+                    if (!match) return;
+                    const target = parseInt(match[1].replace(/,/g, ''), 10);
+                    const suffix = match[2];
+                    if (target < 2) return;
+                    const dur = target > 500 ? 1600 : target > 50 ? 1100 : 800;
+                    const t0 = performance.now();
+                    const tick = now => {
+                        const p = Math.min((now - t0) / dur, 1);
+                        const eased = 1 - Math.pow(1 - p, 3);
+                        const cur = Math.round(target * eased);
+                        el.textContent = (target > 999 ? cur.toLocaleString() : cur) + suffix;
+                        if (p < 1) requestAnimationFrame(tick);
+                        else el.textContent = raw;
+                    };
+                    requestAnimationFrame(tick);
+                };
+                const obs = new IntersectionObserver(entries => {
+                    entries.forEach(e => { if (e.isIntersecting) { animateCounter(e.target); obs.unobserve(e.target); } });
+                }, { threshold: 0.6 });
+                statEls.forEach(el => obs.observe(el));
+            }
         })();
     </script>
 </body>

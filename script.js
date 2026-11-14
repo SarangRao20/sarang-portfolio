@@ -67,27 +67,6 @@ const data = {
             ]
         },
         {
-            title: 'Aapda Awaaz',
-            category: 'VOICE AI',
-            subtitle: 'Multilingual disaster response assistant · Hackathon (Gnani AI + Sarvam)',
-            description: 'When phone lines are full, a voice still answers. A disaster response platform that takes emergency calls in 10+ Indian languages, triages them conversationally, resolves vague locations to map coordinates, deduplicates reports across channels, and ranks incidents by severity — live site, Telegram bot, and Android app release.',
-            metrics: [
-                { v: '10+', k: 'LANGUAGES' },
-                { v: 'LIVE', k: 'SITE + TELEGRAM + ANDROID' },
-                { v: 'CI/CD', k: 'DEPLOYED' }
-            ],
-            shipLog: [
-                'Sarvam Saaras v3 STT + Bulbul v3 TTS for real-time multilingual voice triage; Awaaz Live WebSocket assistant for conversational follow-up.',
-                'Location resolver turns vague village names into exact map coordinates via local gazetteer — grounded vs. unverified flags on every incident.',
-                'Deduplication across call channels + deterministic severity scoring (Critical/High/Medium/Low) for dispatcher dashboard.'
-            ],
-            tags: ['Gnani AI', 'Sarvam AI', 'FastAPI', 'React', 'WebSocket', 'Leaflet'],
-            links: [
-                { name: 'LIVE SITE ↗', url: 'https://aapdaawaaz.duckdns.org' },
-                { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20/AapdaAawaz' }
-            ]
-        },
-        {
             title: 'HP Battery Charge Limiter',
             category: 'TOOLS & SYSTEMS',
             caseStudy: 'battery',
@@ -158,6 +137,16 @@ const data = {
             metric: 'IITM MAD2 — GRADED A',
             links: [
                 { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20/Hospital-Management-System---V2' }
+            ]
+        },
+        {
+            title: 'Aapda Awaaz',
+            category: 'VOICE AI',
+            description: 'Emergency calls in 10+ Indian languages triaged conversationally. Location resolver maps vague village names to GPS. Deduplication + deterministic severity scoring. Live site, Telegram bot, Android release.',
+            metric: 'LIVE · 10+ LANGUAGES',
+            links: [
+                { name: 'LIVE ↗', url: 'https://aapdaawaaz.duckdns.org' },
+                { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20/AapdaAawaz' }
             ]
         },
         {
