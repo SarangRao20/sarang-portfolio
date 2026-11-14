@@ -88,23 +88,25 @@ const data = {
             ]
         },
         {
-            title: 'Veritas-Clin',
-            category: 'CLINICAL AI',
-            subtitle: 'Evidence-grounded clinical decision support · Solo project',
-            description: 'A clinical CDS platform that extracts patient information from multi-encounter histories and answers physician queries with strict citations and zero-hallucination abstention. NLI verification validates every claim; a proactive safety watchdog flags dangerous drug-condition interactions in real time. JWT + RBAC + HIPAA Safe Harbor PHI de-identification before any prompt transmission.',
+            title: 'HP Battery Charge Limiter',
+            category: 'TOOLS & SYSTEMS',
+            caseStudy: 'battery',
+            subtitle: 'EC firmware reverse engineering · Cross-platform daemon · AUR package',
+            description: 'HP ships a hidden charge-limit register (0x76) on many Pavilion models but never wires up a UI for it. Manually disassembled the ACPI DSDT table, located the register, and found the firmware resets it within 3 seconds of any write — so the daemon fights back continuously. Shipped as a one-click Windows installer with system-tray GUI and as an Arch Linux AUR package, with a community register database so owners of other HP models can replicate the discovery.',
             metrics: [
-                { v: 'ZERO', k: 'HALLUCINATION GUARANTEE' },
-                { v: 'HIPAA', k: 'SAFE HARBOR' },
-                { v: '3', k: 'LLM BACKENDS' }
+                { v: 'REG 0x76', k: 'MANUALLY REVERSE-ENGINEERED' },
+                { v: 'AUR', k: 'ARCH LINUX PACKAGE' },
+                { v: '15', k: 'GITHUB STARS' }
             ],
             shipLog: [
-                'NLI verification + calibrated abstention: every extracted claim is grounded to a source passage — no citation, no claim.',
-                'Proactive CDSS Safety Watchdog cross-checks active medications against real-time clinical state (e.g. ACE inhibitors during AKI).',
-                'Three swappable LLM backends (Groq, Claude 3.5, Ollama) + permanent SQLite embedding cache for sub-second startup.'
+                'Disassembled DSDT, mapped EC namespaces by hand — register 0x76 (BDVO), values 0x40 (auto) / 0x45 (inhibit). Zero existing public docs for this model.',
+                'Firmware resets the register in <3s — Windows daemon polls every 3s; Linux uses ACPI WMI path stable enough for 60s. Set-and-forget is not an option.',
+                'Windows: WinRing0 driver + C# GUI + Inno Setup installer with logon-persistent scheduled task. Linux: Python systemd daemon + PKGBUILD on AUR.'
             ],
-            tags: ['FastAPI', 'React', 'Groq', 'Claude API', 'Ollama', 'NLI', 'JWT'],
+            tags: ['Python', 'PowerShell', 'C# WinForms', 'DSDT / ACPI', 'systemd', 'AUR'],
             links: [
-                { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20/veritas-clin' }
+                { name: 'CASE STUDY ↗', url: 'case.html?p=battery' },
+                { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20/battery-charge-limiter' }
             ]
         }
     ],
@@ -156,17 +158,6 @@ const data = {
             metric: 'IITM MAD2 — GRADED A',
             links: [
                 { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20/Hospital-Management-System---V2' }
-            ]
-        },
-        {
-            title: 'HP Battery Charge Limiter',
-            category: 'TOOLS & SYSTEMS',
-            caseStudy: 'battery',
-            description: 'HP omits the charge-limit feature on many Pavilion models. Manually reverse-engineered EC register 0x76 via DSDT analysis — firmware resets it in <3s, so the daemon fights back every 3s. Shipped as a Windows GUI installer (.exe) and an Arch Linux AUR package, with a community register database for other models.',
-            metric: 'AUR · WINDOWS EXE · 15 STARS',
-            links: [
-                { name: 'CASE STUDY ↗', url: 'case.html?p=battery' },
-                { name: 'GITHUB ↗', url: 'https://github.com/SarangRao20/battery-charge-limiter' }
             ]
         },
         {
