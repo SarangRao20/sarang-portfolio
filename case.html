@@ -172,6 +172,83 @@
                 }, { threshold: 0.6 });
                 statEls.forEach(el => obs.observe(el));
             }
+
+            /* Outcome cards — animated top border reveal */
+            if (!reduced && 'IntersectionObserver' in window) {
+                const outcomeObs = new IntersectionObserver(entries => {
+                    entries.forEach((e, idx) => {
+                        if (e.isIntersecting) {
+                            setTimeout(() => e.target.classList.add('in-view'), idx * 80);
+                            outcomeObs.unobserve(e.target);
+                        }
+                    });
+                }, { threshold: 0.4 });
+                document.querySelectorAll('.cs-outcome-card').forEach(el => outcomeObs.observe(el));
+            }
+
+            /* Challenge cards — staggered entrance */
+            if (!reduced && 'IntersectionObserver' in window) {
+                const challengeObs = new IntersectionObserver(entries => {
+                    entries.forEach(e => {
+                        if (e.isIntersecting) {
+                            const cards = e.target.querySelectorAll('.cs-challenge-card');
+                            cards.forEach((card, i) => {
+                                setTimeout(() => card.classList.add('in'), i * 100);
+                            });
+                            challengeObs.unobserve(e.target);
+                        }
+                    });
+                }, { threshold: 0.2 });
+                document.querySelectorAll('.cs-challenges').forEach(el => challengeObs.observe(el));
+            }
+
+            /* Tech grid — staggered fade-in */
+            if (!reduced && 'IntersectionObserver' in window) {
+                const techObs = new IntersectionObserver(entries => {
+                    entries.forEach(e => {
+                        if (e.isIntersecting) {
+                            const cards = e.target.querySelectorAll('.cs-tech-card');
+                            cards.forEach((card, i) => {
+                                setTimeout(() => card.classList.add('in-view'), i * 60);
+                            });
+                            techObs.unobserve(e.target);
+                        }
+                    });
+                }, { threshold: 0.3 });
+                document.querySelectorAll('.cs-tech-grid').forEach(el => techObs.observe(el));
+            }
+
+            /* Workflow steps — sequential reveal with pulse */
+            if (!reduced && 'IntersectionObserver' in window) {
+                const wfObs = new IntersectionObserver(entries => {
+                    entries.forEach(e => {
+                        if (e.isIntersecting) {
+                            const steps = e.target.querySelectorAll('.cs-wf-step');
+                            steps.forEach((step, i) => {
+                                setTimeout(() => step.classList.add('in'), i * 150);
+                            });
+                            wfObs.unobserve(e.target);
+                        }
+                    });
+                }, { threshold: 0.2 });
+                document.querySelectorAll('.cs-visual-workflow').forEach(el => wfObs.observe(el));
+            }
+
+            /* Decision cards — slide-in from left */
+            if (!reduced && 'IntersectionObserver' in window) {
+                const decisionObs = new IntersectionObserver(entries => {
+                    entries.forEach(e => {
+                        if (e.isIntersecting) {
+                            const cards = e.target.querySelectorAll('.cs-decision-card');
+                            cards.forEach((card, i) => {
+                                setTimeout(() => card.classList.add('in'), i * 120);
+                            });
+                            decisionObs.unobserve(e.target);
+                        }
+                    });
+                }, { threshold: 0.3 });
+                document.querySelectorAll('.cs-decisions').forEach(el => decisionObs.observe(el));
+            }
         })();
     </script>
 </body>
